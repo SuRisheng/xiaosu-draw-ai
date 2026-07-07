@@ -1,6 +1,7 @@
 # xiaosu-draw-ai
+# xiaosu-draw-ai
 
-> Universal AI diagramming skill — pure SKILL.md + draw.io CLI driven, not coupled to any specific Agent platform.
+> 软件制图的 AI 技能。Universal AI diagramming skill — pure SKILL.md + draw.io CLI driven, not coupled to any specific Agent platform.
 
 Generate production-quality **architecture, sequence, ER, flowchart, deployment, class, C4, state machine, network, and data flow diagrams** from natural language descriptions.
 
