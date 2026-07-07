@@ -1,0 +1,20 @@
+# Build artifacts
+/output/
+
+# Exported images (regeneratable)
+*.drawio.png
+*.drawio.svg
+*.drawio.pdf
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test temp files
+/tmp/
