@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="Payment System Class Diagram" id="class-1">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- AbstractEntity (abstract class) -->
+        <mxCell id="2" value="&lt;b&gt;&lt;i&gt;«abstract»&lt;br&gt;AbstractEntity&lt;/i&gt;&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="+ id: Long&lt;br&gt;+ createdAt: Date" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="2">
+          <mxGeometry x="10" y="30" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- PaymentService (interface) -->
+        <mxCell id="4" value="&lt;b&gt;«interface»&lt;br&gt;PaymentService&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="+ pay(amount): bool&lt;br&gt;+ refund(txId): bool&lt;br&gt;+ query(txId): Status" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="4">
+          <mxGeometry x="10" y="30" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- AlipayService (concrete, implements PaymentService) -->
+        <mxCell id="6" value="&lt;b&gt;AlipayService&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="- apiKey: String&lt;br&gt;- endpoint: URL" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="6">
+          <mxGeometry x="10" y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="+ pay(amount): bool&lt;br&gt;+ refund(txId): bool&lt;br&gt;+ query(txId): Status" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="6">
+          <mxGeometry x="10" y="60" width="180" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- User (concrete, extends AbstractEntity) -->
+        <mxCell id="9" value="&lt;b&gt;User&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="40" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="+ name: String&lt;br&gt;+ email: String [UQ]" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="9">
+          <mxGeometry x="10" y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="+ login(): bool&lt;br&gt;+ logout(): void" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="9">
+          <mxGeometry x="10" y="60" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Order (concrete, extends AbstractEntity) -->
+        <mxCell id="12" value="&lt;b&gt;Order&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="360" y="200" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="- total: BigDecimal&lt;br&gt;- status: OrderStatus&lt;br&gt;# discountCode: String" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="12">
+          <mxGeometry x="10" y="30" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="+ place(): void&lt;br&gt;+ cancel(): void&lt;br&gt;+ getTotal(): BigDecimal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="12">
+          <mxGeometry x="10" y="70" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- OrderItem (part of Order, composition) -->
+        <mxCell id="15" value="&lt;b&gt;OrderItem&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="640" y="40" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="- productId: Long&lt;br&gt;- quantity: int&lt;br&gt;- unitPrice: BigDecimal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="15">
+          <mxGeometry x="10" y="30" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="+ subtotal(): BigDecimal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="15">
+          <mxGeometry x="10" y="70" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Product -->
+        <mxCell id="18" value="&lt;b&gt;Product&lt;/b&gt;" style="swimlane;fontStyle=1;align=center;startSize=30;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="640" y="200" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="+ id: Long&lt;br&gt;+ name: String&lt;br&gt;+ price: BigDecimal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="18">
+          <mxGeometry x="10" y="30" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="20" value="+ getPrice(): BigDecimal" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;align=left;fontSize=11;" vertex="1" parent="18">
+          <mxGeometry x="10" y="70" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+
+        <!-- User extends AbstractEntity (inheritance) -->
+        <mxCell id="21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" edge="1" parent="1" source="9" target="2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Order extends AbstractEntity (inheritance) -->
+        <mxCell id="22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;" edge="1" parent="1" source="12" target="2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="120" />
+              <mxPoint x="140" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- AlipayService implements PaymentService -->
+        <mxCell id="23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="6" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- User → Order (association 1:N) -->
+        <mxCell id="24" value="places" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="9" target="12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Order → OrderItem (composition) -->
+        <mxCell id="25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=diamond;startFill=1;fontSize=10;" edge="1" parent="1" source="12" target="15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Order → Product (aggregation) -->
+        <mxCell id="26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=none;startArrow=diamondThin;startFill=0;fontSize=10;" edge="1" parent="1" source="12" target="18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

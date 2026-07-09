@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="xiaosu-draw-ai Architecture" id="xiaosu-arch-1">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ====== Tier 1: Input ====== -->
+        <mxCell id="2" value="&lt;b&gt;User Input&lt;/b&gt;&lt;br&gt;Natural Language / Code / DSL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="380" y="30" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="3" value="&lt;b&gt;SKILL.md&lt;/b&gt;&lt;br&gt;Pipeline Dispatch + Template Match + Style Select" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="130" width="300" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ====== Tier 2: Three Pipelines ====== -->
+        <mxCell id="10" value="&lt;b&gt;Pipeline A&lt;/b&gt;&lt;br&gt;Data-Driven&lt;br&gt;Code → IR JSON → XML" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="190" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="20" value="&lt;b&gt;Pipeline B&lt;/b&gt;&lt;br&gt;Mermaid Convert&lt;br&gt;.mmd → draw.io CLI → .drawio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="270" y="250" width="190" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="30" value="&lt;b&gt;Pipeline C&lt;/b&gt;&lt;br&gt;AI Hand-Writes XML&lt;br&gt;Plan → Generate → Validate → Export" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="500" y="250" width="210" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="11" value="ref: pipeline-a-authoring.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="10">
+          <mxGeometry x="10" y="60" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="ref: mermaid-authoring.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="20">
+          <mxGeometry x="10" y="60" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="ref: xml-authoring.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="30">
+          <mxGeometry x="10" y="60" width="180" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Context docs (top-level, well-spaced) -->
+        <mxCell id="32" value="diagram-types.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="760" y="250" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="style-presets.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;align=center;" vertex="1" parent="1">
+          <mxGeometry x="760" y="310" width="140" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges: SKILL.md → Pipelines -->
+        <mxCell id="41" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="3" target="10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="42" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="3" target="20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="43" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="3" target="30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="44" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;dashed=1;dashPattern=4 4;" edge="1" parent="1" source="30" target="32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="45" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;dashed=1;dashPattern=4 4;" edge="1" parent="1" source="30" target="33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ====== Tier 3: Quality Gates ====== -->
+        <mxCell id="50" value="&lt;b&gt;Quality Gates&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="400" width="860" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="51" value="validate.py&lt;br&gt;P0-P2 Structural" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+          <mxGeometry x="30" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="52" value="audit.js&lt;br&gt;P3 Visual Heuristics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+          <mxGeometry x="260" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="visual-audit.md&lt;br&gt;AI Visual Review" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="50">
+          <mxGeometry x="490" y="50" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="54" value="rules.md" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="50">
+          <mxGeometry x="720" y="60" width="100" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Flow: pipelines → quality -->
+        <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="10" target="51">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="20" target="52">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="30" target="53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="50" source="51" target="52">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="50" source="52" target="53">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ====== Tier 4: Export ====== -->
+        <mxCell id="70" value="&lt;b&gt;export.js&lt;/b&gt;&lt;br&gt;CLI Export Wrapper&lt;br&gt;draw.io --export → PNG/SVG/PDF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="580" width="260" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="71" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="50" target="70">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ====== Tier 5: Output ====== -->
+        <mxCell id="80" value="&lt;b&gt;PNG&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="710" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="81" value="&lt;b&gt;SVG&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="710" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="82" value="&lt;b&gt;PDF&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="500" y="710" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="91" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="70" target="80">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="92" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="70" target="81">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="93" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="70" target="82">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ====== Supporting Resources (simple box, not swimlane) ====== -->
+        <mxCell id="100" value="&lt;b&gt;Supporting Resources&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="101" value="templates/ (zh + en)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="870" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="102" value="styles/ (7 presets)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="240" y="870" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="103" value="references/ (9 docs)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="440" y="870" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="104" value="scripts/ (build/install/audit)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="640" y="870" width="200" height="30" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

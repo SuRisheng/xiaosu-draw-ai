@@ -1,20 +1,30 @@
 # Build artifacts
 /output/
+.claude/
 
 # Exported images (regeneratable)
 *.drawio.png
 *.drawio.svg
 *.drawio.pdf
 
-# Dependencies
-node_modules/
-__pycache__/
+# Preview PNG exports (regeneratable)
+.drawio/*.png
+
+# Draw.io backup files (anywhere)
+**/.$*.bkp
+
+# Python
+**/__pycache__/
 *.pyc
+.pytest_cache/
 
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Claude Code session memory
+/memory/
 
 # Test temp files
 /tmp/

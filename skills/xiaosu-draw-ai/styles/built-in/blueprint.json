@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "blueprint",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "high",
+  "description": "Engineering blueprint aesthetic. Deep navy background with cyan/white strokes, sharp corners, monospace typography. Best for architecture, class/ER, sequence, state machines, network topology.",
+  "bestFor": ["architecture", "class", "er", "sequence", "state-machine", "network"],
+  "palette": {
+    "primary":   { "fillColor": "#0d1f3c", "strokeColor": "#00b4d8", "fontColor": "#caf0f8" },
+    "success":   { "fillColor": "#0d1f3c", "strokeColor": "#06d6a0", "fontColor": "#caf0f8" },
+    "warning":   { "fillColor": "#0d1f3c", "strokeColor": "#f77f00", "fontColor": "#caf0f8" },
+    "accent":    { "fillColor": "#0d1f3c", "strokeColor": "#ffffff", "fontColor": "#ffffff" },
+    "danger":    { "fillColor": "#0d1f3c", "strokeColor": "#f77f00", "fontColor": "#caf0f8" },
+    "neutral":   { "fillColor": "#0d1f3c", "strokeColor": "#48cae4", "fontColor": "#90e0ef" },
+    "secondary": { "fillColor": "#0d1f3c", "strokeColor": "#48cae4", "fontColor": "#caf0f8" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "primary"
+  },
+  "shapes": {
+    "service":   "rounded=0;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=0;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=4 4;fillColor=none",
+    "container": "swimlane;startSize=30;fillColor=#0a1a30;strokeColor=#00b4d8;"
+  },
+  "font": {
+    "fontFamily": "Courier New",
+    "fontSize": 12,
+    "titleFontSize": 16,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": ["external"]
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 1,
+    "background": "#0a1628",
+    "fontColor": "#caf0f8",
+    "edgeColor": "#48cae4",
+    "cornerRadius": "rounded=0"
+  }
+}

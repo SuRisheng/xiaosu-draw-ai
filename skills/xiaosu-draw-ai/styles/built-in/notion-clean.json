@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "notion-clean",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "high",
+  "description": "Minimalist, typography-first aesthetic. White background with muted gray tones, system fonts, single blue accent. Best for all diagram types — the safest choice when unsure.",
+  "bestFor": ["class", "er", "sequence", "mindmap", "use-case", "state-machine", "general"],
+  "palette": {
+    "primary":   { "fillColor": "#f9fafb", "strokeColor": "#e5e7eb", "fontColor": "#111827" },
+    "success":   { "fillColor": "#f0fdf4", "strokeColor": "#bbf7d0", "fontColor": "#111827" },
+    "warning":   { "fillColor": "#fefce8", "strokeColor": "#fef08a", "fontColor": "#111827" },
+    "accent":    { "fillColor": "#eff6ff", "strokeColor": "#bfdbfe", "fontColor": "#111827" },
+    "danger":    { "fillColor": "#fef2f2", "strokeColor": "#fecaca", "fontColor": "#111827" },
+    "neutral":   { "fillColor": "#f9fafb", "strokeColor": "#d1d5db", "fontColor": "#374151" },
+    "secondary": { "fillColor": "#faf5ff", "strokeColor": "#e9d5ff", "fontColor": "#111827" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "neutral"
+  },
+  "shapes": {
+    "service":   "rounded=1;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=1;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4",
+    "container": "swimlane;startSize=30;fillColor=#e5e7eb;strokeColor=#d1d5db;"
+  },
+  "font": {
+    "fontFamily": "Helvetica",
+    "fontSize": 14,
+    "titleFontSize": 18,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": []
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 1,
+    "background": "#FFFFFF",
+    "fontColor": "#111827",
+    "edgeColor": "#d1d5db",
+    "cornerRadius": "rounded=1"
+  }
+}

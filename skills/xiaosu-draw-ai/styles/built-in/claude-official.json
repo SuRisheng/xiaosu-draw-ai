@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "claude-official",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "high",
+  "description": "Warm, approachable aesthetic inspired by Anthropic's design language. Cream background, semantic node colors, soft shadows, generous rounded corners. Best for architecture, system documentation, onboarding.",
+  "bestFor": ["architecture", "documentation", "onboarding", "general"],
+  "palette": {
+    "primary":   { "fillColor": "#a8c5e6", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" },
+    "success":   { "fillColor": "#9dd4c7", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" },
+    "warning":   { "fillColor": "#f4e4c1", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" },
+    "accent":    { "fillColor": "#9dd4c7", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" },
+    "danger":    { "fillColor": "#f4e4c1", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" },
+    "neutral":   { "fillColor": "#f5f0eb", "strokeColor": "#999999", "fontColor": "#6a6a6a" },
+    "secondary": { "fillColor": "#e8e6e3", "strokeColor": "#4a4a4a", "fontColor": "#1a1a1a" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "primary"
+  },
+  "shapes": {
+    "service":   "rounded=1;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=1;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4",
+    "container": "swimlane;startSize=30;fillColor=#c4d8eb;strokeColor=#4a4a4a;"
+  },
+  "font": {
+    "fontFamily": "Helvetica",
+    "fontSize": 14,
+    "titleFontSize": 20,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": ["external"]
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 2,
+    "background": "#f8f6f3",
+    "fontColor": "#1a1a1a",
+    "edgeColor": "#5a5a5a",
+    "cornerRadius": "rounded=1"
+  }
+}

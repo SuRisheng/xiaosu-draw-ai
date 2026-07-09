@@ -1,6 +1,8 @@
 # xiaosu-draw-ai 开发指南
 
 > 通用 AI 制图 Skill —— 纯 SKILL.md + draw.io CLI 驱动，不与任何 Agent 平台耦合。
+>
+> 技能文件位于 `skills/xiaosu-draw-ai/`，项目级文件位于根目录。
 
 ## 修改路由表
 
@@ -8,13 +10,21 @@
 
 | 你要做什么 | 改这里 | 说明 |
 |-----------|--------|------|
-| 加图类型 | `templates/` + `references/diagram-types.md` | 模板 + 类型预设 |
-| 加规则 / 改规则 | `references/rules.md` | P0-P3 像素级规则体系 |
-| 改导出行为 | `scripts/export.js` | CLI 导出封装 |
-| 改审计 / 加规则检测 | `scripts/validate.py` | 结构 lint + P0-P2 审计 |
-| 改视觉风格 | `styles/` | 颜色/样式字典 |
-| 改 AI 工作流 | `SKILL.md` | Agent 工作流指令 |
-| 改打包流程 | `scripts/build.js` | 打包构建 |
+| 加图类型 | `skills/xiaosu-draw-ai/templates/` + `skills/xiaosu-draw-ai/references/diagram-types.md` | 模板 + 类型预设 |
+| 加规则 / 改规则 | `skills/xiaosu-draw-ai/references/rules.md` | P0-P3 像素级规则体系 |
+| 改导出行为 | `skills/xiaosu-draw-ai/scripts/export.js` | CLI 导出封装（PNG/SVG/PDF 预览+最终） |
+| 改 Mermaid 转换 | `skills/xiaosu-draw-ai/scripts/mermaid-convert.js` | Pipeline B：Mermaid → draw.io CLI 转换 + 版本检测 |
+| 改边路由算法 | `skills/xiaosu-draw-ai/scripts/router.js` | 正交路由引擎 + 并行边分布（R031/R033 自动修复） |
+| 改数据导入 | `skills/xiaosu-draw-ai/scripts/importers/` | Pipeline A：sql2er（SQL→ER）+ openapi2arch（OpenAPI→架构图） |
+| 改图解析 | `skills/xiaosu-draw-ai/scripts/xml-parser.js` + `skills/xiaosu-draw-ai/scripts/png-extract.js` | 已有图修改入口：XML→JSON 结构 + PNG 嵌入 XML 提取 |
+| 改稠密图策略 | `skills/xiaosu-draw-ai/references/dense-diagram-simplification.md` | 节点≥15 时合并/拆分/容器化/边捆绑 5 策略 |
+| 改 Managed Agents | `skills/xiaosu-draw-ai/references/managed-agents-adaptation.md` | Phase 5 云端 Agent 适配指南 |
+| 改审计 / 加规则检测 | `skills/xiaosu-draw-ai/scripts/validate.py` | 结构 lint + P0-P2 审计 |
+| 改视觉审计 | `skills/xiaosu-draw-ai/scripts/audit.js` + `skills/xiaosu-draw-ai/references/visual-audit.md` | P3 启发式检查 + AI 视觉审计决策表 |
+| 改视觉风格/样式预设 | `skills/xiaosu-draw-ai/styles/schema.json` + `skills/xiaosu-draw-ai/styles/built-in/*.json` + `skills/xiaosu-draw-ai/references/style-presets.md` | 颜色/样式预设 + 样式注册表 + 兼容矩阵 |
+| 改安装流程 | `skills/xiaosu-draw-ai/scripts/install.js` | 跨平台安装器 |
+| 改 AI 工作流 | `skills/xiaosu-draw-ai/SKILL.md` | Agent 工作流指令 |
+| 改打包流程 | `skills/xiaosu-draw-ai/scripts/build.js` | 打包构建 |
 | 加测试 | `tests/` | 测试用例 |
 | 改安装说明 | `README.md` | 给人看的项目说明 |
 
@@ -22,18 +32,28 @@
 
 ```bash
 # 结构 lint
-python3 scripts/validate.py <file.drawio>           # 基础检查
-python3 scripts/validate.py <file.drawio> --strict  # 严格模式
-python3 scripts/validate.py <file.drawio> --score   # 可读性评分
-python3 scripts/validate.py <file.drawio> --json    # JSON 输出
+python3 skills/xiaosu-draw-ai/scripts/validate.py <file.drawio>           # 基础检查
+python3 skills/xiaosu-draw-ai/scripts/validate.py <file.drawio> --strict  # 严格模式
+python3 skills/xiaosu-draw-ai/scripts/validate.py <file.drawio> --score   # 可读性评分
+python3 skills/xiaosu-draw-ai/scripts/validate.py <file.drawio> --json    # JSON 输出
+
+# 视觉审计
+node skills/xiaosu-draw-ai/scripts/audit.js <file.drawio>                  # 全部检查（含 validate.py + P3 启发式）
+node skills/xiaosu-draw-ai/scripts/audit.js <file.drawio> --json           # JSON 输出
+node skills/xiaosu-draw-ai/scripts/audit.js <file.drawio> --score          # 可读性评分
 
 # CLI 导出
-node scripts/export.js <file.drawio>                  # 预览导出
-node scripts/export.js <file.drawio> --final          # 最终导出（嵌入源文件）
-node scripts/export.js <file.drawio> --format svg     # SVG 格式
+node skills/xiaosu-draw-ai/scripts/export.js <file.drawio>                  # 预览导出
+node skills/xiaosu-draw-ai/scripts/export.js <file.drawio> --final          # 最终导出（嵌入源文件）
+node skills/xiaosu-draw-ai/scripts/export.js <file.drawio> --format svg     # SVG 格式
+
+# 安装
+node skills/xiaosu-draw-ai/scripts/install.js                               # 交互式安装
+node skills/xiaosu-draw-ai/scripts/install.js --agent claude-code           # 指定 Agent 安装
+node skills/xiaosu-draw-ai/scripts/install.js --check                       # 仅检查先决条件
 
 # 打包
-node scripts/build.js                                 # 打包到 output/
+node skills/xiaosu-draw-ai/scripts/build.js                                 # 打包到 .claude/skills/xiaosu-draw-ai/
 ```
 
 ## 测试流程
@@ -60,6 +80,34 @@ L2: 端到端测试（仅人工触发）
 | CLAUDE.md | 中文 | 开发者自己看 |
 | README.md | 英文 | 搜索可见性 |
 
-## Phase 1 范围
+## 目录结构
 
-当前仅实现**管道C**（AI 手写 XML）。管道A（数据驱动）和管道B（Mermaid 转换）在后续 Phase 中实现。
+```
+xiaosu-draw-ai/
+  skills/
+    xiaosu-draw-ai/          # 技能文件（与 drawio-skill 参考格式一致）
+      SKILL.md               # Agent 工作流指令
+      data/                  # 结构化 JSON 数据文件
+      references/            # 规则手册 & 编写指南
+      scripts/               # validate.py, audit.js, export.js, build.js, install.js, mermaid-convert.js, router.js, utils.js
+        importers/            # ir-importer.js, sql2er.js, openapi2arch.js（管道 A）
+      styles/                # schema.json + built-in/（7 个预设 JSON）
+      templates/             # 提示模板（zh/ + en/）
+  tests/                     # 测试套件（L0-L3）
+  .drawio/                   # 自举图与开发验证图
+  .github/workflows/         # CI
+  .claude/skills/             # 构建产物（勿手改）
+  doc/DESIGN.md               # 权威设计依据（本文件）
+  CLAUDE.md                  # 开发指南（本文件）
+  README.md                  # 项目门面
+  CHANGELOG.md               # 变更历史
+  LICENSE
+```
+> 版本号以 `skills/xiaosu-draw-ai/SKILL.md` frontmatter 为唯一源。
+
+## Phase 4 范围
+
+当前实现**全部 3 条管道**：
+- **管道 C**（AI 手写 XML）：完整质量门禁（validate.py P0-P2 + audit.js P3 启发式 + visual-audit.md 决策表）、10 类图模板（zh/en）、7 套风格预设、Arrow Semantics
+- **管道 B**（Mermaid 转换）：mermaid-convert.js + CLI v30 版本检测，支持 sequence/ER/class/state machine 等结构优先型图
+- **管道 A**（数据驱动）：sql2er（SQL→ER）、openapi2arch（OpenAPI→架构图），含 ir-importer 接口

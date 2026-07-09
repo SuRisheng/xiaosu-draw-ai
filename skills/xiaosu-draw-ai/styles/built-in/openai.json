@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "openai",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "high",
+  "description": "Radical minimalism. White boxes on white background with a single brand green accent. Thin strokes, system fonts, zero visual decoration. Best for technical documentation, API diagrams, content-first presentations.",
+  "bestFor": ["technical-docs", "api", "architecture", "content-first"],
+  "palette": {
+    "primary":   { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#0d0d0d" },
+    "success":   { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#0d0d0d" },
+    "warning":   { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#0d0d0d" },
+    "accent":    { "fillColor": "#ffffff", "strokeColor": "#10a37f", "fontColor": "#0d0d0d" },
+    "danger":    { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#0d0d0d" },
+    "neutral":   { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#6e6e80" },
+    "secondary": { "fillColor": "#ffffff", "strokeColor": "#e5e5e5", "fontColor": "#0d0d0d" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "neutral"
+  },
+  "shapes": {
+    "service":   "rounded=1;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=1;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4",
+    "container": "swimlane;startSize=30;fillColor=#e5e5e5;strokeColor=#d4d4d4;"
+  },
+  "font": {
+    "fontFamily": "Helvetica",
+    "fontSize": 13,
+    "titleFontSize": 20,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": []
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 1,
+    "background": "#FFFFFF",
+    "fontColor": "#0d0d0d",
+    "edgeColor": "#71717a",
+    "cornerRadius": "rounded=1"
+  }
+}

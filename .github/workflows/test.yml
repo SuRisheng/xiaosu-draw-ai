@@ -1,0 +1,161 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'CHANGELOG.md'
+      - 'output/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  # ── L0: Unit Tests ──────────────────────────────────────────────────
+  unit:
+    name: L0 — Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['18', '20', '22']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install pytest
+
+      - name: Unit tests — validate.py
+        run: python3 -m pytest tests/unit/test_validate.py -v
+
+      - name: Unit tests — IR schema
+        run: node tests/unit/test_ir_schema.js
+
+      - name: Unit tests — Router
+        run: node tests/unit/test_router.js
+
+      - name: Integration tests — Pipeline A
+        run: node tests/integration/test_pipeline_a.js
+
+  # ── L1: Integration Tests ──────────────────────────────────────────
+  integration:
+    name: L1 — Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install draw.io CLI
+        run: |
+          sudo snap install drawio || echo "snap unavailable — trying alternative"
+          # Fallback: download AppImage
+          if ! command -v drawio &> /dev/null && ! command -v draw.io &> /dev/null; then
+            echo "draw.io CLI not available via snap; skipping export tests"
+          fi
+
+      - name: Install xvfb (headless display)
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: CLI detection test
+        run: node tests/integration/test_cli_detect.js
+
+      - name: Export integration test
+        run: |
+          if command -v drawio &> /dev/null || command -v draw.io &> /dev/null; then
+            xvfb-run node tests/integration/test_export.js
+          else
+            echo "SKIP: draw.io CLI not available"
+          fi
+
+      - name: Golden regression test
+        run: node tests/integration/test_golden_regression.js
+
+  # ── Build Validation ────────────────────────────────────────────────
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run build
+        run: node skills/xiaosu-draw-ai/scripts/build.js
+
+      - name: Verify build output
+        run: |
+          echo "Checking output structure..."
+          test -f output/xiaosu-draw-ai/SKILL.md || { echo "Missing SKILL.md"; exit 1; }
+          test -f output/xiaosu-draw-ai/manifest.json || { echo "Missing manifest.json"; exit 1; }
+          test -f output/xiaosu-draw-ai/README.md || { echo "Missing README.md"; exit 1; }
+          test -d output/xiaosu-draw-ai/references || { echo "Missing references/"; exit 1; }
+          test -d output/xiaosu-draw-ai/styles || { echo "Missing styles/"; exit 1; }
+          test -d output/xiaosu-draw-ai/templates/zh || { echo "Missing templates/zh/"; exit 1; }
+          test -d output/xiaosu-draw-ai/templates/en || { echo "Missing templates/en/"; exit 1; }
+          test -d output/xiaosu-draw-ai/scripts || { echo "Missing scripts/"; exit 1; }
+          echo "✓ Build output structure OK"
+
+          echo "Checking manifest version..."
+          node -e "const m=require('./output/xiaosu-draw-ai/manifest.json'); console.log('Version:', m.version); process.exit(m.version ? 0 : 1)"
+
+          echo "Build complete: $(find output/xiaosu-draw-ai -type f | wc -l) files"
+
+  # ── Cross-Platform Smoke Test (Windows) ─────────────────────────────
+  test-windows:
+    name: L0 — Windows
+    runs-on: windows-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install pytest
+
+      - name: Unit tests — validate.py (Windows)
+        run: python3 -m pytest tests/unit/test_validate.py -v
+
+      - name: Unit tests — IR schema (Windows)
+        run: node tests/unit/test_ir_schema.js
+
+      - name: Unit tests — Router (Windows)
+        run: node tests/unit/test_router.js
+
+      - name: Integration tests — Pipeline A (Windows)
+        run: node tests/integration/test_pipeline_a.js
+
+      - name: CLI detection test (Windows)
+        run: node tests/integration/test_cli_detect.js

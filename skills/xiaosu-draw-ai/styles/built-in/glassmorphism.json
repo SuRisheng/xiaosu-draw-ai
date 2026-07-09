@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "glassmorphism",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "medium",
+  "description": "Frosted glass panels on dark gradient background with ambient glow accents. Modern, sci-fi aesthetic with translucent layers. Best for product demos, keynotes, AI/agent architectures.",
+  "bestFor": ["ai-agent", "product-demo", "keynote", "architecture"],
+  "palette": {
+    "primary":   { "fillColor": "#1a2332", "strokeColor": "#58a6ff", "fontColor": "#f0f6fc" },
+    "success":   { "fillColor": "#1a2e1a", "strokeColor": "#3fb950", "fontColor": "#f0f6fc" },
+    "warning":   { "fillColor": "#2e241a", "strokeColor": "#f78166", "fontColor": "#f0f6fc" },
+    "accent":    { "fillColor": "#2a1a3a", "strokeColor": "#bc8cff", "fontColor": "#f0f6fc" },
+    "danger":    { "fillColor": "#2e1a1a", "strokeColor": "#f85149", "fontColor": "#f0f6fc" },
+    "neutral":   { "fillColor": "#1e2330", "strokeColor": "#30363d", "fontColor": "#8b949e" },
+    "secondary": { "fillColor": "#1e2330", "strokeColor": "#30363d", "fontColor": "#8b949e" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "primary"
+  },
+  "shapes": {
+    "service":   "rounded=1;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=1;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none",
+    "container": "swimlane;startSize=30;fillColor=#1a2332;strokeColor=#58a6ff;"
+  },
+  "font": {
+    "fontFamily": "Helvetica",
+    "fontSize": 14,
+    "titleFontSize": 20,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": ["external"]
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 1,
+    "background": "#0d1117",
+    "fontColor": "#f0f6fc",
+    "edgeColor": "#58a6ff",
+    "cornerRadius": "rounded=1"
+  }
+}

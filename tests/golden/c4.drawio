@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="C4 Container - Internet Banking" id="c4-c2">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="2" value="Internet Banking — C2 Container Diagram" style="text;html=1;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- System Boundary -->
+        <mxCell id="3" value="Internet Banking System" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;fontSize=12;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="250" y="80" width="700" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- Person: Customer -->
+        <mxCell id="4" value="Personal Banking&lt;br&gt;Customer" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="40" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Container: Web App -->
+        <mxCell id="5" value="&lt;b&gt;Single-Page Application&lt;/b&gt;&lt;br&gt;React&lt;br&gt;[Container: Web]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="300" y="140" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Container: Mobile App -->
+        <mxCell id="6" value="&lt;b&gt;Mobile App&lt;/b&gt;&lt;br&gt;iOS / Android&lt;br&gt;[Container: Mobile]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="140" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Container: API Application -->
+        <mxCell id="7" value="&lt;b&gt;API Application&lt;/b&gt;&lt;br&gt;Spring Boot&lt;br&gt;[Container: API]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="380" y="300" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Container: Database -->
+        <mxCell id="8" value="&lt;b&gt;Database&lt;/b&gt;&lt;br&gt;MySQL&lt;br&gt;[Container: Data]" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="680" y="300" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- External: Email System -->
+        <mxCell id="9" value="&lt;b&gt;E-mail System&lt;/b&gt;&lt;br&gt;[External: SMTP]" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="300" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- External: Mainframe -->
+        <mxCell id="10" value="&lt;b&gt;Mainframe Banking&lt;/b&gt;&lt;br&gt;[External: Legacy]" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="410" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Customer → Web App -->
+        <mxCell id="11" value="Views pages [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Customer → Mobile App -->
+        <mxCell id="12" value="Uses app [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="4" target="6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Web App → API -->
+        <mxCell id="13" value="Makes API calls [JSON/HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="5" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Mobile App → API -->
+        <mxCell id="14" value="Makes API calls [JSON/HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="6" target="7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- API → Database -->
+        <mxCell id="15" value="Reads/writes [JDBC]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="7" target="8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- API → Email -->
+        <mxCell id="16" value="Sends mail [SMTP]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;dashed=1;dashPattern=8 4;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="7" target="9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="340" />
+              <mxPoint x="240" y="240" />
+              <mxPoint x="1100" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API → Mainframe -->
+        <mxCell id="17" value="Calls legacy API [REST]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;dashed=1;dashPattern=8 4;fontSize=9;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="7" target="10">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="240" y="440" />
+              <mxPoint x="240" y="550" />
+              <mxPoint x="1100" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
