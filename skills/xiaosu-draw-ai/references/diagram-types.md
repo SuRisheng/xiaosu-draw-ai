@@ -157,6 +157,8 @@
 
 > **Pipeline:** B (Mermaid) by default. Use `sequenceDiagram` in `.mmd` → CLI convert.
 > Downgrade to C if user wants custom styling ("精美"/"beautiful").
+> **Delivery:** Prefer Mermaid code block for platforms that render it (GitHub, Notion, Feishu Wiki). Use PNG for Feishu Docx/Whiteboard.
+> **Source preservation:** Keep `.mmd` alongside `.drawio` — the `.mmd` is the editable source.
 
 **Purpose:** Show message exchange between participants over time. Best for login flows, API call chains, distributed transactions.
 

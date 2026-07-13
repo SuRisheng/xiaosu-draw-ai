@@ -5,7 +5,7 @@ description: >-
   Universal AI diagramming skill powered by draw.io CLI. Generate production-quality
   architecture, sequence, ER, flowchart, deployment, class, C4, state machine, network,
   and data flow diagrams from natural language descriptions.
-  Phase 2: Pipeline C (AI hand-writes XML) with full quality gates, templates, visual audit, and 7 style presets. Pipeline B (Mermaid) planned.
+  Phase 4: All 3 pipelines active (A: data-driven importers, B: Mermaid conversion, C: hand-written XML) with full quality gates, templates, visual audit, and 7 style presets.
 license: MIT
 homepage: https://github.com/rshsu/xiaosu-draw-ai
 compatibility: >-
@@ -144,6 +144,8 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `references/feishu-embed.md` | Embedding final diagrams in Feishu/Lark docs, wikis, or messages |
 | `scripts/xml-parser.js` | User provides an existing .drawio file to modify — parse XML to see current nodes/edges/containers |
 | `scripts/png-extract.js` | User provides a .drawio.png (--final export) — extract the embedded source XML |
+| `scripts/mermaid-convert.js` | User has .mmd source → Pipeline B regeneration; re-editing Mermaid-based diagrams |
+| `references/feishu-embed.md` | User wants to embed in Feishu — Mermaid code for Wiki, PNG for Docx |
 
 ## Template-Guided Conversations
 
@@ -178,21 +180,28 @@ When the user provides an existing diagram file and asks to change it:
 
 | User Provides | Action |
 |--------------|--------|
-| `.drawio` file + modification request | Run `node scripts/xml-parser.js <file> --json` to get current structure. Read the parsed JSON — it contains `{ nodes, edges, containers }` with all ids, labels, styles, and absolute geometry. Show the user a summary of what's in the diagram, confirm the modification intent, then apply targeted XML edits. |
-| `.drawio.png` (--final export) + modification request | Run `node scripts/png-extract.js <file> --output temp.drawio` to extract the embedded source XML. Then parse with `node scripts/xml-parser.js temp.drawio --json`. Proceed same as .drawio path. Clean up temp file after. |
-| Plain PNG (no embedded XML) + modification request | Tell the user: "This PNG doesn't contain editable source data. Do you have the original .drawio file? If not, I can analyze the image visually and redraw it with your changes — but I'll be recreating it from scratch, not modifying the original." Then proceed per user's choice. |
+| `.mmd` / `.mermaid` file + modification request | **Pipeline B source found!** Edit the `.mmd` source directly → re-run `node scripts/mermaid-convert.js <file>.mmd --output <file>.drawio` → validate → export. The `.mmd` file is the **editable source** — always prefer editing it over the generated `.drawio`. |
+| `.drawio` file + modification request | **First, check if a corresponding `.mmd` source file exists** (same base name, same directory). If YES → edit `.mmd` per above. If NO → determine the format: open the file and look for `<UserObject>` elements. **If UserObject found**: this is a Mermaid-generated file without its source. Tell the user: "This was generated from Mermaid. I can edit the XML directly, but it's fragile — better to recreate a `.mmd` source file first. Should I extract the Mermaid structure and create one?" **If no UserObject**: hand-written Pipeline C XML. Run `node scripts/xml-parser.js <file> --json` to get current structure → show summary → apply targeted XML edits. |
+| `.drawio.png` (--final export) + modification request | Run `node scripts/png-extract.js <file> --output temp.drawio` to extract the embedded source XML. Then follow the `.drawio` file flow above (check for `.mmd` source, check for UserObject format). Clean up temp file after. |
+| Plain PNG (no embedded XML) + modification request | Tell the user: "This PNG doesn't contain editable source data. Do you have the original .drawio or .mmd file? If not, I can analyze the image visually and redraw it with your changes — but I'll be recreating it from scratch, not modifying the original." Then proceed per user's choice. |
+| User says "modify the XXX diagram" (no file provided, by name) | Search `.drawio/type/` for matching `.mmd` or `.drawio` files. If `.mmd` found → edit source → regenerate. If only `.drawio` found → parse and edit. This is the common case when the user named the diagram in a previous conversation. |
 
-After parsing the existing structure, the rest of the workflow is identical to a fresh generation:
-show IR-like summary → confirm → modify XML → validate → export → visual self-check → deliver.
+After parsing the existing structure and identifying the source format, the rest of the workflow:
+- **Mermaid source (.mmd)**: edit `.mmd` → convert → validate → export → deliver
+- **Hand-written XML (.drawio, no UserObject)**: show IR-like summary → confirm → modify XML → validate → export → visual self-check → deliver
+- **UserObject XML (Mermaid-generated, no .mmd)**: warn about fragility → offer to create .mmd source → modify → validate → export
 
 ```
 User requests a diagram or modification
   │
   ├─ Is the user modifying an existing diagram?
-  │     (.drawio file, .drawio.png, or plain PNG + change description)
+  │     (.mmd file, .drawio file, .drawio.png, or plain PNG + change description)
   │
-  │    ├─ YES → Parse existing structure → show summary → apply changes
-  │    │       └─ Then continue through quality gates below
+  │    ├─ YES → Is a .mmd source file available (same name)?
+  │    │      ├─ YES → Pipeline B re-edit: edit .mmd → re-convert → validate → deliver
+  │    │      └─ NO  → Extract XML → check for UserObject format
+  │    │             ├─ UserObject found → Mermaid-generated, no source. Warn + offer to create .mmd.
+  │    │             └─ Standard mxCell → Pipeline C re-edit: parse → modify XML → validate → deliver
   │    │
   │    └─ NO → Continue with fresh generation
   │
@@ -252,7 +261,8 @@ How to interact with the user at each stage of the diagramming process:
 | User provides a document (PRD, README, meeting notes) | Read the document first. Extract structure, show IR summary, ask user to confirm. |
 | User provides code/SQL/OpenAPI | Check if matching importer exists. If not, explain the fallback path. |
 | User asks for "better looking" or "prettier" | Switch or suggest a different style preset. Do NOT re-ask structure questions. |
-| User revises 5+ times | Suggest opening the `.drawio` file in draw.io desktop for fine-tuning. |
+| User provides a `.mmd` file | **Pipeline B source found.** Read it, show structure summary, ask what to change. Edit `.mmd` text → re-convert → validate → deliver. |
+| User revises 5+ times | For Pipeline C: suggest opening the `.drawio` file in draw.io desktop. For Pipeline B: the `.mmd` source can be iterated indefinitely since edits are text-based. |
 
 ### IR Summary Format
 
@@ -382,7 +392,7 @@ Final SVG output: `.drawio/<diagram-name>.svg`.
 
 ---
 
-## Workflow: Pipeline B — Mermaid Conversion (Phase 3, planned)
+## Workflow: Pipeline B — Mermaid Conversion (Phase 4, active)
 
 For structure-first diagrams (sequence, ER, class, state machine) when draw.io CLI ≥ v30.
 
@@ -399,12 +409,19 @@ Read `references/mermaid-authoring.md`. Write Mermaid syntax to a `.mmd` file.
 Use the diagram type's section from `references/diagram-types.md` for color styling
 (via Mermaid `style` and `classDef` statements).
 
+**Store `.mmd` alongside `.drawio` output — the `.mmd` file is the editable source.**
+Never delete it. Both files should be version-controlled:
+```
+.drawio/<diagram-name>.mmd      ← Editable source (text diff, easy review)
+.drawio/<diagram-name>.drawio   ← Generated output (for draw.io + export)
+.drawio/<diagram-name>.png      ← Rendered preview
+```
+
 ### Step B3: Convert to .drawio
 
 ```bash
 node scripts/mermaid-convert.js .drawio/<diagram-name>.mmd --output .drawio/<diagram-name>.drawio
 ```
-Delete the `.mmd` file after successful conversion.
 **Never** apply `--layout` to a Mermaid-converted file (it's already laid out).
 
 ### Step B4: Validate + Export + Self-Check
@@ -416,9 +433,41 @@ node scripts/export.js .drawio/<diagram-name>.drawio
 ```
 Visual self-check per `references/visual-audit.md` (max 2 rounds).
 
-### Step B5: Review + Final Export
+### Step B5: Platform-Aware Delivery (NEW)
 
-Same as Pipeline C Step 6.
+**Before delivering, determine how the user will consume the diagram:**
+
+| Target Platform | Deliver | Format | Re-edit Path |
+|----------------|---------|--------|-------------|
+| **GitHub/GitLab Markdown** (`.md` files) | Mermaid code block + `.drawio` | Mermaid renders natively | Edit `.mmd` → regenerate |
+| **Notion** | Mermaid code block | Notion supports Mermaid syntax | Edit `.mmd` → regenerate |
+| **Obsidian** | Mermaid code block | Native Mermaid plugin | Edit `.mmd` → regenerate |
+| **Feishu Wiki** | Mermaid code block | Wiki Markdown renders Mermaid | Edit `.mmd` → regenerate |
+| **Feishu Docx** (普通文档) | PNG export (--final) | Docx 不支持 Mermaid | png-extract → recreate `.mmd` |
+| **Feishu Whiteboard** | PNG export | 画板不支持代码块 | png-extract → recreate `.mmd` |
+| **Confluence** | Mermaid code block (via plugin) + PNG fallback | Plugin-dependent | Edit `.mmd` → regenerate |
+| **Slack / IM** | PNG preview | Messages don't render Mermaid | Re-generate from `.mmd` |
+| **Word / PPT / 邮件** | PNG (--final) | 通用格式 | png-extract → recreate `.mmd` |
+
+**Decision flow:**
+```
+Pipeline B generated .drawio + .mmd
+  │
+  ├─ User's target supports Mermaid rendering?
+  │   ├─ YES → Deliver Mermaid code (copy .mmd content) as primary artifact
+  │   │         Also provide .drawio + PNG as backup
+  │   └─ NO  → Deliver PNG (--final) as primary artifact
+  │             Keep .mmd for future edits — ALWAYS
+  │
+  └─ Re-edit scenario (user says "change the XXX diagram")
+      → Find .mmd source → edit text → re-convert → re-validate → re-deliver
+```
+
+> **Key principle**: The `.mmd` file is the **single source of truth** for Pipeline B diagrams. The `.drawio` and `.png` are derived artifacts. Always preserve the `.mmd` and route modifications through it.
+
+### Step B6: Review + Final Export
+
+Same as Pipeline C Step 6. For platforms that support Mermaid, also deliver the Mermaid code block.
 
 ---
 
