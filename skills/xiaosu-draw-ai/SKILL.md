@@ -237,71 +237,73 @@ User requests a diagram or modification
 
 ## Template-Driven Document Generation
 
-When the user says "用这个模板（link）+ 这些需求，生成一份 XX 设计文档" — OR — the user provides an article containing `@xiaosu-draw-ai` annotations and asks to generate/update diagrams. Read `references/article-diagram-embedding.md` for the full specification.
+When the user says "用这个模板（link）+ 这些需求，生成一份 XX 设计文档" — OR — the user provides an article containing `@xiaosu-draw-ai` blocks and asks to generate/update diagrams. Read `references/article-diagram-embedding.md` for the full specification.
 
-### Two modes of @xiaosu-draw-ai annotation
+### How the Agent reads a template（无需特殊标注语法）
 
-| Mode | Format | Use case |
-|------|--------|---------|
-| **Mode 1: Template annotation** | `<!-- @xiaosu-draw-ai type=系统架构图 desc=分层展示前端→网关→服务→数据 -->` | Template article: mark WHERE a diagram goes and WHAT TYPE it should be. Invisible in rendered view. |
-| **Mode 2: Inline diagram request** | `@xiaosu-draw-ai 绘制<名>` + `【图类型】【内容】【风格】` blocks | Article with explicit diagram specs. Agent generates directly from these blocks. |
+Templates work across **Feishu Wiki, Markdown, and Docx**. The Agent infers diagram requirements from what's already in the template — no special annotation syntax needed in most cases.
+
+**Inference priority (from most reliable to least):**
+
+| Priority | Template content | What the Agent infers |
+|----------|-----------------|----------------------|
+| **1** | ````mermaid` code block | Type, nodes, edges — read code directly. Perfect template. |
+| **2** | `.drawio.png` file | `png-extract.js` → full XML structure. Even more detail than Mermaid. |
+| **3** | Section heading | Infer type from keywords: "系统架构"→architecture, "登录流程"→sequence, "数据模型"→ER, "部署方案"→deployment |
+| **4** | Section body text | Infer intent: "本系统分为三层：前端、服务、数据"→three-layer architecture |
+| **5** | Pure PNG + vision | Visual identification (type + approximate structure). ~60-80% accuracy. |
+| **6** | Pure PNG, no vision | ❌ Cannot determine type or content. Needs hint. |
+
+**When the template needs help (Priority 5-6 only):** Write a natural-language sentence in the template body — no special syntax:
+
+```markdown
+## 3.1 核心设计
+
+> 这里需要一张系统架构图，展示前端、网关、服务、数据四层关系。
+
+![示例](example.png)
+```
+
+This works in ALL document formats and serves double duty as human-facing template instruction.
+
+**Why not `<!-- HTML comments -->`?** They only work in `.md` files. Feishu Wiki and Docx don't support them.
+
+### @xiaosu-draw-ai inline request（行内图表请求）
+
+For embedding explicit diagram specs directly in an article:
+
+```markdown
+@xiaosu-draw-ai 绘制用户登录时序图
+【图类型】时序图
+【内容】
+1、参与者：用户浏览器、Web 应用、API 网关、认证服务、数据库
+2、正常流程：输入凭证 → POST /login → 校验 → 查库 → 返回 JWT → 成功
+3、异常分支：密码错误 401；账号锁定 423
+【风格】Notion Clean
+```
+
+`【图类型】` maps to `diagram-types.md`; `【内容】` is the primary spec; `【风格】` defaults to Flat Icon.
 
 ### Workflow: Template + Requirements → New Document
 
 ```
-User gives: template link + requirements ("画一个电商系统的设计文档")
-  │
-  ├─ Step 1: Read template
-  │     Fetch outline + full body
-  │     Extract all @xiaosu-draw-ai annotations (both modes)
-  │     Build template map: sections, diagram positions, types
-  │
-  ├─ Step 2: Show blueprint to user
-  │     "模板有 7 个章节，3 个图表位置：
-  │      §2 → 系统架构图, §3.1 → 时序图, §3.2 → ER图"
-  │     Wait for user confirmation
-  │
-  ├─ Step 3: Generate content + diagrams section by section
-  │     Write text based on user requirements (follow template structure)
-  │     At each annotation position:
-  │       - Mode 1: derive diagram content from user requirements + surrounding text
-  │       - Mode 2: use explicit 【内容】 as spec
-  │       - Generate diagram (Pipeline B for sequence/ER/class/state,
-  │         Pipeline C for architecture/deployment/flowchart/C4/network/data-flow)
-  │       - Run validate.py → export → insert at position
-  │
-  └─ Step 4: Deliver complete new document
-        Template structure + user-driven content + generated diagrams
+1. Read template → infer diagram positions from Priority 1-4 (5-6 only with hint)
+2. Show blueprint → "模板有 7 个章节，3 个图表位置（如何推断的）"
+3. Generate section by section → text from requirements, diagrams from context
+4. Deliver → template structure + user content + generated diagrams
 ```
 
-### Critical rule: Template images are type hints ONLY
+### Critical rule
 
-Template example images tell the Agent "a system architecture diagram goes here" — they do NOT provide the diagram content. The Agent MUST derive what nodes, edges, and layers the new diagram should contain from:
-1. The user's requirements (primary source)
-2. The `desc=` field in the annotation (intent hint)
-3. The surrounding article text (context)
-
-**Copying structure from a template's example image into a new diagram is a process violation.**
+Template example images are context hints ONLY. **Copying structure from a template image into a new diagram is a process violation.** Content comes from user requirements + surrounding article text.
 
 ### Article text changed → diagrams stale
 
-When the user says "文章内容改了，更新里面的图":
-
-1. Re-read current article text
-2. For each `@xiaosu-draw-ai` annotation position:
-   - Mode 2: compare `【内容】` with current article text. If diverged, flag mismatch to user.
-   - Mode 1: re-derive diagram content from current text
-3. Regenerate diagrams that have drifted
-4. Report changes: "已更新 §2 架构图（新增 Payment Service 节点）"
+Re-read article → detect drift between current text and diagrams → flag mismatches → regenerate. "已更新 §2 架构图（新增 Payment Service 节点）"
 
 ### Batch processing
 
-When multiple annotations exist in one article:
-1. Scan ALL first → show summary table → wait for confirmation
-2. Generate sequentially (one at a time, avoid file conflicts)
-3. Track progress ("2/3 done")
-4. Per-diagram error handling: 3 fix attempts, then mark as `⚠️ 失败` and continue
-5. Report all results at the end
+Scan ALL positions first → show summary → wait for confirmation → generate sequentially with progress tracking → report results.
 
 ## Style Selection
 
