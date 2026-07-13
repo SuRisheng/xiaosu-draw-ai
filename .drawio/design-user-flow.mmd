@@ -1,0 +1,13 @@
+%% title: User Interaction Flow
+%% type: flowchart
+flowchart LR
+    A["用户描述"] --> B["Agent 追问缺失信息"]
+    B --> C["Agent 展示 IR 摘要"]
+    C --> D["用户确认"]
+    D -->|"不通过"| B
+    D -->|"通过"| E["Agent 生成图"]
+    E --> F["Agent 自动检查"]
+    F -->|"有问题"| E
+    F -->|"通过"| G["用户看图反馈"]
+    G -->|"需要修改"| A
+    G -->|"满意"| H["交付: .drawio + 图片"]

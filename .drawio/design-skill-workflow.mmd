@@ -1,0 +1,16 @@
+%% title: xiaosu-draw-ai Skill Workflow
+%% type: flowchart
+flowchart TD
+    A["自然语言需求"] --> B["SKILL.md 触发与工作流"]
+    B --> C["templates/ 引导澄清"]
+    C --> D["抽取 IR 中间表示"]
+    D --> E["用户确认"]
+    E --> F{"router 选择管道"}
+    F -->|"有源文件"| G["管道 A: 数据导入"]
+    F -->|"结构优先型"| H["管道 B: Mermaid 转换"]
+    F -->|"布局优先型"| I["管道 C: AI 手写 XML"]
+    G --> J["references/ 提供生成规则"]
+    H --> J
+    I --> J
+    J --> K["scripts/ 执行验证与导出"]
+    K --> L["交付: .drawio + PNG/SVG/PDF"]

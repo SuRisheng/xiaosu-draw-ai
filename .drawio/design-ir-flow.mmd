@@ -1,0 +1,12 @@
+%% title: IR Generation and Confirmation Flow
+%% type: flowchart
+flowchart TD
+    A["用户自然语言"] --> B["Agent 提取 Draft IR"]
+    B --> C["Agent 用人话展示摘要"]
+    C --> D["用户确认 / 修改"]
+    D -->|"修改"| B
+    D -->|"确认"| E["冻结 IR"]
+    E --> F{"管道选择"}
+    F -->|"管道 A"| G["数据导入渲染"]
+    F -->|"管道 B"| H["Mermaid 转换渲染"]
+    F -->|"管道 C"| I["AI 手写 XML 渲染"]

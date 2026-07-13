@@ -141,11 +141,10 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `references/troubleshooting.md` | CLI not found, export failures, encoding issues, version problems |
 | `references/dense-diagram-simplification.md` | Diagram has 15+ nodes or user says "too cluttered" — apply simplification strategies |
 | `references/benchmark.md` | User says "benchmark", "measure", "统计性能", or "耗时统计" — collect timing and token metrics |
-| `references/feishu-embed.md` | Embedding final diagrams in Feishu/Lark docs, wikis, or messages |
+| `references/feishu-embed.md` | **Delivering any diagram — MANDATORY before every delivery.** Determine target platform (Wiki/Docx/GitHub/Slack etc.) and correct output format (Mermaid code block vs PNG vs both). Prevents exporting Mermaid as PNG when native code would be better. |
 | `scripts/xml-parser.js` | User provides an existing .drawio file to modify — parse XML to see current nodes/edges/containers |
 | `scripts/png-extract.js` | User provides a .drawio.png (--final export) — extract the embedded source XML |
 | `scripts/mermaid-convert.js` | User has .mmd source → Pipeline B regeneration; re-editing Mermaid-based diagrams |
-| `references/feishu-embed.md` | User wants to embed in Feishu — Mermaid code for Wiki, PNG for Docx |
 
 ## Template-Guided Conversations
 
@@ -434,41 +433,15 @@ node scripts/export.js .drawio/<diagram-name>.drawio
 ```
 Visual self-check per `references/visual-audit.md` (max 2 rounds).
 
-### Step B5: Platform-Aware Delivery (NEW)
+### Step B5: Platform-Aware Delivery
 
-**Before delivering, determine how the user will consume the diagram:**
+**See global "Output Format Decision" section below.** This gate applies to ALL pipelines, not just Pipeline B. Read `references/feishu-embed.md` before every delivery.
 
-| Target Platform | Deliver | Format | Re-edit Path |
-|----------------|---------|--------|-------------|
-| **GitHub/GitLab Markdown** (`.md` files) | Mermaid code block + `.drawio` | Mermaid renders natively | Edit `.mmd` → regenerate |
-| **Notion** | Mermaid code block | Notion supports Mermaid syntax | Edit `.mmd` → regenerate |
-| **Obsidian** | Mermaid code block | Native Mermaid plugin | Edit `.mmd` → regenerate |
-| **Feishu Wiki** | Mermaid code block | Wiki Markdown renders Mermaid | Edit `.mmd` → regenerate |
-| **Feishu Docx** (普通文档) | PNG export (--final) | Docx 不支持 Mermaid | png-extract → recreate `.mmd` |
-| **Feishu Whiteboard** | PNG export | 画板不支持代码块 | png-extract → recreate `.mmd` |
-| **Confluence** | Mermaid code block (via plugin) + PNG fallback | Plugin-dependent | Edit `.mmd` → regenerate |
-| **Slack / IM** | PNG preview | Messages don't render Mermaid | Re-generate from `.mmd` |
-| **Word / PPT / 邮件** | PNG (--final) | 通用格式 | png-extract → recreate `.mmd` |
-
-**Decision flow:**
-```
-Pipeline B generated .drawio + .mmd
-  │
-  ├─ User's target supports Mermaid rendering?
-  │   ├─ YES → Deliver Mermaid code (copy .mmd content) as primary artifact
-  │   │         Also provide .drawio + PNG as backup
-  │   └─ NO  → Deliver PNG (--final) as primary artifact
-  │             Keep .mmd for future edits — ALWAYS
-  │
-  └─ Re-edit scenario (user says "change the XXX diagram")
-      → Find .mmd source → edit text → re-convert → re-validate → re-deliver
-```
-
-> **Key principle**: The `.mmd` file is the **single source of truth** for Pipeline B diagrams. The `.drawio` and `.png` are derived artifacts. Always preserve the `.mmd` and route modifications through it.
+For Pipeline B specifically: the `.mmd` file is the **single source of truth**. Default to delivering the Mermaid code block (not PNG) for any platform that supports Mermaid rendering (Feishu Wiki, GitHub, Notion, Obsidian). Export PNG only as backup or when the platform requires it.
 
 ### Step B6: Review + Final Export
 
-Same as Pipeline C Step 6. For platforms that support Mermaid, also deliver the Mermaid code block.
+Same as Pipeline C Step 6. Apply Output Format Decision (see global section) before delivering.
 
 ---
 
@@ -498,15 +471,55 @@ For detailed P3 rules (R030–R039), see `references/visual-audit.md` — a deci
 
 ---
 
+## Output Format Decision（交付前必查，全管道通用）
+
+**Before delivering any diagram — regardless of Pipeline A/B/C — determine the target platform and choose the correct output format. This is a mandatory gate, not a suggestion.**
+
+Read `references/feishu-embed.md` for the full platform matrix. Quick reference:
+
+| Target Platform | Preferred Format | Why |
+|----------------|---------|-----|
+| **Feishu Wiki** | ````mermaid` code block | Wiki Markdown natively renders Mermaid — no PNG needed |
+| **Feishu Docx** | PNG (`--final`) | Docx does not support Mermaid code blocks |
+| **GitHub/GitLab Markdown** | ````mermaid` code block | Native Mermaid rendering in most Markdown renderers |
+| **Notion / Obsidian** | ````mermaid` code block | Both support Mermaid syntax natively |
+| **Confluence** | ````mermaid` code block + PNG fallback | Plugin-dependent |
+| **Slack / IM / 邮件** | PNG preview | Messages do not render Mermaid |
+| **Word / PPT / PDF** | PNG (`--final`) | Universal image format required |
+
+**Decision flow:**
+
+```
+Diagram generated (any pipeline)
+  │
+  ├─ Is the diagram from Mermaid source (Pipeline B or hand-written .mmd)?
+  │   ├─ YES → Does the target platform support Mermaid rendering?
+  │   │   ├─ YES → Deliver ```mermaid code block as PRIMARY artifact
+  │   │   │         + .drawio PNG as backup
+  │   │   └─ NO  → Deliver PNG as primary artifact
+  │   │             Keep .mmd source for future edits — ALWAYS
+  │   └─ NO  (Pipeline A/C — no Mermaid source)
+  │         → Deliver PNG + .drawio source
+  │
+  └─ Common mistake: Exporting Mermaid as PNG for Feishu Wiki
+      → Wiki supports Mermaid natively; PNG loses editability.
+      → Check target BEFORE choosing export method.
+```
+
+> **Hard rule**: If you have `.mmd` source AND the target supports Mermaid, you MUST deliver the Mermaid code block. Exporting to PNG in this scenario is a process violation.
+
+---
+
 ## Review Loop
 
-After delivering the draft PNG:
+After delivering the draft diagram in the correct format:
 
-1. **Show** the preview PNG to the user.
+1. **Show** the deliverable to the user (Mermaid code block or PNG depending on platform).
 2. **Collect** feedback — the user may request label changes, layout adjustments, or component additions.
-3. **Apply** targeted XML edits (re-validate after each edit with `python3 scripts/validate.py`).
-4. **Re-export** preview: `node scripts/export.js .drawio/<diagram-name>.drawio`
-5. **Repeat** until the user approves or 5 revision rounds are reached.
+3. **Apply** edits (edit `.mmd` source for Mermaid, edit XML for Pipeline C, re-extract for Pipeline A).
+4. **Re-validate** after each edit with `python3 scripts/validate.py`.
+5. **Re-deliver** in the same format as determined by the Output Format Decision.
+6. **Repeat** until the user approves or 5 revision rounds are reached.
 
 If the user reaches 5+ revisions without converging, suggest opening the `.drawio` file directly in the draw.io desktop app for fine-tuning.
 

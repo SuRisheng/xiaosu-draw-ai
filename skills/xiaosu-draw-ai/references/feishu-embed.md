@@ -1,13 +1,42 @@
-# Feishu / Lark Embedding Guide
+# Output Format & Embedding Guide
 
-> How to embed xiaosu-draw-ai diagrams in Feishu (Lark) documents, wikis, and messages.
->
-> **When to read:** When the user wants to share a diagram in Feishu — embed in a doc,
-> attach to a message, or integrate with an approval workflow.
+> **CRITICAL: Read this BEFORE every diagram delivery, regardless of pipeline.**
+> 
+> Determines the correct output format based on where the diagram will be consumed.
+> Covers Feishu (Lark), GitHub, Notion, Confluence, Slack, and other platforms.
 
 ---
 
-## Quick Embed: Upload to Feishu Doc
+## Platform Format Matrix
+
+| Target Platform | Mermaid Support? | Deliver This | Notes |
+|----------------|---------|-------------|-------|
+| **Feishu Wiki** | ✅ Native | ````mermaid` code block | Wiki Markdown renders Mermaid directly. Do NOT export to PNG — it loses editability. |
+| **Feishu Docx** | ❌ | PNG (`--final`) | Docx does not support code blocks. Use draw.io CLI export. |
+| **GitHub/GitLab** | ✅ Native | ````mermaid` code block | Both render Mermaid in `.md` files natively. |
+| **Notion** | ✅ via plugin | ````mermaid` code block | Notion supports Mermaid syntax. |
+| **Obsidian** | ✅ Native | ````mermaid` code block | Native Mermaid plugin. |
+| **Confluence** | ⚠️ Plugin | ````mermaid` + PNG fallback | Depends on Mermaid plugin being installed. |
+| **Slack / IM** | ❌ | PNG preview | Messages don't render code blocks. |
+| **Word / PPT / Email** | ❌ | PNG (`--final`) | Universal image format. |
+| **PDF** | ❌ | PNG or SVG | Embed as image. |
+
+## Decision Rule
+
+```
+If target supports Mermaid AND you have .mmd source:
+  → PRIMARY: ```mermaid code block
+  → BACKUP: .drawio + PNG
+  → NEVER: PNG-only (unless user explicitly requests)
+
+If target does NOT support Mermaid:
+  → PRIMARY: PNG (--final)
+  → Keep .mmd source file for future edits
+```
+
+---
+
+## Embedding in Feishu
 
 1. Generate the final PNG: `node scripts/export.js .drawio/<name>.drawio --final`
 2. The output is `.drawio/<name>.drawio.png` (PNG with embedded editable XML).

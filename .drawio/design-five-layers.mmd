@@ -1,0 +1,33 @@
+%% title: Five-Layer Architecture
+%% type: flowchart
+flowchart TD
+    subgraph L1["L1: 意图层"]
+        A1["用户自然语言"]
+        A2["匹配提示词模板"]
+        A3["AI 抽取 IR"]
+        A4["人审核确认"]
+        A1 --> A2 --> A3 --> A4
+    end
+    subgraph L2["L2: 路由层"]
+        B1["结构化 IR"]
+        B2["判断管道 A/B/C"]
+        B1 --> B2
+    end
+    subgraph L3["L3: 生成层"]
+        C1["管道A: 导入器→IR→autolayout→XML"]
+        C2["管道B: IR→Mermaid→CLI 转换"]
+        C3["管道C: IR→AI 手写 XML"]
+    end
+    subgraph L4["L4: 质量层（不可跳过）"]
+        D1["validate.py: P0-P2 结构+几何+空间"]
+        D2["audit.js: P3 启发式"]
+        D3["AI 视觉审计: visual-audit.md 决策表"]
+        D1 --> D2 --> D3
+    end
+    subgraph L5["L5: 交付层"]
+        E1["CLI 导出"]
+        E2[".drawio 源文件 + PNG/SVG/PDF"]
+        E3["Git 记录 / 飞书嵌入"]
+        E1 --> E2 --> E3
+    end
+    L1 --> L2 --> L3 --> L4 --> L5

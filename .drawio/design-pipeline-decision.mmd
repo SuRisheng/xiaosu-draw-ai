@@ -1,0 +1,21 @@
+%% title: Pipeline Routing Decision Tree
+%% type: flowchart
+flowchart TD
+    A["用户请求画图"] --> B{"给了可解析源文件？"}
+    B -->|"是: SQL/OpenAPI/Terraform/K8s"| C{"已有对应 importer？"}
+    C -->|"有"| D["管道 A: importer 提取 IR"]
+    C -->|"无"| E["读取文件内容"]
+    E --> F["走模板澄清"]
+    F --> G{"图类型？"}
+    B -->|"否"| H{"给了普通文档？"}
+    H -->|"是: PRD/README/会议纪要"| I["从文档抽取结构"]
+    I --> J["展示 IR 摘要"]
+    J --> G
+    H -->|"否"| G
+    G -->|"sequence/ER/class/state"| K{"CLI >= v30 且无强视觉要求？"}
+    K -->|"是"| L["管道 B: Mermaid 转换"]
+    K -->|"否"| M["管道 C: AI 手写 XML"]
+    G -->|"architecture/deployment/flowchart 等"| M
+    D --> N["质量门禁 + 导出"]
+    L --> N
+    M --> N
