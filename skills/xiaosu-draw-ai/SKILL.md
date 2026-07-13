@@ -142,6 +142,7 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `references/dense-diagram-simplification.md` | Diagram has 15+ nodes or user says "too cluttered" — apply simplification strategies |
 | `references/benchmark.md` | User says "benchmark", "measure", "统计性能", or "耗时统计" — collect timing and token metrics |
 | `references/feishu-embed.md` | **Delivering any diagram — MANDATORY before every delivery.** Determine target platform (Wiki/Docx/GitHub/Slack etc.) and correct output format (Mermaid code block vs PNG vs both). Prevents exporting Mermaid as PNG when native code would be better. |
+| `references/article-diagram-embedding.md` | User provides a template article link + requirements to generate a new document — OR — user says "update diagrams in this article" after editing text — OR — article contains `@xiaosu-draw-ai` annotations. Read template structure, extract diagram type/position hints, batch generate all diagrams. |
 | `scripts/xml-parser.js` | User provides an existing .drawio file to modify — parse XML to see current nodes/edges/containers |
 | `scripts/png-extract.js` | User provides a .drawio.png (--final export) — extract the embedded source XML |
 | `scripts/mermaid-convert.js` | User has .mmd source → Pipeline B regeneration; re-editing Mermaid-based diagrams |
@@ -233,6 +234,74 @@ User requests a diagram or modification
 > **Visual quality requests** ("精美", "beautiful", "professional", "keynote-ready") affect how rendering is done, not how structure is extracted. A "beautiful architecture diagram" is still Pipeline C — just with a more suitable style preset. A "beautiful sequence diagram" downgrades from Pipeline B to C.
 >
 > **Multi-condition overlap**: When the user provides both code AND a diagram type AND visual requirements, data source takes priority: extract structure via Pipeline A, then decide rendering (B or C) separately.
+
+## Template-Driven Document Generation
+
+When the user says "用这个模板（link）+ 这些需求，生成一份 XX 设计文档" — OR — the user provides an article containing `@xiaosu-draw-ai` annotations and asks to generate/update diagrams. Read `references/article-diagram-embedding.md` for the full specification.
+
+### Two modes of @xiaosu-draw-ai annotation
+
+| Mode | Format | Use case |
+|------|--------|---------|
+| **Mode 1: Template annotation** | `<!-- @xiaosu-draw-ai type=系统架构图 desc=分层展示前端→网关→服务→数据 -->` | Template article: mark WHERE a diagram goes and WHAT TYPE it should be. Invisible in rendered view. |
+| **Mode 2: Inline diagram request** | `@xiaosu-draw-ai 绘制<名>` + `【图类型】【内容】【风格】` blocks | Article with explicit diagram specs. Agent generates directly from these blocks. |
+
+### Workflow: Template + Requirements → New Document
+
+```
+User gives: template link + requirements ("画一个电商系统的设计文档")
+  │
+  ├─ Step 1: Read template
+  │     Fetch outline + full body
+  │     Extract all @xiaosu-draw-ai annotations (both modes)
+  │     Build template map: sections, diagram positions, types
+  │
+  ├─ Step 2: Show blueprint to user
+  │     "模板有 7 个章节，3 个图表位置：
+  │      §2 → 系统架构图, §3.1 → 时序图, §3.2 → ER图"
+  │     Wait for user confirmation
+  │
+  ├─ Step 3: Generate content + diagrams section by section
+  │     Write text based on user requirements (follow template structure)
+  │     At each annotation position:
+  │       - Mode 1: derive diagram content from user requirements + surrounding text
+  │       - Mode 2: use explicit 【内容】 as spec
+  │       - Generate diagram (Pipeline B for sequence/ER/class/state,
+  │         Pipeline C for architecture/deployment/flowchart/C4/network/data-flow)
+  │       - Run validate.py → export → insert at position
+  │
+  └─ Step 4: Deliver complete new document
+        Template structure + user-driven content + generated diagrams
+```
+
+### Critical rule: Template images are type hints ONLY
+
+Template example images tell the Agent "a system architecture diagram goes here" — they do NOT provide the diagram content. The Agent MUST derive what nodes, edges, and layers the new diagram should contain from:
+1. The user's requirements (primary source)
+2. The `desc=` field in the annotation (intent hint)
+3. The surrounding article text (context)
+
+**Copying structure from a template's example image into a new diagram is a process violation.**
+
+### Article text changed → diagrams stale
+
+When the user says "文章内容改了，更新里面的图":
+
+1. Re-read current article text
+2. For each `@xiaosu-draw-ai` annotation position:
+   - Mode 2: compare `【内容】` with current article text. If diverged, flag mismatch to user.
+   - Mode 1: re-derive diagram content from current text
+3. Regenerate diagrams that have drifted
+4. Report changes: "已更新 §2 架构图（新增 Payment Service 节点）"
+
+### Batch processing
+
+When multiple annotations exist in one article:
+1. Scan ALL first → show summary table → wait for confirmation
+2. Generate sequentially (one at a time, avoid file conflicts)
+3. Track progress ("2/3 done")
+4. Per-diagram error handling: 3 fix attempts, then mark as `⚠️ 失败` and continue
+5. Report all results at the end
 
 ## Style Selection
 
