@@ -420,6 +420,58 @@ class TestR012EdgeCrossing:
             "No R012 when edge paths don't cross"
 
 
+class TestR016WaypointEntryAlignment:
+    """R016 (P1): Last waypoint must be axis-aligned with the target entry point."""
+
+    def test_vertical_entry_last_wp_x_misaligned(self):
+        """Vertical entry (entryY=0), wp_last.x != entry_x → R016."""
+        result = write_and_validate(
+            # Source at (40,40,100,40), Target at (320,40,100,40)
+            '<mxCell id="2" value="Src" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Tgt" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # entryY=0 (top entry), entry_x = 320+100*0.5 = 370
+            # wp_last at x=390 (≠370, delta=20px) → R016
+            '<mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="90" y="80" /><mxPoint x="390" y="80" /></Array></mxGeometry></mxCell>',
+        )
+        assert any(w['id'] == 'R016' for w in result['warnings']), \
+            "Should detect R016: wp_last.x misaligned with vertical entry_x"
+
+    def test_vertical_entry_last_wp_x_aligned(self):
+        """Vertical entry (entryY=0), wp_last.x == entry_x → no R016."""
+        result = write_and_validate(
+            '<mxCell id="2" value="Src" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Tgt" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # entryY=0, entry_x=370. wp_last at x=370 — aligned ✓
+            '<mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="90" y="80" /><mxPoint x="370" y="80" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R016' for w in result['warnings']), \
+            "No R016 when wp_last.x aligns with vertical entry_x"
+
+    def test_horizontal_entry_last_wp_y_misaligned(self):
+        """Horizontal entry (entryX=0), wp_last.y != entry_y → R016."""
+        result = write_and_validate(
+            # Source above target: Src (200,40,100,40), Tgt (40,200,100,40)
+            '<mxCell id="2" value="Src" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="200" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Tgt" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            # entryX=0 (left entry), entry_y = 200+40*0.5 = 220
+            # wp_last at y=200 (≠220, delta=20px) → R016
+            '<mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0;entryY=0.5;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="250" y="80" /><mxPoint x="250" y="200" /></Array></mxGeometry></mxCell>',
+        )
+        assert any(w['id'] == 'R016' for w in result['warnings']), \
+            "Should detect R016: wp_last.y misaligned with horizontal entry_y"
+
+    def test_no_explicit_entry_skipped(self):
+        """Edge without explicit entryX in style → R016 not checked."""
+        result = write_and_validate(
+            '<mxCell id="2" value="Src" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Tgt" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # No entryX in style → auto-routing → skip R016 check
+            '<mxCell id="4" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="90" y="80" /><mxPoint x="390" y="80" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R016' for w in result['warnings']), \
+            "No R016 when entryX not explicitly specified (auto-routing)"
+
+
 class TestR014OffCanvas:
     def test_negative_x(self):
         result = write_and_validate(

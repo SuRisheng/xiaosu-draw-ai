@@ -140,6 +140,82 @@ test('sql2er rejects non-SQL files', () => {
     assert(sql2er.detect('/nonexistent/file.txt') === false, 'Should reject .txt');
 });
 
+// ── OpenAPI 3.x Sample ──────────────────────────────────────────────
+
+const SAMPLE_OPENAPI_JSON = JSON.stringify({
+    openapi: '3.0.3',
+    info: { title: 'Petstore API', version: '1.0.0' },
+    servers: [{ url: 'https://api.petstore.example.com', description: 'Production' }],
+    paths: {
+        '/pets': {
+            get: { operationId: 'listPets', summary: 'List all pets', tags: ['pets'] },
+            post: { operationId: 'createPet', summary: 'Create a pet', tags: ['pets'] },
+        },
+        '/pets/{petId}': {
+            get: { operationId: 'getPet', summary: 'Get a pet by ID', tags: ['pets'] },
+            delete: { operationId: 'deletePet', summary: 'Delete a pet', tags: ['pets'] },
+        },
+        '/store/orders': {
+            post: { operationId: 'placeOrder', summary: 'Place an order', tags: ['store'] },
+        },
+    },
+});
+
+const NON_OPENAPI_JSON = JSON.stringify({ name: 'just-a-config', version: '1.0' });
+
+console.log('\nOpenAPI 2 Architecture:');
+const openapi2arch = irImporter.findByName('openapi2arch');
+
+test('openapi2arch detects OpenAPI 3.x JSON files', () => {
+    const tmpFile = path.join(require('os').tmpdir(), `test-openapi-${Date.now()}.json`);
+    fs.writeFileSync(tmpFile, SAMPLE_OPENAPI_JSON, 'utf-8');
+    try {
+        assert(openapi2arch.detect(tmpFile) === true, 'Should detect OpenAPI 3.x JSON');
+    } finally {
+        fs.unlinkSync(tmpFile);
+    }
+});
+
+test('openapi2arch rejects non-OpenAPI JSON', () => {
+    const tmpFile = path.join(require('os').tmpdir(), `test-config-${Date.now()}.json`);
+    fs.writeFileSync(tmpFile, NON_OPENAPI_JSON, 'utf-8');
+    try {
+        assert(openapi2arch.detect(tmpFile) === false, 'Should reject non-OpenAPI JSON');
+    } finally {
+        fs.unlinkSync(tmpFile);
+    }
+});
+
+test('openapi2arch extracts valid IR from OpenAPI spec', () => {
+    const tmpFile = path.join(require('os').tmpdir(), `test-openapi-ir-${Date.now()}.json`);
+    fs.writeFileSync(tmpFile, SAMPLE_OPENAPI_JSON, 'utf-8');
+    try {
+        const ir = openapi2arch.extract(tmpFile);
+        assert(ir.meta.type === 'architecture', `Expected type "architecture", got "${ir.meta.type}"`);
+        assert(ir.meta.title !== undefined, 'Expected meta.title to be set');
+        assert(ir.nodes.length > 0, `Expected at least 1 node, got ${ir.nodes.length}`);
+        // Should have server node + svc_pets node + svc_store node
+        assert(ir.nodes.some(n => n.id.startsWith('server_')), 'Expected a server node');
+        assert(ir.nodes.some(n => n.id === 'svc_pets'), 'Expected svc_pets service node');
+        assert(ir.nodes.some(n => n.id === 'svc_store'), 'Expected svc_store service node');
+        assert(ir.layout !== undefined, 'Expected layout to be set');
+        assert(ir.layout.direction === 'TB', 'Expected top-to-bottom layout direction');
+    } finally {
+        fs.unlinkSync(tmpFile);
+    }
+});
+
+test('openapi2arch extract fails on nonexistent file', () => {
+    try {
+        openapi2arch.extract('/nonexistent/openapi.json');
+        throw new Error('Should have thrown');
+    } catch (e) {
+        // Expected
+        assert(e.message.includes('not found') || e.message.includes('ENOENT'),
+            `Expected file-not-found error, got: ${e.message}`);
+    }
+});
+
 // Report
 console.log(`\nResults: ${passed}/${passed + failed} passed`);
 if (failed === 0) {
