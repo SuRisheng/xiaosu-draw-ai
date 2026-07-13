@@ -52,13 +52,44 @@ const MINIMAL_DRAWIO = `<?xml version="1.0" encoding="UTF-8"?>
 </mxfile>
 `;
 
+// UserObject format (Pipeline B / Mermaid v30+) — same diagram, different cell format
+const USEROBJECT_DRAWIO = `<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron">
+  <diagram name="Test-Export-UO" id="test-uo">
+    <mxGraphModel dx="-339" dy="-199" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="0" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <UserObject label="Test Service" mermaidId="n:svc" id="2">
+          <mxCell parent="1" style="rounded=1;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1">
+            <mxGeometry height="60" width="200" x="40" y="40" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="Test DB" mermaidId="n:db" id="3">
+          <mxCell parent="1" style="shape=cylinder3;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1">
+            <mxGeometry height="80" width="200" x="40" y="180" as="geometry" />
+          </mxCell>
+        </UserObject>
+        <UserObject label="" mermaidId="e:edge" id="4">
+          <mxCell edge="1" parent="1" source="2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;endFill=1;" target="3">
+            <mxGeometry relative="1" as="geometry" />
+          </mxCell>
+        </UserObject>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+`;
+
 // ── Helpers ────────────────────────────────────────────────────────
 
 function detectDrawio() {
     const platform = process.platform;
     const candidates = platform === 'win32'
-        ? ['drawio', 'draw.io']
-        : ['drawio', 'draw.io'];
+        ? ['drawio', 'draw.io', 'C:\\Program Files\\draw.io\\draw.io.exe']
+        : platform === 'darwin'
+            ? ['drawio', 'draw.io', '/Applications/draw.io.app/Contents/MacOS/draw.io']
+            : ['drawio', 'draw.io', '/usr/bin/drawio', '/usr/local/bin/drawio'];
 
     for (const bin of candidates) {
         try {
@@ -234,6 +265,11 @@ function main() {
         if (testExportPreview(inputFile, tmpDir)) passed++; else failed++;
         if (testExportFinal(inputFile, tmpDir)) passed++; else failed++;
         if (testExportSVG(inputFile, tmpDir)) passed++; else failed++;
+
+        // Test 4: UserObject (Pipeline B / Mermaid v30+) format export
+        const uoInputFile = path.join(tmpDir, 'test-export-uo.drawio');
+        fs.writeFileSync(uoInputFile, USEROBJECT_DRAWIO, 'utf-8');
+        if (testExportPreview(uoInputFile, tmpDir)) passed++; else failed++;
 
         console.log(`\nResults: ${passed}/${passed + failed} passed`);
         if (failed === 0) {

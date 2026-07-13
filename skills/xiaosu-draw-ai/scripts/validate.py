@@ -426,6 +426,46 @@ def validate_drawio(filepath):
                     "message": f"Edges cross: id='{e1.get('id')}' and id='{e2.get('id')}'"
                 })
 
+    # ── P2: R033 — Stacked Edges (≥20px shared path within 5px tolerance) ──
+    for i in range(len(waypointed_edges)):
+        for j in range(i + 1, len(waypointed_edges)):
+            e1, segs1 = waypointed_edges[i]
+            e2, segs2 = waypointed_edges[j]
+            for s1 in segs1:
+                for s2 in segs2:
+                    # Check if both segments are horizontal (within 5px y tolerance)
+                    if abs(s1[0][1] - s1[1][1]) < 1 and abs(s2[0][1] - s2[1][1]) < 1:
+                        if abs(s1[0][1] - s2[0][1]) <= 5:
+                            # Both horizontal at same y — check x-overlap
+                            x1_min, x1_max = min(s1[0][0], s1[1][0]), max(s1[0][0], s1[1][0])
+                            x2_min, x2_max = min(s2[0][0], s2[1][0]), max(s2[0][0], s2[1][0])
+                            overlap = min(x1_max, x2_max) - max(x1_min, x2_min)
+                            if overlap >= 20:
+                                warnings.append({
+                                    "id": "R033",
+                                    "message": (
+                                        f"Stacked edges: id='{e1.get('id')}' and id='{e2.get('id')}' "
+                                        f"share {overlap:.0f}px horizontal overlap at y≈{s1[0][1]:.0f}. "
+                                        f"Offset waypoints by 15-20px to separate."
+                                    )
+                                })
+                    # Check if both segments are vertical (within 5px x tolerance)
+                    elif abs(s1[0][0] - s1[1][0]) < 1 and abs(s2[0][0] - s2[1][0]) < 1:
+                        if abs(s1[0][0] - s2[0][0]) <= 5:
+                            # Both vertical at same x — check y-overlap
+                            y1_min, y1_max = min(s1[0][1], s1[1][1]), max(s1[0][1], s1[1][1])
+                            y2_min, y2_max = min(s2[0][1], s2[1][1]), max(s2[0][1], s2[1][1])
+                            overlap = min(y1_max, y2_max) - max(y1_min, y2_min)
+                            if overlap >= 20:
+                                warnings.append({
+                                    "id": "R033",
+                                    "message": (
+                                        f"Stacked edges: id='{e1.get('id')}' and id='{e2.get('id')}' "
+                                        f"share {overlap:.0f}px vertical overlap at x≈{s1[0][0]:.0f}. "
+                                        f"Distribute connection points (exitX=0.25/0.5/0.75)."
+                                    )
+                                })
+
     # ── P1: R016 — Waypoint-Entry Misalignment ──
     # For edges with explicit entryX/entryY, the last waypoint must be axis-aligned
     # with the target entry point. Violation causes diagonal stub segments and

@@ -721,6 +721,42 @@ class TestUserObjectParsing:
 # Integration Tests (Full Valid File)
 # ═══════════════════════════════════════════════════════════════════
 
+class TestR033StackedEdges:
+    """R033 (P2): Two edges sharing ≥20px of overlapping path segments (within 5px)."""
+
+    def test_stacked_horizontal_segments(self):
+        """Two edges with overlapping horizontal segments at same y → R033."""
+        # A(top-left), B(top-right), C(bottom-left), D(bottom-right)
+        # Both edges route through a shared horizontal corridor at y=80
+        result = write_and_validate(
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="400" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="5" value="D" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="400" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge1 A→B: exit bottom → horizontal corridor at y=80
+            '<mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=1;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="220" y="80" /><mxPoint x="300" y="80" /></Array></mxGeometry></mxCell>',
+            # Edge2 C→D: exit top → horizontal at y=80 (overlaps Edge1 seg2 by ~80px)
+            '<mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="4" target="5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="190" y="80" /><mxPoint x="310" y="80" /></Array></mxGeometry></mxCell>',
+        )
+        assert any(w['id'] == 'R033' for w in result['warnings']), \
+            "Should detect R033: stacked horizontal edges sharing path"
+
+    def test_separated_edges_no_warning(self):
+        """Two edges at clearly different y-levels → no R033."""
+        result = write_and_validate(
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="120" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="5" value="D" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="120" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge1: horizontal at y=60
+            '<mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="60" /><mxPoint x="200" y="60" /></Array></mxGeometry></mxCell>',
+            # Edge2: horizontal at y=140 (80px apart > 5px tolerance)
+            '<mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="4" target="5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="140" /><mxPoint x="200" y="140" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R033' for w in result['warnings']), \
+            "No R033 when edges are at different y-levels"
+
+
 class TestR040ContainerChildColorContrast:
     """R040 (P2): Swimlane header fillColor must differ from children's fillColor."""
 
