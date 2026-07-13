@@ -141,6 +141,32 @@ Edit the `## Constraints` section — that's what the AI reads before generating
 
 ---
 
+## How to Choose a Visual Style
+
+When describing your diagram, add a style keyword to switch from the default **Flat Icon** style:
+
+| Style | What to say | Effect |
+|-------|------------|--------|
+| **Flat Icon** *(default)* | *(no style specified)* | White background, blue primary palette, rounded rectangles |
+| **Dark Terminal** | "dark", "dark mode", "terminal" | Deep navy-black background, neon accents, monospace font |
+| **Blueprint** | "blueprint", "engineering", "technical drawing" | Dark navy background, cyan strokes, sharp corners |
+| **Notion Clean** | "clean", "minimal", "notion", "simple" | White background, muted gray palette, single blue accent |
+| **Glassmorphism** | "glass", "frosted", "modern", "futuristic" | Dark gradient BG, frosted glass fills, ambient glow |
+| **Claude Official** | "claude style", "warm", "professional", "friendly" | Warm cream background, semantic fills, soft shadows |
+| **OpenAI** | "openai style", "spartan", "ultra-clean" | White-on-white minimalism, thin strokes, brand green accent |
+
+**Examples:**
+
+> "Draw a microservices architecture diagram, **dark mode**"
+>
+> "帮我画一张架构图，**蓝图风格**"
+>
+> "Create a sequence diagram with a **clean, minimal look**"
+
+The AI resolves the keyword → style preset → color palette → shapes → typography via the lookup protocol in `style-presets.md`. If no style is specified, **Flat Icon** is used.
+
+---
+
 ## How to Modify Styles
 
 Styles are structured JSON presets at `skills/xiaosu-draw-ai/styles/built-in/`. Each file defines the complete visual parameters the AI uses when generating a diagram. The schema is defined in `styles/schema.json`.

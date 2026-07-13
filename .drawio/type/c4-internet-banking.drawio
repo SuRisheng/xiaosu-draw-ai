@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="C4 Internet Banking Context" id="c4-1">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- Title -->
+        <mxCell id="2" value="&lt;b&gt;Internet Banking System — C4 Context Diagram (Level 1)&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="600" height="30" as="geometry" />
+        </mxCell>
+        <!-- System Boundary -->
+        <mxCell id="3" value="Internet Banking System [Software System]" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;fontSize=12;fontFamily=Helvetica;verticalAlign=top;spacingLeft=10;spacingTop=5;pointerEvents=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="440" height="360" as="geometry" />
+        </mxCell>
+        <!-- Main System -->
+        <mxCell id="4" value="&lt;b&gt;Internet Banking System&lt;/b&gt;&lt;br&gt;[Software System]&lt;br&gt;&lt;br&gt;Allows customers to view&lt;br&gt;accounts, make payments,&lt;br&gt;and manage finances online." style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;align=center;" vertex="1" parent="3">
+          <mxGeometry x="120" y="80" width="200" height="120" as="geometry" />
+        </mxCell>
+        <!-- Single-Page App (Container inside boundary) -->
+        <mxCell id="5" value="&lt;b&gt;Single-Page Application&lt;/b&gt;&lt;br&gt;[Container: React]&lt;br&gt;&lt;br&gt;Web front-end delivering&lt;br&gt;responsive UI to customers." style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;align=center;" vertex="1" parent="3">
+          <mxGeometry x="120" y="230" width="200" height="110" as="geometry" />
+        </mxCell>
+        <!-- Person: Customer -->
+        <mxCell id="6" value="Personal Banking&lt;br&gt;Customer" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="60" y="180" width="60" height="80" as="geometry" />
+        </mxCell>
+        <!-- External: Mainframe -->
+        <mxCell id="7" value="&lt;b&gt;Mainframe Banking System&lt;/b&gt;&lt;br&gt;[Software System]&lt;br&gt;&lt;br&gt;Core banking platform&lt;br&gt;for all account data." style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;align=center;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="280" y="510" width="200" height="110" as="geometry" />
+        </mxCell>
+        <!-- External: Email -->
+        <mxCell id="8" value="&lt;b&gt;E-mail System&lt;/b&gt;&lt;br&gt;[Software System]&lt;br&gt;&lt;br&gt;Sends e-mail&lt;br&gt;notifications to customers." style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;align=center;dashed=1;dashPattern=8 4;" vertex="1" parent="1">
+          <mxGeometry x="550" y="510" width="170" height="110" as="geometry" />
+        </mxCell>
+        <!-- Edges -->
+        <!-- Customer → System -->
+        <mxCell id="9" value="Views accounts,&lt;br&gt;makes payments&lt;br&gt;[HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=1;exitY=0.3;entryX=0;entryY=0.3;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="6" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- System → Mainframe (R049: exit left, route around SPA left edge per R050) -->
+        <mxCell id="10" value="Uses&lt;br&gt;[XML/HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0;exitY=0.5;entryX=0.5;entryY=0;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="4" target="7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="240" />
+              <mxPoint x="380" y="490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- System → Email (R049: exit right, 1wp single-bend to Email top) -->
+        <mxCell id="11" value="Sends e-mails&lt;br&gt;[SMTP]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=1;exitY=0.25;entryX=0.5;entryY=0;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="4" target="8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="635" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- Legend -->
+        <mxCell id="12" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="780" y="140" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="Person" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="780" y="170" width="30" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="225" width="80" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="System" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="870" y="227" width="50" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="" style="rounded=1;arcSize=10;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;dashPattern=8 4;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="780" y="260" width="80" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="External" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="870" y="262" width="50" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

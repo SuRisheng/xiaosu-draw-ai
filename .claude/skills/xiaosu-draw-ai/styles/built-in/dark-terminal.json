@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema.json",
+  "name": "dark-terminal",
+  "version": 1,
+  "default": false,
+  "source": { "type": "built-in" },
+  "confidence": "high",
+  "description": "Neon-on-dark hacker/terminal aesthetic. Deep navy-black background with bright neon accent colors. Monospace typography. Best for data flow, network topology, AI/agent architectures.",
+  "bestFor": ["data-flow", "network", "ai-agent", "devops"],
+  "palette": {
+    "primary":   { "fillColor": "#1e1b4b", "strokeColor": "#7c3aed", "fontColor": "#e2e8f0" },
+    "success":   { "fillColor": "#052e16", "strokeColor": "#059669", "fontColor": "#e2e8f0" },
+    "warning":   { "fillColor": "#1c1917", "strokeColor": "#ea580c", "fontColor": "#e2e8f0" },
+    "accent":    { "fillColor": "#1e3a5f", "strokeColor": "#3b82f6", "fontColor": "#e2e8f0" },
+    "danger":    { "fillColor": "#1c1917", "strokeColor": "#dc2626", "fontColor": "#e2e8f0" },
+    "neutral":   { "fillColor": "#1e293b", "strokeColor": "#334155", "fontColor": "#94a3b8" },
+    "secondary": { "fillColor": "#1e293b", "strokeColor": "#eab308", "fontColor": "#e2e8f0" }
+  },
+  "roles": {
+    "service":  "primary",
+    "database": "success",
+    "queue":    "warning",
+    "gateway":  "accent",
+    "error":    "danger",
+    "external": "neutral",
+    "security": "secondary",
+    "container": "primary"
+  },
+  "shapes": {
+    "service":   "rounded=1;whiteSpace=wrap;html=1",
+    "database":  "shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15",
+    "queue":     "rounded=1;whiteSpace=wrap;html=1",
+    "decision":  "rhombus;whiteSpace=wrap;html=1",
+    "external":  "rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none",
+    "container": "swimlane;startSize=30;fillColor=#1e1b4b;strokeColor=#7c3aed;"
+  },
+  "font": {
+    "fontFamily": "Courier New",
+    "fontSize": 12,
+    "titleFontSize": 15,
+    "titleBold": true
+  },
+  "edges": {
+    "style": "edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1",
+    "arrow": "endArrow=classic;endFill=1",
+    "dashedFor": []
+  },
+  "extras": {
+    "sketch": false,
+    "globalStrokeWidth": 1,
+    "background": "#0f0f1a",
+    "fontColor": "#e2e8f0",
+    "edgeColor": "#475569",
+    "cornerRadius": "rounded=1"
+  }
+}

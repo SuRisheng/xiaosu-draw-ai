@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="Cloud Deployment" id="deploy-1">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="750" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- Title -->
+        <mxCell id="2" value="&lt;b&gt;Cloud Deployment — AWS Infrastructure&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="450" height="30" as="geometry" />
+        </mxCell>
+        <!-- Internet (Cloud) -->
+        <mxCell id="3" value="Internet" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        <!-- DMZ Zone (Container) -->
+        <mxCell id="4" value="DMZ (Public Subnet)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;fontSize=12;fontFamily=Helvetica;verticalAlign=top;spacingLeft=10;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="220" y="70" width="260" height="300" as="geometry" />
+        </mxCell>
+        <!-- WAF -->
+        <mxCell id="5" value="AWS WAF" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontFamily=Helvetica;" vertex="1" parent="4">
+          <mxGeometry x="70" y="25" width="120" height="60" as="geometry" />
+        </mxCell>
+        <!-- Load Balancer -->
+        <mxCell id="6" value="Application&lt;br&gt;Load Balancer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="4">
+          <mxGeometry x="50" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <!-- Bastion Host -->
+        <mxCell id="7" value="Bastion Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="4">
+          <mxGeometry x="70" y="210" width="120" height="50" as="geometry" />
+        </mxCell>
+        <!-- Internal Zone (Container) -->
+        <mxCell id="8" value="Internal (Private Subnet)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;fontSize=12;fontFamily=Helvetica;verticalAlign=top;spacingLeft=10;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="540" y="70" width="260" height="300" as="geometry" />
+        </mxCell>
+        <!-- Web Server 1 -->
+        <mxCell id="9" value="Web Server 1&lt;br&gt;(EC2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="8">
+          <mxGeometry x="60" y="30" width="140" height="50" as="geometry" />
+        </mxCell>
+        <!-- Web Server 2 -->
+        <mxCell id="10" value="Web Server 2&lt;br&gt;(EC2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="8">
+          <mxGeometry x="60" y="110" width="140" height="50" as="geometry" />
+        </mxCell>
+        <!-- App Server -->
+        <mxCell id="11" value="App Server&lt;br&gt;(ECS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="8">
+          <mxGeometry x="60" y="190" width="140" height="50" as="geometry" />
+        </mxCell>
+        <!-- Data Zone (Container) -->
+        <mxCell id="12" value="Data (Private Subnet)" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;fontSize=12;fontFamily=Helvetica;verticalAlign=top;spacingLeft=10;spacingTop=5;" vertex="1" parent="1">
+          <mxGeometry x="220" y="420" width="580" height="220" as="geometry" />
+        </mxCell>
+        <!-- RDS Primary -->
+        <mxCell id="13" value="RDS Primary&lt;br&gt;(MySQL)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="12">
+          <mxGeometry x="70" y="30" width="140" height="60" as="geometry" />
+        </mxCell>
+        <!-- RDS Replica -->
+        <mxCell id="14" value="RDS Replica&lt;br&gt;(Read)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="12">
+          <mxGeometry x="370" y="30" width="140" height="60" as="geometry" />
+        </mxCell>
+        <!-- ElastiCache -->
+        <mxCell id="15" value="ElastiCache&lt;br&gt;(Redis)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="12">
+          <mxGeometry x="220" y="130" width="140" height="60" as="geometry" />
+        </mxCell>
+        <!-- S3 -->
+        <mxCell id="16" value="S3&lt;br&gt;(Object Store)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontFamily=Helvetica;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;" vertex="1" parent="12">
+          <mxGeometry x="370" y="130" width="140" height="60" as="geometry" />
+        </mxCell>
+        <!-- Edges -->
+        <!-- Internet → WAF -->
+        <mxCell id="17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="3" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- WAF → ALB -->
+        <mxCell id="18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="5" target="6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- ALB → Web Server 1 -->
+        <mxCell id="19" value=":443" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=1;exitY=0.3;entryX=0;entryY=0.3;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="6" target="9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- ALB → Web Server 2 -->
+        <mxCell id="20" value=":443" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=1;exitY=0.7;entryX=0;entryY=0.7;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="6" target="10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Web Server 1 → App Server -->
+        <mxCell id="21" value=":3000" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="9" target="11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Web Server 2 → App Server -->
+        <mxCell id="22" value=":3000" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.5;exitY=1;entryX=0.5;entryY=0;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="10" target="11">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="180" />
+              <mxPoint x="670" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- App Server → RDS Primary -->
+        <mxCell id="23" value=":3306" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;exitX=0.3;exitY=1;entryX=0.3;entryY=0;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="11" target="13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- App Server → ElastiCache -->
+        <mxCell id="24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#16a34a;exitX=0.7;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="11" target="15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- RDS Primary → RDS Replica (replication) -->
+        <mxCell id="25" value="Replication" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;dashed=1;dashPattern=8 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="13" target="14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- Bastion → WS1 (R049/R050: exit right, route through DMZ-Internal gap) -->
+        <mxCell id="26" value="SSH" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;dashed=1;dashPattern=8 4;exitX=1;exitY=0.5;entryX=0;entryY=0.5;labelBackgroundColor=#FFFFFF;fontSize=10;fontFamily=Helvetica;" edge="1" parent="1" source="7" target="9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="305" />
+              <mxPoint x="510" y="125" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- Legend -->
+        <mxCell id="27" value="&lt;b&gt;Legend&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="870" y="420" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="870" y="455" as="sourcePoint" />
+            <mxPoint x="930" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="29" value="Traffic Flow" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="940" y="445" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#6c8ebf;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="870" y="480" as="sourcePoint" />
+            <mxPoint x="930" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="31" value="Replication / Admin" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="940" y="470" width="110" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

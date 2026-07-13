@@ -141,6 +141,32 @@ Copy-Item -Recurse .\.claude\skills\xiaosu-draw-ai $env:USERPROFILE\.claude\skil
 
 ---
 
+## 如何选择视觉风格
+
+在制图描述中加入风格关键词即可切换——不指定则默认使用 **Flat Icon（默认简洁风）**：
+
+| 风格 | 这样说 | 视觉效果 |
+|------|--------|---------|
+| **Flat Icon**（默认） | （不指定风格） | 白底、蓝色主色调、圆角矩形 |
+| **Dark Terminal** | "深色"、"暗色"、"终端"、"dark" | 深黑蓝底、霓虹色装饰、等宽字体 |
+| **Blueprint** | "蓝图"、"工程图"、"blueprint" | 深蓝底、青色线条、直角、工程标题栏 |
+| **Notion Clean** | "简洁"、"极简"、"清爽"、"clean" | 白底、低饱和灰、单一蓝色强调 |
+| **Glassmorphism** | "玻璃"、"毛玻璃"、"现代"、"glass" | 深色渐变底、磨砂玻璃填充、环境光晕 |
+| **Claude Official** | "暖色"、"专业"、"友善"、"claude风格" | 暖白底、语义色填充、柔阴影 |
+| **OpenAI** | "极简"、"简朴"、"openai风格" | 白底极致简约、细线框、品牌绿点缀 |
+
+**示例：**
+
+> "画一张微服务架构图，**深色风格**"
+>
+> "Draw a deployment diagram with a **blueprint look**"
+>
+> "帮我画一张时序图，**简洁一点**"
+
+AI 按 `style-presets.md` 中定义的查表协议解析关键词 → 风格预设 → 调色板 → 形状样式 → 字体排版，无需用户了解 JSON 细节。
+
+---
+
 ## 如何修改样式
 
 样式是结构化 JSON 预设文件，位于 `skills/xiaosu-draw-ai/styles/built-in/`。每个文件定义了 AI 生成图时使用的完整视觉参数。Schema 定义见 `styles/schema.json`。

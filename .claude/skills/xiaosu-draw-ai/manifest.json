@@ -1,0 +1,26 @@
+{
+  "name": "xiaosu-draw-ai",
+  "version": "1.0.0",
+  "description": "Universal AI diagramming skill — pure SKILL.md + draw.io CLI driven. Phase 2: Pipeline C with full quality gates, templates, visual audit, and 7 style presets.",
+  "license": "MIT",
+  "buildDate": "2026-07-13",
+  "requires": {
+    "drawio": ">=24.0.0",
+    "python": ">=3.0",
+    "node": ">=14.0"
+  },
+  "platforms": [
+    "windows",
+    "macos",
+    "linux"
+  ],
+  "pipeline": "A/B/C (v1.0.0)",
+  "files": [
+    "SKILL.md",
+    "references/",
+    "scripts/",
+    "styles/",
+    "templates/",
+    "data/"
+  ]
+}
