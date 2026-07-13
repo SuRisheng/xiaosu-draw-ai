@@ -21,14 +21,39 @@
 
 ## Embed in Feishu Wiki
 
-Feishu Wiki supports image embedding in knowledge base pages:
+Feishu Wiki supports both image embedding AND Mermaid code rendering:
 
-1. Navigate to the target Wiki page.
-2. Click **Edit** → **Insert Image** → upload the `.drawio.png` file.
-3. Add a caption below the image with a link to the source `.drawio` file in your git repo:
+### Option A: Mermaid Code Block (Pipeline B — preferred for editability)
+
+Feishu Wiki Markdown renders Mermaid natively — no image upload needed.
+
+1. Navigate to the target Wiki page, click **Edit**.
+2. Insert a Mermaid code block with the `.mmd` source content:
+   ````markdown
+   ```mermaid
+   sequenceDiagram
+       participant A as Alice
+       participant B as Bob
+       A->>B: Hello
+       B-->>A: Hi
    ```
-   [Edit this diagram](https://github.com/your-org/your-repo/blob/main/diagrams/architecture.drawio)
+   ````
+3. Wiki will render this as a live diagram. **No PNG export needed.**
+4. **Re-editing**: edit the Mermaid code block text directly in the Wiki editor — or edit the `.mmd` source file, regenerate, and paste the updated code.
+
+> **Advantage over PNG**: Mermaid code is text — diff-friendly, easy to modify, and re-renders automatically. This is the recommended delivery for Pipeline B diagrams when the target is Feishu Wiki.
+
+### Option B: PNG Image (Pipeline C — for hand-drawn diagrams)
+
+For Pipeline C diagrams (architecture, deployment, flowchart, etc.) that don't have a Mermaid source:
+
+1. Click **Edit** → **Insert Image** → upload the `.drawio.png` file.
+2. Add a caption with a link to the source file in your git repo:
    ```
+   [Edit this diagram](https://github.com/your-org/your-repo/blob/main/.drawio/type/architecture.drawio)
+   ```
+
+> **Feishu Docx limitation**: Feishu Docx (普通文档) does **NOT** support Mermaid code blocks. Use Option B (PNG) for Docx. Feishu Wiki (知识库) supports both.
 
 ---
 

@@ -70,7 +70,7 @@ draw.io CLI v30+ supports **28 Mermaid diagram types**:
 # Step 2: Convert .mmd → .drawio
 drawio -x -f xml -o output.drawio input.mmd
 
-# Step 3: Delete the .mmd file (the .drawio is the artifact)
+# Step 3: Keep the .mmd file (it's the editable source; .drawio is a derived artifact)
 # Step 4: Continue with standard pipeline:
 #   python3 scripts/validate.py output.drawio
 #   node scripts/export.js output.drawio
@@ -79,7 +79,7 @@ drawio -x -f xml -o output.drawio input.mmd
 **CRITICAL rules after conversion:**
 - **Never** apply `--layout` to a Mermaid-converted file (it's already laid out)
 - The converted file uses `UserObject`-wrapped cells — `validate.py` handles these correctly
-- Delete the `.mmd` intermediate file after successful conversion
+- Keep the `.mmd` source file after successful conversion (it's the editable source)
 - Treat the `.drawio` as the primary artifact from that point forward
 
 ---
@@ -169,12 +169,21 @@ If ≥ v30, proceed. If < v30, fall back to Pipeline C.
 
 Write the Mermaid syntax to a `.mmd` file. Follow the syntax rules above. Use the type-specific presets from `references/diagram-types.md` for color styling (`style` and `classDef` statements).
 
+**Required comment header** (every `.mmd` must start with these `%%` lines for discoverability):
+```
+%% title: <Human-readable diagram title>
+%% type: <diagram type — sequence|er|class|state-machine>
+%% keywords: <comma-separated keywords for search>
+%% description: <One-line description of what this diagram shows>
+```
+The `%%` prefix is a Mermaid comment — ignored by renderers but searchable by the agent when the user says "modify the XXX diagram."
+
 ### Step B3: Convert to .drawio
 
 ```bash
-drawio -x -f xml -o .drawio/<name>.drawio .drawio/<name>.mmd
+node scripts/mermaid-convert.js .drawio/<name>.mmd --output .drawio/<name>.drawio
 ```
-Delete the `.mmd` file after successful conversion.
+Keep the `.mmd` file after successful conversion — it is the **editable source**. The `.drawio` is a derived artifact. Both should be version-controlled.
 
 ### Step B4: Validate + Export + Self-Check
 
