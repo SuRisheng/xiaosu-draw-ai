@@ -470,6 +470,116 @@ class TestComputeScore:
 
 
 # ═══════════════════════════════════════════════════════════════════
+# UserObject Wrapper Tests (draw.io v30+ Mermaid Pipeline B format)
+# ═══════════════════════════════════════════════════════════════════
+
+USEROBJECT_SKELETON_HEAD = '''<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron">
+  <diagram name="Test" id="test-1">
+    <mxGraphModel dx="-339" dy="-199" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="0" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+'''
+
+USEROBJECT_SKELETON_TAIL = '''      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>'''
+
+
+def make_userobject_drawio(*cells_xml):
+    """Wrap cell XML fragments in a draw.io v30+ skeleton with UserObject wrappers."""
+    cells = "\n".join(f"        {c}" for c in cells_xml)
+    return USEROBJECT_SKELETON_HEAD + cells + "\n" + USEROBJECT_SKELETON_TAIL
+
+
+def write_and_validate_uo(*cells_xml):
+    """Write a .drawio file from UserObject-wrapped cell XML and run validate_drawio on it."""
+    content = make_userobject_drawio(*cells_xml)
+    tmp = tempfile.NamedTemporaryFile(suffix='.drawio', mode='w', delete=False, encoding='utf-8')
+    try:
+        tmp.write(content)
+        tmp.close()
+        return validate_drawio(tmp.name)
+    finally:
+        os.unlink(tmp.name)
+
+
+# Sample UserObject-wrapped cells (Mermaid conversion format)
+UO_VERTEX_A = '<UserObject label="Service A" mermaidId="n:A" mermaidBaseStyle="rounded=1;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" mermaidBaseValue="Service A" id="2"><mxCell parent="1" style="rounded=1;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1"><mxGeometry height="50" width="140" x="100" y="100" as="geometry" /></mxCell></UserObject>'
+
+UO_VERTEX_B = '<UserObject label="Service B" mermaidId="n:B" mermaidBaseStyle="rounded=1;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" mermaidBaseValue="Service B" id="3"><mxCell parent="1" style="rounded=1;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1"><mxGeometry height="50" width="140" x="400" y="100" as="geometry" /></mxCell></UserObject>'
+
+UO_EDGE_AB = '<UserObject label="" mermaidId="e:A-&gt;B" mermaidBaseStyle="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;endFill=1;" mermaidBaseValue="" id="4"><mxCell edge="1" parent="1" source="2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;endFill=1;" target="3"><mxGeometry relative="1" as="geometry" /></mxCell></UserObject>'
+
+
+class TestUserObjectParsing:
+    def test_uo_vertex_has_id(self):
+        """UserObject-wrapped vertex should have its id resolved from the wrapper."""
+        result = write_and_validate_uo(UO_VERTEX_A)
+        # Should NOT have R003 (parent breakage — id="2" parsed correctly)
+        assert not any(e['id'] == 'R003' for e in result['errors']), \
+            "UserObject vertex id='2' should be resolved from wrapper"
+
+    def test_uo_vertex_has_geometry(self):
+        """UserObject-wrapped vertex should have geometry parsed from inner mxCell."""
+        result = write_and_validate_uo(UO_VERTEX_A)
+        # Should NOT have R005 (missing geometry)
+        assert not any(e['id'] == 'R005' for e in result['errors']), \
+            "Inner mxCell geometry should be recognized"
+
+    def test_uo_valid_diagram_no_errors(self):
+        """Two UO vertices + UO edge = valid diagram, no P0 errors."""
+        result = write_and_validate_uo(UO_VERTEX_A, UO_VERTEX_B, UO_EDGE_AB)
+        errors = result['errors']
+        assert len(errors) == 0, f"Unexpected errors: {errors}"
+
+    def test_uo_edge_with_source_target_works(self):
+        """UserObject edge connecting two UO vertices should resolve source/target."""
+        result = write_and_validate_uo(UO_VERTEX_A, UO_VERTEX_B, UO_EDGE_AB)
+        # Should NOT have R001 (dangling edge)
+        assert not any(e['id'] == 'R001' for e in result['errors']), \
+            "Edge source=2 target=3 should resolve to UO vertices"
+
+    def test_uo_dangling_edge_detected(self):
+        """Edge with source pointing to non-existent UO vertex should trigger R001."""
+        result = write_and_validate_uo(
+            UO_VERTEX_A,  # id=2
+            # Edge source=99 doesn't exist
+            '<UserObject id="5"><mxCell edge="1" parent="1" source="99" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;" target="2"><mxGeometry relative="1" as="geometry" /></mxCell></UserObject>',
+        )
+        assert any(e['id'] == 'R001' for e in result['errors']), \
+            "Should detect R001: dangling edge in UserObject format"
+
+    def test_uo_off_grid_detected(self):
+        """UserObject vertex with off-grid coords should trigger R020."""
+        result = write_and_validate_uo(
+            '<UserObject id="2"><mxCell parent="1" style="rounded=1;" vertex="1"><mxGeometry height="50" width="143" x="43" y="40" as="geometry" /></mxCell></UserObject>',
+        )
+        assert any(w['id'] == 'R020' for w in result['warnings']), \
+            "Should detect R020: off-grid coords in UserObject format"
+
+    def test_uo_mixed_standard_and_userobject(self):
+        """A diagram with both standard mxCell and UserObject-wrapped cells should work."""
+        result = write_and_validate_uo(
+            UO_VERTEX_A,   # UserObject id=2
+            UO_VERTEX_B,   # UserObject id=3
+            VALID_EDGE_AB, # Standard mxCell edge (no UserObject wrapper)
+        )
+        assert len(result['errors']) == 0, f"Mixed format should work: {result['errors']}"
+
+    def test_uo_duplicate_id_detected(self):
+        """Two UserObject cells with same id should trigger R002."""
+        result = write_and_validate_uo(
+            UO_VERTEX_A,
+            UO_VERTEX_A,  # Same id=2
+        )
+        assert any(e['id'] == 'R002' for e in result['errors']), \
+            "Should detect R002: duplicate UserObject IDs"
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Integration Tests (Full Valid File)
 # ═══════════════════════════════════════════════════════════════════
 
