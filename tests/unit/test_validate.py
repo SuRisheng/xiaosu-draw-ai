@@ -334,6 +334,92 @@ class TestR013InsufficientSpacing:
         assert any(w['id'] == 'R013' for w in result['warnings']), "Should detect R013: diagonal connected too close"
 
 
+class TestR011EdgeThroughVertex:
+    """R011 (P1): Edge with waypoints passing through an unrelated vertex's bounding box."""
+
+    def test_edge_passes_through_vertex(self):
+        """An edge from A to B whose waypointed path passes through C should trigger R011."""
+        # A at (40,40,100,40) center=(90,60)
+        # C at (160,40,80,40) bbox=(160,40)-(240,80) — blocker
+        # B at (320,40,100,40) center=(370,60)
+        # Edge A→B, exit bottom, 2 waypoints forcing path through C
+        result = write_and_validate(
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="160" y="40" width="80" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge A→B: exit bottom-center, waypoints that go through C's bbox
+            '<mxCell id="5" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="2" target="4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="80" /><mxPoint x="200" y="20" /></Array></mxGeometry></mxCell>',
+        )
+        assert any(w['id'] == 'R011' for w in result['warnings']), \
+            "Should detect R011: edge passing through vertex C"
+
+    def test_edge_avoids_vertex_no_warning(self):
+        """Edge with waypoints that route AROUND all non-source/target vertices — no R011."""
+        result = write_and_validate(
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="160" y="120" width="80" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge A→B waypoints go through area WITHOUT C (C is at y=120)
+            '<mxCell id="5" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="2" target="4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="80" /><mxPoint x="200" y="20" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R011' for w in result['warnings']), \
+            "No R011 when edge avoids all non-source/target vertices"
+
+    def test_edge_through_swimlane_container_excluded(self):
+        """Edge passing through a swimlane (transparent container) should NOT trigger R011."""
+        result = write_and_validate(
+            # Swimlane container at y=80 spanning x=40..340
+            '<mxCell id="2" value="Container" style="swimlane;startSize=30;" vertex="1" parent="1"><mxGeometry x="40" y="80" width="300" height="100" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge A→B waypoints go through the swimlane area (should be excluded from R011)
+            '<mxCell id="5" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="3" target="4"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="80" /><mxPoint x="200" y="120" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R011' for w in result['warnings']), \
+            "R011 should exclude swimlane containers (transparent boundaries)"
+
+
+class TestR012EdgeCrossing:
+    """R012 (P1): Two waypointed edges whose path segments cross."""
+
+    def test_edges_cross(self):
+        """Two edges with crossing waypoint paths should trigger R012."""
+        # A(top-left), B(top-right), C(bottom-left), D(bottom-right)
+        # Edge1 (A→D): diagonal ↘  Edge2 (C→B): diagonal ↗
+        # Paths cross in the center of the diagram
+        result = write_and_validate(
+            # A at top-left: (40,40,100,40) center=(90,60)
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # B at top-right: (320,40,100,40) center=(370,60)
+            '<mxCell id="3" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            # C at bottom-left: (40,200,100,40) center=(90,220)
+            '<mxCell id="4" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            # D at bottom-right: (320,200,100,40) center=(370,220)
+            '<mxCell id="5" value="D" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge1 A→D: exit A bottom at (90,80), diagonal path to D top at (370,200)
+            '<mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="2" target="5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="80" /><mxPoint x="250" y="140" /></Array></mxGeometry></mxCell>',
+            # Edge2 C→B: exit C top at (90,200), diagonal path to B bottom at (370,80)
+            '<mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="4" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="200" /><mxPoint x="250" y="120" /></Array></mxGeometry></mxCell>',
+        )
+        assert any(w['id'] == 'R012' for w in result['warnings']), \
+            "Should detect R012: edge paths crossing"
+
+    def test_edges_not_crossing_no_warning(self):
+        """Two edges with non-crossing paths should not trigger R012."""
+        result = write_and_validate(
+            '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="B" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="40" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="4" value="C" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="40" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            '<mxCell id="5" value="D" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="320" y="200" width="100" height="40" as="geometry" /></mxCell>',
+            # Edge1: A→B horizontal at y=80
+            '<mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="60" /><mxPoint x="200" y="60" /></Array></mxGeometry></mxCell>',
+            # Edge2: C→D horizontal at y=240 — parallel, no crossing
+            '<mxCell id="7" style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="4" target="5"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="200" y="220" /><mxPoint x="200" y="220" /></Array></mxGeometry></mxCell>',
+        )
+        assert not any(w['id'] == 'R012' for w in result['warnings']), \
+            "No R012 when edge paths don't cross"
+
+
 class TestR014OffCanvas:
     def test_negative_x(self):
         result = write_and_validate(

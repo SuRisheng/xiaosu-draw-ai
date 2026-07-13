@@ -65,9 +65,39 @@ L0: 单元测试（无外部依赖）
 L1: 集成测试（需要 draw.io CLI）
   node tests/integration/test_export.js
   node tests/integration/test_golden_regression.js
+  node tests/integration/test_mermaid_convert.js
 
 L2: 端到端测试（仅人工触发）
   node tests/e2e/test_full_workflow.js
+```
+
+## 测试触发规则
+
+> **改了代码必须先跑测试，再提交。** 对照下表确定要跑哪些。
+
+| 你改了什么文件 | 必须运行的测试 | 原因 |
+|---------------|---------------|------|
+| `scripts/validate.py` | `pytest tests/unit/test_validate.py -v` + `node tests/integration/test_golden_regression.js` | 核心解析逻辑变更 + 回归保护 |
+| `scripts/mermaid-convert.js` | `node tests/integration/test_mermaid_convert.js` | Pipeline B 入口，4/10 图类型依赖 |
+| `scripts/export.js` | `node tests/integration/test_export.js` | 导出管道，影响所有图 |
+| `scripts/router.js` | `node tests/unit/test_router.js` | 边路由引擎 |
+| `scripts/audit.js` | `node tests/unit/test_audit.js` | P3 视觉审计 |
+| `scripts/importers/*.js` | `node tests/integration/test_pipeline_a.js` | Pipeline A 导入器 |
+| `scripts/xml-parser.js` | `pytest tests/unit/test_validate.py -v`（UserObject 测试） | XML 解析变更影响验证 |
+| `scripts/png-extract.js` | 暂无自动化测试（需手动验证） | — |
+| `scripts/build.js` | 手动跑 `node scripts/build.js --dry-run` | 暂无自动化测试 |
+| `references/rules.md`（新增/修改规则）| `pytest tests/unit/test_validate.py -v` | 规则定义应与检测实现同步 |
+| `styles/built-in/*.json` | `node tests/integration/test_golden_regression.js` | 视觉效果回归 |
+| `.drawio/type/*.drawio`（新增/修改示例图）| `node tests/integration/test_golden_regression.js --update` | 更新 golden 基线 |
+| `templates/` | 无需测试（纯提示模板） | — |
+
+**一次性全量验证（提交前推荐）：**
+```bash
+python3 -m pytest tests/unit/ -v && \
+  node tests/integration/test_cli_detect.js && \
+  node tests/integration/test_mermaid_convert.js && \
+  node tests/integration/test_export.js && \
+  node tests/integration/test_golden_regression.js
 ```
 
 ## 语言策略

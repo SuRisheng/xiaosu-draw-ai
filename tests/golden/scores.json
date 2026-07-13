@@ -3,60 +3,84 @@
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:38.297Z"
+    "timestamp": "2026-07-13T03:54:42.266Z"
   },
   "c4.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:38.495Z"
+    "timestamp": "2026-07-13T03:54:42.455Z"
+  },
+  "class-vehicle-rental.drawio": {
+    "error_count": 0,
+    "warning_count": 48,
+    "score": 48,
+    "timestamp": "2026-07-13T03:54:42.645Z"
   },
   "class.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:38.687Z"
+    "timestamp": "2026-07-13T03:54:42.863Z"
   },
   "data-flow.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:38.870Z"
+    "timestamp": "2026-07-13T03:54:43.049Z"
   },
   "deployment.drawio": {
     "error_count": 0,
     "warning_count": 2,
     "score": 20,
-    "timestamp": "2026-07-08T09:19:39.046Z"
+    "timestamp": "2026-07-13T03:54:43.235Z"
+  },
+  "er-blog.drawio": {
+    "error_count": 0,
+    "warning_count": 107,
+    "score": 135,
+    "timestamp": "2026-07-13T03:54:43.429Z"
   },
   "er.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:39.224Z"
+    "timestamp": "2026-07-13T03:54:43.620Z"
   },
   "flowchart.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:39.397Z"
+    "timestamp": "2026-07-13T03:54:43.815Z"
   },
   "network.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:39.591Z"
+    "timestamp": "2026-07-13T03:54:43.996Z"
+  },
+  "sequence-login.drawio": {
+    "error_count": 0,
+    "warning_count": 15,
+    "score": 35,
+    "timestamp": "2026-07-13T03:54:44.183Z"
   },
   "sequence.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:39.776Z"
+    "timestamp": "2026-07-13T03:54:44.369Z"
   },
   "state-machine.drawio": {
     "error_count": 0,
     "warning_count": 0,
     "score": 0,
-    "timestamp": "2026-07-08T09:19:39.968Z"
+    "timestamp": "2026-07-13T03:54:44.559Z"
+  },
+  "statemachine-order.drawio": {
+    "error_count": 0,
+    "warning_count": 11,
+    "score": 11,
+    "timestamp": "2026-07-13T03:54:44.783Z"
   }
 }
