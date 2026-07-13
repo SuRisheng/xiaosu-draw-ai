@@ -90,19 +90,19 @@
         <mxCell id="101" edge="1" parent="1" source="4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;" target="12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="104" edge="1" parent="1" source="13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="21">
+        <mxCell id="104" edge="1" parent="1" source="13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;exitX=0.33;exitY=1;exitDx=0;exitDy=0;" target="21">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="590" y="330" />
+              <mxPoint x="580" y="330" />
               <mxPoint x="160" y="330" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="105" edge="1" parent="1" source="13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="22">
+        <mxCell id="105" edge="1" parent="1" source="13" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;exitX=0.67;exitY=1;exitDx=0;exitDy=0;" target="22">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="590" y="330" />
-              <mxPoint x="360" y="330" />
+              <mxPoint x="600" y="310" />
+              <mxPoint x="360" y="310" />
             </Array>
           </mxGeometry>
         </mxCell>
