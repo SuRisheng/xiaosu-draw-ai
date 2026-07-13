@@ -9,9 +9,9 @@
 
 # Preview PNG exports (regeneratable)
 .drawio/*
-!.drawio/type/
-!.drawio/type/*.mmd
-!.drawio/type/*.drawio
+# But keep source files (editable)
+!.drawio/*.mmd
+!.drawio/*.drawio
 
 # Draw.io backup files (anywhere)
 **/.$*.bkp

@@ -1,7 +1,5 @@
 %% title: Order Lifecycle State Machine
 %% type: state-machine
-%% keywords: state machine, order, lifecycle, Created, Shipped, Delivered, Cancelled
-%% description: Order states — Created → Payment Pending → Confirmed → Shipped → Delivered (with cancel/return paths)
 stateDiagram-v2
     [*] --> Created
     Created --> PaymentPending: Submit order

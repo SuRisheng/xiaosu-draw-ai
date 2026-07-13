@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="Page-1" id="page-1">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="2" value="应用商店功能架构图" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=18;fontStyle=1;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="260" y="20" width="1040" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 1: 车机端 Swimlane -->
+        <mxCell id="3" value="应用商店 App（车机端 · Android）" style="swimlane;startSize=30;fillColor=#e5e7eb;strokeColor=#d1d5db;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="280" y="60" width="1040" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 1 Row 1 -->
+        <mxCell id="4" value="F-A01 首页推荐" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="20" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="F-A02 应用分类" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="230" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="F-A03 应用搜索" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="440" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="F-A04 应用详情" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="650" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="F-A05 APK下载" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="860" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 1 Row 2 -->
+        <mxCell id="9" value="F-A06 断点续传" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="20" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="F-A07 应用安装" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="230" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="F-A08 异常告警" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="440" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="F-A09 我的应用" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="650" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="F-A10 更新管理" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#f9fafb;strokeColor=#e5e7eb;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="3">
+          <mxGeometry x="860" y="120" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 2: 运营后台 Swimlane -->
+        <mxCell id="14" value="运营后台（Web）" style="swimlane;startSize=30;fillColor=#e5e7eb;strokeColor=#d1d5db;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="280" y="370" width="1040" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 2 Modules -->
+        <mxCell id="15" value="F-O01 应用管理" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#eff6ff;strokeColor=#bfdbfe;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="14">
+          <mxGeometry x="20" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="F-O02 APK上传" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#eff6ff;strokeColor=#bfdbfe;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="14">
+          <mxGeometry x="230" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="F-O03 推荐管理" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#eff6ff;strokeColor=#bfdbfe;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="14">
+          <mxGeometry x="440" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="F-O04 分类管理" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#eff6ff;strokeColor=#bfdbfe;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="14">
+          <mxGeometry x="650" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="F-O05 数据面板" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#eff6ff;strokeColor=#bfdbfe;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="14">
+          <mxGeometry x="860" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 3: 云端服务 Swimlane -->
+        <mxCell id="20" value="云端服务" style="swimlane;startSize=30;fillColor=#e5e7eb;strokeColor=#d1d5db;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#111827;" vertex="1" parent="1">
+          <mxGeometry x="280" y="610" width="1040" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Layer 3 Modules -->
+        <mxCell id="21" value="F-C01 应用信息接口" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#faf5ff;strokeColor=#e9d5ff;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="20">
+          <mxGeometry x="20" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="F-C02 APK下载服务" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#faf5ff;strokeColor=#e9d5ff;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="20">
+          <mxGeometry x="230" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="F-C03 版本管理" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#faf5ff;strokeColor=#e9d5ff;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="20">
+          <mxGeometry x="440" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="F-C04 更新检查接口" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#faf5ff;strokeColor=#e9d5ff;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="20">
+          <mxGeometry x="650" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="25" value="F-C05 数据统计" style="rounded=1;whiteSpace=wrap;html=1;spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;fillColor=#faf5ff;strokeColor=#e9d5ff;fontFamily=Helvetica;fontSize=13;fontColor=#111827;" vertex="1" parent="20">
+          <mxGeometry x="860" y="50" width="160" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
