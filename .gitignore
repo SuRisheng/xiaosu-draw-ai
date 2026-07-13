@@ -8,7 +8,10 @@
 *.drawio.pdf
 
 # Preview PNG exports (regeneratable)
-.drawio
+.drawio/*
+!.drawio/type/
+!.drawio/type/*.mmd
+!.drawio/type/*.drawio
 
 # Draw.io backup files (anywhere)
 **/.$*.bkp

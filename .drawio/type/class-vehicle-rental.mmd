@@ -1,0 +1,52 @@
+classDiagram
+    class IRentable {
+        &lt;&lt;interface&gt;&gt;
+        +getDailyRate() Decimal
+        +isAvailable() Boolean
+        +rent() void
+        +returnVehicle() void
+    }
+    class Vehicle {
+        &lt;&lt;abstract&gt;&gt;
+        #plateNumber String
+        #brand String
+        #model String
+        #year Integer
+        +getDailyRate() Decimal
+        +isAvailable() Boolean
+        +needsMaintenance() Boolean
+    }
+    class Car {
+        -seatCount Integer
+        -transmission String
+        +getDailyRate() Decimal
+        +needsMaintenance() Boolean
+    }
+    class Truck {
+        -maxLoadKg Integer
+        -hasLiftgate Boolean
+        +getDailyRate() Decimal
+        +needsMaintenance() Boolean
+    }
+    class Customer {
+        -id Integer
+        -name String
+        -licenseNumber String
+        -phone String
+        +canRent() Boolean
+        +getAge() Integer
+    }
+    class Rental {
+        -id Integer
+        -startDate Date
+        -endDate Date
+        -totalCost Decimal
+        +calculateCost() Decimal
+        +extend(days Integer) void
+    }
+
+    IRentable &lt;|.. Vehicle: implements
+    Vehicle &lt;|-- Car: extends
+    Vehicle &lt;|-- Truck: extends
+    Customer "1" --&gt; "*" Rental: places
+    Rental "*" --&gt; "1" Vehicle: rents

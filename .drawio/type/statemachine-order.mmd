@@ -1,0 +1,13 @@
+stateDiagram-v2
+    [*] --> Created
+    Created --> PaymentPending: Submit order
+    PaymentPending --> Confirmed: Payment received
+    PaymentPending --> Cancelled: Payment timeout [after 30 min]
+    Confirmed --> Shipped: Ship
+    Confirmed --> Cancelled: Admin cancel
+    Shipped --> Delivered: Deliver
+    Shipped --> Returned: Customer return
+    Delivered --> [*]
+    Delivered --> Returned: Request return
+    Cancelled --> [*]
+    Returned --> [*]

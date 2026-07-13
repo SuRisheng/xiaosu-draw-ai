@@ -1,0 +1,39 @@
+erDiagram
+    User {
+        int id PK
+        string username UK
+        string email UK
+        string password_hash
+        timestamp created_at
+        enum role "admin,author,reader"
+    }
+    Post {
+        int id PK
+        int author_id FK
+        string title
+        text content
+        enum status "draft,published"
+        timestamp published_at
+    }
+    Comment {
+        int id PK
+        int post_id FK
+        int author_id FK
+        text body
+    }
+    Category {
+        int id PK
+        string name
+        string slug UK
+    }
+    PostCategory {
+        int post_id PK_FK
+        int category_id PK_FK
+        timestamp assigned_at
+    }
+
+    User ||--o{ Post: "writes"
+    User ||--o{ Comment: "writes"
+    Post ||--o{ Comment: "has"
+    Post ||--o{ PostCategory: "categorized"
+    Category ||--o{ PostCategory: "groups"

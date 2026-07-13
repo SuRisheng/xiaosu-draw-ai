@@ -1,0 +1,16 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#dae8fc', 'primaryBorderColor': '#6c8ebf', 'secondaryColor': '#ffe6cc', 'secondaryBorderColor': '#d79b00', 'tertiaryColor': '#d5e8d4', 'tertiaryBorderColor': '#82b366'}}}%%
+sequenceDiagram
+    participant User as User
+    participant WebApp as Web App<br/>(React)
+    participant Gateway as API Gateway<br/>(Kong)
+    participant Auth as Auth Service
+    participant DB as Database<br/>(MySQL)
+
+    User->>WebApp: 1. Enter credentials
+    WebApp->>Gateway: 2. POST /login
+    Gateway->>Auth: 3. Authenticate(email, password)
+    Auth->>DB: 4. SELECT * FROM users WHERE email=?
+    DB-->>Auth: 5. User record
+    Auth-->>Gateway: 6. JWT Token
+    Gateway-->>WebApp: 7. 200 OK + Token
+    WebApp-->>User: 8. Login success
