@@ -664,6 +664,41 @@ def validate_drawio(filepath):
                     "message": f"Edge id='{edge.get('id')}': final segment length={length:.1f}px (< 15px)"
                 })
 
+    # ── P2: R040 — Container-Child Color Contrast ──
+    # Swimlane header fillColor must differ from children's fillColor.
+    def _extract_fillcolor(style):
+        """Extract fillColor hex value from style string. Returns lowercase hex or None."""
+        m = re.search(r'(?<!\w)fillColor=([#0-9a-fA-F]+)', style)
+        return m.group(1).lower() if m else None
+
+    for vertex in all_vertices:
+        vstyle = vertex.get('style', '')
+        if 'swimlane' not in vstyle:
+            continue
+        vid = vertex.get('id', '?')
+        sw_color = _extract_fillcolor(vstyle)
+        if not sw_color:
+            continue
+
+        # Check all children of this swimlane
+        for child in all_vertices:
+            if child.get('parent', '') != vid:
+                continue
+            cstyle = child.get('style', '')
+            if 'fillColor=none' in cstyle:
+                continue  # Transparent children are fine
+            child_color = _extract_fillcolor(cstyle)
+            if child_color and child_color == sw_color:
+                warnings.append({
+                    "id": "R040",
+                    "message": (
+                        f"Swimlane id='{vid}' fillColor=#{sw_color} matches "
+                        f"child id='{child.get('id', '?')}' fillColor=#{child_color}. "
+                        f"Use a darker variant for the swimlane header."
+                    )
+                })
+                break  # One warning per swimlane is enough
+
     return {"errors": errors, "warnings": warnings}
 
 

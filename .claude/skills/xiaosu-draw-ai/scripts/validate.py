@@ -426,6 +426,77 @@ def validate_drawio(filepath):
                     "message": f"Edges cross: id='{e1.get('id')}' and id='{e2.get('id')}'"
                 })
 
+    # ── P1: R016 — Waypoint-Entry Misalignment ──
+    # For edges with explicit entryX/entryY, the last waypoint must be axis-aligned
+    # with the target entry point. Violation causes diagonal stub segments and
+    # rotated arrow heads.
+    for edge in all_edges:
+        edge_id = edge.get('id', '?')
+        edge_style = edge.get('style', '')
+        source_id = edge.get('source', '')
+        target_id = edge.get('target', '')
+
+        # Only check edges with explicit entry points
+        entry_match = re.search(r'(?<!\w)entryX=([0-9.]+)', edge_style)
+        if not entry_match:
+            continue
+
+        # Check if this is a vertical entry (TOP or BOTTOM)
+        entry_y_match = re.search(r'(?<!\w)entryY=([0-9.]+)', edge_style)
+        entry_x_val = float(entry_match.group(1))
+        entry_y_val = float(entry_y_match.group(1)) if entry_y_match else 0.5
+
+        # Get target geometry
+        if target_id not in all_cells:
+            continue
+        tgt_geom = resolve_absolute_geometry(all_cells[target_id], all_cells)
+        if not tgt_geom:
+            continue
+        tx, ty, tw, th = tgt_geom
+        entry_x = tx + tw * entry_x_val
+        entry_y = ty + th * entry_y_val
+
+        # Get waypoints
+        geom = edge.find('mxGeometry')
+        if geom is None:
+            continue
+        points_arr = geom.find('Array')
+        if points_arr is None:
+            continue
+        points = []
+        for pt in points_arr.findall('mxPoint'):
+            points.append((float(pt.get('x', 0)), float(pt.get('y', 0))))
+        if not points:
+            continue
+
+        wp_last = points[-1]
+
+        # R016 check: vertical entry (entryY=0 or 1) → wp_last.x must == entry_x
+        #             horizontal entry (entryX=0 or 1) → wp_last.y must == entry_y
+        is_vertical_entry = abs(entry_y_val - 0.0) < 0.01 or abs(entry_y_val - 1.0) < 0.01
+        is_horizontal_entry = abs(entry_x_val - 0.0) < 0.01 or abs(entry_x_val - 1.0) < 0.01
+
+        if is_vertical_entry:
+            if abs(wp_last[0] - entry_x) > 1.0:  # >1px tolerance
+                warnings.append({
+                    "id": "R016",
+                    "message": (
+                        f"Edge id='{edge_id}': last waypoint x={wp_last[0]:.0f} "
+                        f"misaligned with vertical entry x={entry_x:.0f} "
+                        f"(delta={abs(wp_last[0] - entry_x):.0f}px). Align wp_last.x to entry_x."
+                    )
+                })
+        elif is_horizontal_entry:
+            if abs(wp_last[1] - entry_y) > 1.0:
+                warnings.append({
+                    "id": "R016",
+                    "message": (
+                        f"Edge id='{edge_id}': last waypoint y={wp_last[1]:.0f} "
+                        f"misaligned with horizontal entry y={entry_y:.0f} "
+                        f"(delta={abs(wp_last[1] - entry_y):.0f}px). Align wp_last.y to entry_y."
+                    )
+                })
+
     # ── P1: R013 — Insufficient Spacing (Connected Nodes) ──
     # Edge-connected node pairs must have sufficient center-to-center distance.
     # Minimums: 80px general, 120px vertical (TB layout), 100px horizontal (LR layout).
@@ -592,6 +663,41 @@ def validate_drawio(filepath):
                     "id": "R022",
                     "message": f"Edge id='{edge.get('id')}': final segment length={length:.1f}px (< 15px)"
                 })
+
+    # ── P2: R040 — Container-Child Color Contrast ──
+    # Swimlane header fillColor must differ from children's fillColor.
+    def _extract_fillcolor(style):
+        """Extract fillColor hex value from style string. Returns lowercase hex or None."""
+        m = re.search(r'(?<!\w)fillColor=([#0-9a-fA-F]+)', style)
+        return m.group(1).lower() if m else None
+
+    for vertex in all_vertices:
+        vstyle = vertex.get('style', '')
+        if 'swimlane' not in vstyle:
+            continue
+        vid = vertex.get('id', '?')
+        sw_color = _extract_fillcolor(vstyle)
+        if not sw_color:
+            continue
+
+        # Check all children of this swimlane
+        for child in all_vertices:
+            if child.get('parent', '') != vid:
+                continue
+            cstyle = child.get('style', '')
+            if 'fillColor=none' in cstyle:
+                continue  # Transparent children are fine
+            child_color = _extract_fillcolor(cstyle)
+            if child_color and child_color == sw_color:
+                warnings.append({
+                    "id": "R040",
+                    "message": (
+                        f"Swimlane id='{vid}' fillColor=#{sw_color} matches "
+                        f"child id='{child.get('id', '?')}' fillColor=#{child_color}. "
+                        f"Use a darker variant for the swimlane header."
+                    )
+                })
+                break  # One warning per swimlane is enough
 
     return {"errors": errors, "warnings": warnings}
 

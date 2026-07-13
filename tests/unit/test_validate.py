@@ -721,6 +721,50 @@ class TestUserObjectParsing:
 # Integration Tests (Full Valid File)
 # ═══════════════════════════════════════════════════════════════════
 
+class TestR040ContainerChildColorContrast:
+    """R040 (P2): Swimlane header fillColor must differ from children's fillColor."""
+
+    def test_swimlane_child_same_color(self):
+        """Swimlane and child with identical fillColor → R040."""
+        result = write_and_validate(
+            # Swimlane with fillColor=#dae8fc, child with same fillColor
+            '<mxCell id="2" value="Layer" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="300" height="100" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="2"><mxGeometry x="40" y="40" width="140" height="50" as="geometry" /></mxCell>',
+        )
+        assert any(w['id'] == 'R040' for w in result['warnings']), \
+            "Should detect R040: swimlane and child have identical fillColor"
+
+    def test_swimlane_child_different_color(self):
+        """Swimlane and child with different fillColors → no R040."""
+        result = write_and_validate(
+            # Swimlane fillColor=#B0C4DE (darker header), child fillColor=#dae8fc (lighter)
+            '<mxCell id="2" value="Layer" style="swimlane;startSize=30;fillColor=#B0C4DE;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="300" height="100" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Service" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="2"><mxGeometry x="40" y="40" width="140" height="50" as="geometry" /></mxCell>',
+        )
+        assert not any(w['id'] == 'R040' for w in result['warnings']), \
+            "No R040 when swimlane header color differs from child"
+
+    def test_transparent_child_no_warning(self):
+        """Child with fillColor=none (transparent) should not trigger R040."""
+        result = write_and_validate(
+            '<mxCell id="2" value="Layer" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="300" height="100" as="geometry" /></mxCell>',
+            # Transparent child — explicitly fillColor=none
+            '<mxCell id="3" value="Label" style="text;html=1;fillColor=none;strokeColor=none;" vertex="1" parent="2"><mxGeometry x="40" y="40" width="100" height="30" as="geometry" /></mxCell>',
+        )
+        assert not any(w['id'] == 'R040' for w in result['warnings']), \
+            "No R040 for transparent children (fillColor=none)"
+
+    def test_non_swimlane_ignored(self):
+        """Non-swimlane containers should not trigger R040."""
+        result = write_and_validate(
+            # Rounded rect (not a swimlane) with child of same color
+            '<mxCell id="2" value="Group" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1"><mxGeometry x="40" y="40" width="300" height="100" as="geometry" /></mxCell>',
+            '<mxCell id="3" value="Item" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="2"><mxGeometry x="40" y="40" width="140" height="50" as="geometry" /></mxCell>',
+        )
+        assert not any(w['id'] == 'R040' for w in result['warnings']), \
+            "No R040 for non-swimlane containers"
+
+
 class TestValidFile:
     def test_minimal_valid_no_issues(self):
         """A minimal valid diagram should have zero errors and warnings."""
