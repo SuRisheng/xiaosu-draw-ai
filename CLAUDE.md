@@ -4,12 +4,29 @@
 >
 > 技能文件位于 `skills/xiaosu-draw-ai/`，项目级文件位于根目录。
 
+## 技能路由规则（最高优先级，先于所有其他操作）
+
+> **硬门：当用户消息包含以下任一模式，必须立即调用 `Skill("xiaosu-draw-ai")`，
+> 不得先做其他操作（包括读取文档、编辑文件、分析内容）。**
+
+| 触发模式 | 匹配条件 | 示例 |
+|----------|---------|------|
+| `.drawio` 文件 | 消息中出现 `.drawio` 路径或文件名 | "修改 .drawio/xxx.drawio"、"mediax-arch.drawio" |
+| `.mmd` 文件 | 消息中出现 `.mmd` 路径或文件名 | "编辑 sequence.mmd" |
+| 制图动词 | 绘制、画、重绘、重新绘制、重画、创建、生成、修改、编辑 + 图相关上下文 | "画一张架构图"、"重绘时序图" |
+| 图类型名词 | 架构图、流程图、时序图、ER图、部署图、类图、C4图、状态机、网络拓扑、数据流图 | "帮我做一张系统架构图" |
+| 导出图 | 导出 + PNG/SVG/PDF + 图上下文 | "导出为 PNG" |
+
+**违反此规则 = 流程错误**：跳过技能意味着跳过 quality gates（validate.py → export → visual audit），产出未经校验的 XML。
+
 ## 修改路由表
 
 改什么动哪里，AI 和人都能准确识别：
 
 | 你要做什么 | 改这里 | 说明 |
 |-----------|--------|------|
+| 改技能路由触发 | `CLAUDE.md` → 技能路由规则 | 加触发模式、匹配条件（防模型跳过 Skill 调用） |
+| 改技能 description / 关键词 | `skills/xiaosu-draw-ai/SKILL.md` frontmatter | 意图匹配面（软信号），改后需 `node scripts/build.js` |
 | 加图类型 | `skills/xiaosu-draw-ai/templates/` + `skills/xiaosu-draw-ai/references/diagram-types.md` | 模板 + 类型预设 |
 | 加规则 / 改规则 | `skills/xiaosu-draw-ai/references/rules.md` | P0-P3 像素级规则体系 |
 | 改导出行为 | `skills/xiaosu-draw-ai/scripts/export.js` | CLI 导出封装（PNG/SVG/PDF 预览+最终） |
