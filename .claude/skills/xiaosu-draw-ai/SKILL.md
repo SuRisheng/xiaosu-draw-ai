@@ -2,18 +2,18 @@
 name: xiaosu-draw-ai
 version: 1.0.0
 description: >-
-  Universal AI diagramming skill powered by draw.io CLI. Create, modify, fix, redraw,
-  or extract architecture, sequence, ER, flowchart, deployment, class, C4, state machine,
-  network, and data flow diagrams from natural language, existing files, or PNG exports.
-  通用 AI 制图技能：创建、修改、修复、重绘、提取架构图/时序图/ER图/流程图/部署图/类图/C4图/状态机/网络拓扑/数据流图。
-  Phase 4: All 3 pipelines active (A: data-driven importers, B: Mermaid conversion, C: hand-written XML) with full quality gates, templates, visual audit, and 7 style presets.
+  处理 .drawio/.mmd 文件：创建、绘制、重绘、修改、修复、导出架构图/流程图/时序图/
+  ER图/部署图/类图/C4图/状态机/网络拓扑/数据流图，导出为PNG/SVG/PDF，从PNG提取原图。
+  Diagramming with .drawio/.mmd files: create, draw, redraw, modify, fix, export
+  architecture, sequence, ER, flowchart, deployment, class, C4, state machine,
+  network topology, data flow diagrams to PNG/SVG/PDF. Extract from PNG.
 license: MIT
 homepage: https://github.com/rshsu/xiaosu-draw-ai
 compatibility: >-
   Requires draw.io desktop app CLI (>= 24.0.0) on PATH.
   validate.py needs Python 3. export.js needs Node.js.
 platforms: [windows, macos, linux]
-metadata: {"hermes":{"tags":["drawio","diagram","architecture","flowchart","visualization","uml","sequence","er"],"category":"design","requires_tools":["drawio","draw.io"],"related_skills":["mermaid","plantuml"]}}
+metadata: {"hermes":{"tags":["drawio","diagram","architecture","flowchart","visualization","uml","sequence","er","redraw","export","架构图","流程图","时序图","ER图","部署图","类图","C4图","状态机","网络拓扑","数据流图","制图","画图","重绘","导出","draw","diagramming"],"category":"design","requires_tools":["drawio","draw.io"],"related_skills":["mermaid","plantuml"]}}
 ---
 
 # xiaosu-draw-ai
@@ -23,20 +23,26 @@ Pipeline C (AI hand-writes XML) is the active path with full quality gates, temp
 
 ## When to Use
 
-Trigger when the user asks to create, draw, generate, modify, fix, redraw, re-layout,
-extract from PNG, or re-export a diagram (EN) / 创建、绘制、生成、修改、修复、重绘、重新排版、
-提取PNG、重新导出一张图 (ZH):
+Trigger when the user asks to create, draw, generate, make, build, modify, edit, fix,
+redraw, redesign, recreate, redo, re-layout, adjust, update, beautify, polish, export,
+convert, extract from PNG, or re-export a diagram (EN) /
+创建、绘制、画、生成、做、制作、制图、作图、修改、编辑、调整、更新、修复、重绘、
+重新绘制、重新画、重画、再画、重做、重新排版、美化、优化、导出、输出、转换、
+提取PNG、重新导出一张图 (ZH).
 
-- **Architecture diagram / 架构图** — system, microservices, cloud architecture
-- **Sequence diagram / 时序图** — interaction flows, message sequences
-- **ER diagram / ER图** — entities, relationships, database design
-- **Flowchart / 流程图** — business processes, decision flows
-- **Deployment diagram / 部署图** — infrastructure, nodes, network zones
-- **UML Class diagram / 类图** — classes, inheritance, composition
-- **C4 model / C4图** — context, container, component, code levels
-- **State machine diagram / 状态机图** — states, transitions, events
-- **Network topology / 网络拓扑** — network devices, connections, zones
-- **Data flow diagram / 数据流图** — data sources, transformations, sinks
+Also trigger when user mentions `.drawio` files, `.mmd` files, or draw.io PNG exports
+— regardless of whether a diagram type is explicitly named.
+
+- **Architecture diagram / 架构图** — system architecture, microservices, cloud architecture, tech architecture, business architecture, functional architecture, logical architecture, physical architecture, application architecture, system design, layered architecture / 系统架构、微服务架构、云架构、技术架构、业务架构、功能架构、逻辑架构、物理架构、应用架构、系统设计、分层架构
+- **Sequence diagram / 时序图** — interaction flows, message sequences, call chains, login flows / 顺序图、交互流程、交互图、消息流、调用链、登录流程
+- **ER diagram / ER图** — entities, relationships, database design, data model, schema design, table structure / 实体关系图、E-R图、数据模型、数据库设计、表结构
+- **Flowchart / 流程图** — business processes, decision flows, workflows, approval flows, algorithm flows / 业务流程、审批流、工作流、决策流、算法流程
+- **Deployment diagram / 部署图** — infrastructure, nodes, network zones, cloud deployment, physical topology / 部署架构、基础设施、网络部署、云部署、物理拓扑
+- **UML Class diagram / 类图** — classes, inheritance, composition, OO design, object model / UML类图、对象模型、继承关系
+- **C4 model / C4图** — context, container, component, code levels / C4模型、容器图、上下文图、组件图
+- **State machine diagram / 状态机图** — states, transitions, events, lifecycle / 状态图、状态转移、生命周期、状态流转
+- **Network topology / 网络拓扑** — network devices, connections, zones, network architecture / 网络架构、网络图、机房拓扑
+- **Data flow diagram / 数据流图** — data sources, transformations, sinks, data pipelines, ETL / DFD、数据管道、ETL、数据流转
 
 ## Prerequisites
 
