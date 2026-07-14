@@ -2,9 +2,10 @@
 name: xiaosu-draw-ai
 version: 1.0.0
 description: >-
-  Universal AI diagramming skill powered by draw.io CLI. Generate production-quality
-  architecture, sequence, ER, flowchart, deployment, class, C4, state machine, network,
-  and data flow diagrams from natural language descriptions.
+  Universal AI diagramming skill powered by draw.io CLI. Create, modify, fix, redraw,
+  or extract architecture, sequence, ER, flowchart, deployment, class, C4, state machine,
+  network, and data flow diagrams from natural language, existing files, or PNG exports.
+  通用 AI 制图技能：创建、修改、修复、重绘、提取架构图/时序图/ER图/流程图/部署图/类图/C4图/状态机/网络拓扑/数据流图。
   Phase 4: All 3 pipelines active (A: data-driven importers, B: Mermaid conversion, C: hand-written XML) with full quality gates, templates, visual audit, and 7 style presets.
 license: MIT
 homepage: https://github.com/rshsu/xiaosu-draw-ai
@@ -22,18 +23,20 @@ Pipeline C (AI hand-writes XML) is the active path with full quality gates, temp
 
 ## When to Use
 
-Trigger when the user asks to create, draw, or generate:
+Trigger when the user asks to create, draw, generate, modify, fix, redraw, re-layout,
+extract from PNG, or re-export a diagram (EN) / 创建、绘制、生成、修改、修复、重绘、重新排版、
+提取PNG、重新导出一张图 (ZH):
 
-- **Architecture diagram** — system, microservices, cloud architecture
-- **Sequence diagram** — interaction flows, message sequences
-- **ER diagram** — entities, relationships, database design
-- **Flowchart** — business processes, decision flows
-- **Deployment diagram** — infrastructure, nodes, network zones
-- **UML Class diagram** — classes, inheritance, composition
-- **C4 model** — context, container, component, code levels
-- **State machine diagram** — states, transitions, events
-- **Network topology** — network devices, connections, zones
-- **Data flow diagram** — data sources, transformations, sinks
+- **Architecture diagram / 架构图** — system, microservices, cloud architecture
+- **Sequence diagram / 时序图** — interaction flows, message sequences
+- **ER diagram / ER图** — entities, relationships, database design
+- **Flowchart / 流程图** — business processes, decision flows
+- **Deployment diagram / 部署图** — infrastructure, nodes, network zones
+- **UML Class diagram / 类图** — classes, inheritance, composition
+- **C4 model / C4图** — context, container, component, code levels
+- **State machine diagram / 状态机图** — states, transitions, events
+- **Network topology / 网络拓扑** — network devices, connections, zones
+- **Data flow diagram / 数据流图** — data sources, transformations, sinks
 
 ## Prerequisites
 
@@ -351,9 +354,20 @@ If this looks right, I'll generate the diagram. If not, what should I change?
 
 Wait for user confirmation before generating XML.
 
+## Multi-Diagram Consistency (R062)
+
+When the user describes **architecture evolution** ("第一阶段/第二阶段", "Phase 1/2", "当前/目标架构"), apply these constraints BEFORE Step 1:
+
+1. **Independent layouts per phase** — Each phase has its OWN两端对齐 grid derived from its own element count. Do NOT insert empty slots to reserve space for future phases. Phase 1 with 5 logic elements uses a 5-column grid. Phase 2 with 6 logic elements uses a 6-column grid. Same-module pixel positions MAY differ between phases when the grid changes.
+2. **Same modules present** — If a module exists in Phase 1, Phase 2 MUST show it (if still present in the architecture). The module's logical role and relative ordering are preserved, even if its pixel position shifts.
+3. **New element markers** — Net-new elements (not present in any earlier phase) use `fillColor=#9dd4c7` (green tint), `fontStyle=1` (bold), and label suffix `（新增）`. This applies to both internal modules and connecting external systems. When inserting new elements into a grid, keep edge-anchored elements (e.g., L5 at rightmost for E2 connection) at their grid-edge position — insert new elements BEFORE them.
+4. **Edge evolution** — If an external system connects to a different internal module in a later phase, show the Phase-N connection only in Phase N. The external element's position may change accordingly.
+
+---
+
 ## Workflow: Pipeline C — AI Hand-Writes XML
 
-Follow this 6-step process. Do NOT skip steps 4-5 (quality gates).
+Follow this 7-step process. Do NOT skip steps 1.5, 2.5, and 5 (quality gates).
 
 ### Step 1: Plan
 
@@ -378,6 +392,31 @@ State your plan to the user before generating. Example:
 > - **Layout**: Top-to-bottom, 4 tiers, 120px layer spacing
 > - **Edges**: Frontend → Gateway → Services → Data"
 
+### Step 1.5: External Element Placement & Overlap Prevention
+
+**CRITICAL: Before writing XML, place every external element with precise coordinates that avoid ALL overlaps.** This is a mechanical step, not a visual guess.
+
+1. **Place core first** — Position the main container(s) on the canvas. Compute their absolute bounding boxes.
+
+2. **For each external element, determine optimal side** (Mode B hub-spoke):
+   - Identify the internal target element (what it connects to)
+   - Compute the target's absolute center `(cx, cy)`
+   - Evaluate each candidate side:
+     - **TOP/BOTTOM**: align external `x-center = target x-center`. Edge is vertical, 0 horizontal offset.
+     - **LEFT/RIGHT**: align external `y-center = target y-center`. Edge is horizontal, 0 vertical offset.
+   - **Prefer the side where the edge path is a single straight segment** (no waypoints).
+   - **Prefer sides with fewer existing external elements** (avoid stacking >3 on one side).
+
+3. **Overlap pre-check** — For each external element's candidate position, verify its bounding box does NOT overlap:
+   - The diagram title text (id="2")
+   - Any container header (swimlane title bar)
+   - Any other external element (≥80px center-to-center on the same side)
+   - If overlap detected → adjust position outward until ≥20px clearance from all non-target elements.
+
+4. **Axis alignment** — For horizontal edges (LEFT/RIGHT sides): external `y-center` MUST equal target `y-center` (±10px tolerance, R025). For vertical edges (TOP/BOTTOM sides): external `x-center` MUST equal target `x-center` (±10px tolerance).
+
+5. **Gap spacing from core** — External elements must be ≥30px from the nearest container edge to leave room for the edge path (Type-C gap).
+
 ### Step 2: Generate XML
 
 Read `references/xml-authoring.md`. For the matched diagram type, also reference `references/diagram-types.md` for type-specific presets. For the default color palette, read `styles/built-in/flat-icon.json` (or `styles/schema.json` for the schema).
@@ -396,6 +435,29 @@ Generate a valid `.drawio` XML file and write it to `.drawio/<diagram-name>.draw
   - Layer-to-layer ≥ 120px
   - Same-row ≥ 100-120px
   - Page margin ≥ 40px
+
+### Step 2.5: Edge Collision Pre-Check (Mechanical)
+
+**CRITICAL: Before running validate.py, mechanically trace every edge path against all element bounding boxes.** This prevents edges from crossing unrelated elements — the #1 visual defect in architecture diagrams.
+
+For each edge `(source → target)`:
+
+1. **Compute the orthogonal path** — Using source and target absolute coordinates (resolved through all parent offsets), determine the edge's line segments (0, 1, or 2 waypoints).
+
+2. **Trace each segment against all non-source/non-target leaf elements**:
+   - For each element on the canvas (excluding source and target), compute its absolute bounding box.
+   - Check if any edge segment intersects the bounding box.
+   - Only check **leaf elements** (vertices without children). Container swimlanes are NOT checked (edges may pass through container bodies legitimately).
+
+3. **If collision detected**, apply fixes in priority order:
+   - **(a) Re-route**: Adjust exit/entry points or add waypoints to route the edge through a mapped gap (≥20px clearance, R052).
+   - **(b) Swap element positions**: If the target is blocked because of its row position, swap it with another element in the same row to move it closer to the edge source (barycenter reorder, R059).
+   - **(c) Widen gaps**: Increase inter-element or inter-layer spacing (R054, max 60px / 180px).
+   - **(d) Fallback**: If all above fail, allow element crossing with `strokeColor=#cccccc;strokeWidth=1;dashed=1` (R055). **Document every fallback crossing.**
+
+4. **Repeat until 0 collisions OR all remaining collisions are documented fallbacks.** Maximum 3 repair rounds.
+
+**This step MUST complete with 0 undocumented element crossings before proceeding to Step 3.**
 
 ### Step 3: Validate
 

@@ -2,9 +2,10 @@
 name: xiaosu-draw-ai
 version: 1.0.0
 description: >-
-  Universal AI diagramming skill powered by draw.io CLI. Generate production-quality
-  architecture, sequence, ER, flowchart, deployment, class, C4, state machine, network,
-  and data flow diagrams from natural language descriptions.
+  Universal AI diagramming skill powered by draw.io CLI. Create, modify, fix, redraw,
+  or extract architecture, sequence, ER, flowchart, deployment, class, C4, state machine,
+  network, and data flow diagrams from natural language, existing files, or PNG exports.
+  通用 AI 制图技能：创建、修改、修复、重绘、提取架构图/时序图/ER图/流程图/部署图/类图/C4图/状态机/网络拓扑/数据流图。
   Phase 4: All 3 pipelines active (A: data-driven importers, B: Mermaid conversion, C: hand-written XML) with full quality gates, templates, visual audit, and 7 style presets.
 license: MIT
 homepage: https://github.com/rshsu/xiaosu-draw-ai
@@ -22,18 +23,20 @@ Pipeline C (AI hand-writes XML) is the active path with full quality gates, temp
 
 ## When to Use
 
-Trigger when the user asks to create, draw, or generate:
+Trigger when the user asks to create, draw, generate, modify, fix, redraw, re-layout,
+extract from PNG, or re-export a diagram (EN) / 创建、绘制、生成、修改、修复、重绘、重新排版、
+提取PNG、重新导出一张图 (ZH):
 
-- **Architecture diagram** — system, microservices, cloud architecture
-- **Sequence diagram** — interaction flows, message sequences
-- **ER diagram** — entities, relationships, database design
-- **Flowchart** — business processes, decision flows
-- **Deployment diagram** — infrastructure, nodes, network zones
-- **UML Class diagram** — classes, inheritance, composition
-- **C4 model** — context, container, component, code levels
-- **State machine diagram** — states, transitions, events
-- **Network topology** — network devices, connections, zones
-- **Data flow diagram** — data sources, transformations, sinks
+- **Architecture diagram / 架构图** — system, microservices, cloud architecture
+- **Sequence diagram / 时序图** — interaction flows, message sequences
+- **ER diagram / ER图** — entities, relationships, database design
+- **Flowchart / 流程图** — business processes, decision flows
+- **Deployment diagram / 部署图** — infrastructure, nodes, network zones
+- **UML Class diagram / 类图** — classes, inheritance, composition
+- **C4 model / C4图** — context, container, component, code levels
+- **State machine diagram / 状态机图** — states, transitions, events
+- **Network topology / 网络拓扑** — network devices, connections, zones
+- **Data flow diagram / 数据流图** — data sources, transformations, sinks
 
 ## Prerequisites
 
@@ -142,6 +145,7 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `references/dense-diagram-simplification.md` | Diagram has 15+ nodes or user says "too cluttered" — apply simplification strategies |
 | `references/benchmark.md` | User says "benchmark", "measure", "统计性能", or "耗时统计" — collect timing and token metrics |
 | `references/feishu-embed.md` | **Delivering any diagram — MANDATORY before every delivery.** Determine target platform (Wiki/Docx/GitHub/Slack etc.) and correct output format (Mermaid code block vs PNG vs both). Prevents exporting Mermaid as PNG when native code would be better. |
+| `references/article-diagram-embedding.md` | User provides a template article link + requirements to generate a new document — OR — user says "update diagrams in this article" after editing text — OR — article contains `@xiaosu-draw-ai` annotations. Read template structure, extract diagram type/position hints, batch generate all diagrams. |
 | `scripts/xml-parser.js` | User provides an existing .drawio file to modify — parse XML to see current nodes/edges/containers |
 | `scripts/png-extract.js` | User provides a .drawio.png (--final export) — extract the embedded source XML |
 | `scripts/mermaid-convert.js` | User has .mmd source → Pipeline B regeneration; re-editing Mermaid-based diagrams |
@@ -234,6 +238,76 @@ User requests a diagram or modification
 >
 > **Multi-condition overlap**: When the user provides both code AND a diagram type AND visual requirements, data source takes priority: extract structure via Pipeline A, then decide rendering (B or C) separately.
 
+## Template-Driven Document Generation
+
+When the user says "用这个模板（link）+ 这些需求，生成一份 XX 设计文档" — OR — the user provides an article containing `@xiaosu-draw-ai` blocks and asks to generate/update diagrams. Read `references/article-diagram-embedding.md` for the full specification.
+
+### How the Agent reads a template（无需特殊标注语法）
+
+Templates work across **Feishu Wiki, Markdown, and Docx**. The Agent infers diagram requirements from what's already in the template — no special annotation syntax needed in most cases.
+
+**Inference priority (from most reliable to least):**
+
+| Priority | Template content | What the Agent infers |
+|----------|-----------------|----------------------|
+| **1** | ````mermaid` code block | Type, nodes, edges — read code directly. Perfect template. |
+| **2** | `.drawio.png` file | `png-extract.js` → full XML structure. Even more detail than Mermaid. |
+| **3** | Section heading | Infer type from keywords: "系统架构"→architecture, "登录流程"→sequence, "数据模型"→ER, "部署方案"→deployment |
+| **4** | Section body text | Infer intent: "本系统分为三层：前端、服务、数据"→three-layer architecture |
+| **5** | Pure PNG + vision | Visual identification (type + approximate structure). ~60-80% accuracy. |
+| **6** | Pure PNG, no vision | ❌ Cannot determine type or content. Needs hint. |
+
+**When the template needs help (Priority 5-6 only):** Write a natural-language sentence in the template body — no special syntax:
+
+```markdown
+## 3.1 核心设计
+
+> 这里需要一张系统架构图，展示前端、网关、服务、数据四层关系。
+
+![示例](example.png)
+```
+
+This works in ALL document formats and serves double duty as human-facing template instruction.
+
+**Why not `<!-- HTML comments -->`?** They only work in `.md` files. Feishu Wiki and Docx don't support them.
+
+### @xiaosu-draw-ai inline request（行内图表请求）
+
+For embedding explicit diagram specs directly in an article:
+
+```markdown
+@xiaosu-draw-ai 绘制用户登录时序图
+【图类型】时序图
+【内容】
+1、参与者：用户浏览器、Web 应用、API 网关、认证服务、数据库
+2、正常流程：输入凭证 → POST /login → 校验 → 查库 → 返回 JWT → 成功
+3、异常分支：密码错误 401；账号锁定 423
+【风格】Notion Clean
+```
+
+`【图类型】` maps to `diagram-types.md`; `【内容】` is the primary spec; `【风格】` defaults to Flat Icon.
+
+### Workflow: Template + Requirements → New Document
+
+```
+1. Read template → infer diagram positions from Priority 1-4 (5-6 only with hint)
+2. Show blueprint → "模板有 7 个章节，3 个图表位置（如何推断的）"
+3. Generate section by section → text from requirements, diagrams from context
+4. Deliver → template structure + user content + generated diagrams
+```
+
+### Critical rule
+
+Template example images are context hints ONLY. **Copying structure from a template image into a new diagram is a process violation.** Content comes from user requirements + surrounding article text.
+
+### Article text changed → diagrams stale
+
+Re-read article → detect drift between current text and diagrams → flag mismatches → regenerate. "已更新 §2 架构图（新增 Payment Service 节点）"
+
+### Batch processing
+
+Scan ALL positions first → show summary → wait for confirmation → generate sequentially with progress tracking → report results.
+
 ## Style Selection
 
 | Style | File | Best For | User Triggers |
@@ -280,9 +354,20 @@ If this looks right, I'll generate the diagram. If not, what should I change?
 
 Wait for user confirmation before generating XML.
 
+## Multi-Diagram Consistency (R062)
+
+When the user describes **architecture evolution** ("第一阶段/第二阶段", "Phase 1/2", "当前/目标架构"), apply these constraints BEFORE Step 1:
+
+1. **Independent layouts per phase** — Each phase has its OWN两端对齐 grid derived from its own element count. Do NOT insert empty slots to reserve space for future phases. Phase 1 with 5 logic elements uses a 5-column grid. Phase 2 with 6 logic elements uses a 6-column grid. Same-module pixel positions MAY differ between phases when the grid changes.
+2. **Same modules present** — If a module exists in Phase 1, Phase 2 MUST show it (if still present in the architecture). The module's logical role and relative ordering are preserved, even if its pixel position shifts.
+3. **New element markers** — Net-new elements (not present in any earlier phase) use `fillColor=#9dd4c7` (green tint), `fontStyle=1` (bold), and label suffix `（新增）`. This applies to both internal modules and connecting external systems. When inserting new elements into a grid, keep edge-anchored elements (e.g., L5 at rightmost for E2 connection) at their grid-edge position — insert new elements BEFORE them.
+4. **Edge evolution** — If an external system connects to a different internal module in a later phase, show the Phase-N connection only in Phase N. The external element's position may change accordingly.
+
+---
+
 ## Workflow: Pipeline C — AI Hand-Writes XML
 
-Follow this 6-step process. Do NOT skip steps 4-5 (quality gates).
+Follow this 7-step process. Do NOT skip steps 1.5, 2.5, and 5 (quality gates).
 
 ### Step 1: Plan
 
@@ -307,6 +392,31 @@ State your plan to the user before generating. Example:
 > - **Layout**: Top-to-bottom, 4 tiers, 120px layer spacing
 > - **Edges**: Frontend → Gateway → Services → Data"
 
+### Step 1.5: External Element Placement & Overlap Prevention
+
+**CRITICAL: Before writing XML, place every external element with precise coordinates that avoid ALL overlaps.** This is a mechanical step, not a visual guess.
+
+1. **Place core first** — Position the main container(s) on the canvas. Compute their absolute bounding boxes.
+
+2. **For each external element, determine optimal side** (Mode B hub-spoke):
+   - Identify the internal target element (what it connects to)
+   - Compute the target's absolute center `(cx, cy)`
+   - Evaluate each candidate side:
+     - **TOP/BOTTOM**: align external `x-center = target x-center`. Edge is vertical, 0 horizontal offset.
+     - **LEFT/RIGHT**: align external `y-center = target y-center`. Edge is horizontal, 0 vertical offset.
+   - **Prefer the side where the edge path is a single straight segment** (no waypoints).
+   - **Prefer sides with fewer existing external elements** (avoid stacking >3 on one side).
+
+3. **Overlap pre-check** — For each external element's candidate position, verify its bounding box does NOT overlap:
+   - The diagram title text (id="2")
+   - Any container header (swimlane title bar)
+   - Any other external element (≥80px center-to-center on the same side)
+   - If overlap detected → adjust position outward until ≥20px clearance from all non-target elements.
+
+4. **Axis alignment** — For horizontal edges (LEFT/RIGHT sides): external `y-center` MUST equal target `y-center` (±10px tolerance, R025). For vertical edges (TOP/BOTTOM sides): external `x-center` MUST equal target `x-center` (±10px tolerance).
+
+5. **Gap spacing from core** — External elements must be ≥30px from the nearest container edge to leave room for the edge path (Type-C gap).
+
 ### Step 2: Generate XML
 
 Read `references/xml-authoring.md`. For the matched diagram type, also reference `references/diagram-types.md` for type-specific presets. For the default color palette, read `styles/built-in/flat-icon.json` (or `styles/schema.json` for the schema).
@@ -325,6 +435,29 @@ Generate a valid `.drawio` XML file and write it to `.drawio/<diagram-name>.draw
   - Layer-to-layer ≥ 120px
   - Same-row ≥ 100-120px
   - Page margin ≥ 40px
+
+### Step 2.5: Edge Collision Pre-Check (Mechanical)
+
+**CRITICAL: Before running validate.py, mechanically trace every edge path against all element bounding boxes.** This prevents edges from crossing unrelated elements — the #1 visual defect in architecture diagrams.
+
+For each edge `(source → target)`:
+
+1. **Compute the orthogonal path** — Using source and target absolute coordinates (resolved through all parent offsets), determine the edge's line segments (0, 1, or 2 waypoints).
+
+2. **Trace each segment against all non-source/non-target leaf elements**:
+   - For each element on the canvas (excluding source and target), compute its absolute bounding box.
+   - Check if any edge segment intersects the bounding box.
+   - Only check **leaf elements** (vertices without children). Container swimlanes are NOT checked (edges may pass through container bodies legitimately).
+
+3. **If collision detected**, apply fixes in priority order:
+   - **(a) Re-route**: Adjust exit/entry points or add waypoints to route the edge through a mapped gap (≥20px clearance, R052).
+   - **(b) Swap element positions**: If the target is blocked because of its row position, swap it with another element in the same row to move it closer to the edge source (barycenter reorder, R059).
+   - **(c) Widen gaps**: Increase inter-element or inter-layer spacing (R054, max 60px / 180px).
+   - **(d) Fallback**: If all above fail, allow element crossing with `strokeColor=#cccccc;strokeWidth=1;dashed=1` (R055). **Document every fallback crossing.**
+
+4. **Repeat until 0 collisions OR all remaining collisions are documented fallbacks.** Maximum 3 repair rounds.
+
+**This step MUST complete with 0 undocumented element crossings before proceeding to Step 3.**
 
 ### Step 3: Validate
 

@@ -69,6 +69,40 @@ Rules that indicate layout or quality defects. **Fix and re-run validation.**
 
 ---
 
+## Smart Layout & Gap Routing (Phase 4 — NEW)
+
+Rules for the Content-First + Gap Routing pipeline (see SKILL.md workflow). These complement existing P1/P2 rules.
+
+### P1 — Must Fix
+
+| ID | Description | Detection |
+|----|-------------|-----------|
+| **R052** | **Gap-first edge routing**: Every edge segment MUST route through a mapped gap region (empty space >=20px between element bboxes). Classify gaps: Type-A (horizontal between adjacent elements in same row), Type-B (horizontal bands between stacked containers), Type-C (margins between containers and external elements), Type-D (space between external elements). Before finalizing any edge, map all gaps and verify path falls within gap regions. Modifies R011: edges in mapped >=20px gaps are exempt from R011. | `[AI]` |
+| **R053** | **Gap width threshold**: Single edge requires >=20px gap. N parallel edges require >=20+15*(N-1)px. If insufficient for required edge count, trigger R054. | `[AI]` |
+| **R054** | **Spacing adjustment for gap routing**: When R052/R053 fail: (1) increase inter-element gap (20px -> max 60px), (2) increase inter-layer spacing (120px -> max 180px), (3) increase container-external margins. Re-map gaps and re-route after adjustment. If max adjustments still fail, trigger R055. | `[AI]` |
+| **R057** | **Edge label gap placement**: Labels require >=30px clearance from all element boundaries. If midpoint not in gap: (1) shift label along edge to nearest gap, (2) widen path per R054, (3) place outside diagram with callout line. | `[AI]` |
+| **R059** | **Smart layout mode selection**: Classify diagram before placing elements. Mode-A (Layered Cascade): pure layered architecture, TB layout. Mode-B (Hub-Spoke): single core container + externals; core centered, each external placed independently on optimal side (TOP/BOTTOM/LEFT/RIGHT). Mode-C (Tangram): multi-container, 8-directional candidates, force-directed refinement. | `[AI]` |
+| **R060** | **Hub-Spoke side scoring (Mode B)**: For each external: Score(side) = edge_distance + gap_block*100 + element_crossing*200 - label_bonus*30 + collision*50. Select lowest-score side. Resolve same-side collisions by distributing >=80px apart, ordered by target position in core. | `[AI]` |
+
+### P2 — Warning
+
+| ID | Description | Detection |
+|----|-------------|-----------|
+| **R055** | **Element crossing fallback**: If R054 adjustments exhausted and no gap available, edge may cross element body. Use `strokeColor=#cccccc;strokeWidth=1;dashed=1` to de-emphasize. Report crossing details in output. | `[AI]` |
+| **R056** | **Layout direction optimization**: For Mode-A only: evaluate TB/LR/RL/BT scores. Score = sum(edge_manhattan) + crossings*100. TB has 1.2x preference weight. Switch direction only if alternative scores >30% better. | `[AI]` |
+| **R058** | **Edge-element Z-order**: All edge mxCells MUST appear before vertex mxCells in the XML (drawn first = lower z-index). If edge crosses element per R055, element renders on top, preserving readability. | `[AI]` |
+| **R061** | **Tangram anchor selection (Mode C)**: Container with most edges = anchor, placed at canvas center. Remaining containers placed near their connection targets in 8 candidate directions (N/NE/E/SE/S/SW/W/NW). 2 rounds of global micro-adjustment after placement. | `[AI]` |
+| **R062** | **Multi-diagram consistency (architecture evolution)**: When generating multiple diagrams for architecture evolution (Phase 1/2/3, 当前/目标): (1) **Each phase has its OWN independent layout.** Apply两端对齐 independently per phase — the grid (column count, W, gap) is derived from that phase's element count. Do NOT insert empty slots to "reserve space" for future phases. (2) **Same modules exist in both phases.** If Phase 1 has module X, Phase 2 MUST also show module X (if still present). Pixel positions may differ when the grid changes (e.g., 5→6 columns). (3) Net-new elements (not present in any earlier phase) use `fillColor=#9dd4c7` + `fontStyle=1` + label suffix `（新增）`. Insert them into the current phase's grid without moving existing elements out of their logical order. Pay special attention to elements that must stay at grid edges (e.g., L5 at rightmost) — insert new elements BEFORE edge-anchored elements, not after. (4) If an external system connects to a different internal module across phases, show the Phase-N connection only in Phase N; the external element's position may change to stay near its new target. (5) If a source document (wiki/doc) is provided, it is the source of truth — flag document inconsistencies to the user. | `[AI]` |
+
+### P2 modifications to existing rules
+
+| Original | Change | Reason |
+|----------|--------|--------|
+| **R011** (Edge through vertex) | Exempt edges routed through mapped >=20px gaps | Gap routing is the intended path; R011 should not penalize correct routing |
+| **R049** (Direct path priority) | R052 (gap routing) takes priority over direct path | Direct path through an element body is worse than a 2-waypoint gap-routed path |
+
+---
+
 ## P2 — Warning (Exit Code 0)
 
 Rules that indicate suboptimal quality. **Recorded in validation output but do not block.**

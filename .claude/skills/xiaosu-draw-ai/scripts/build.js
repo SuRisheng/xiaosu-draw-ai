@@ -27,7 +27,7 @@ function readVersion() {
         throw new Error('SKILL.md not found. Unable to determine version.');
     }
     const content = fs.readFileSync(skillPath, 'utf-8');
-    const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!fmMatch) {
         throw new Error('SKILL.md missing YAML frontmatter (--- ... ---).');
     }
@@ -103,7 +103,7 @@ function copyDir(src, dest, exclude = []) {
 
 function validateFrontmatter(filePath) {
     const content = fs.readFileSync(path.join(SKILL_ROOT, filePath), 'utf-8');
-    const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!fmMatch) {
         return `SKILL.md missing YAML frontmatter (--- ... ---).`;
     }
