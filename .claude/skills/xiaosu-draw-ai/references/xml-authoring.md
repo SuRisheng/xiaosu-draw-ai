@@ -305,6 +305,8 @@ Inspired by drawio-skill `default.json`:
 
 ### Edge Simplicity (R006, R016–R018, R023, R025)
 
+**R067 — Explicit exit/entry points for special edges only:** For simple forward-flow edges (top→down center-to-center), the default connection is sufficient — do NOT add explicit `exitX`/`exitY`/`entryX`/`entryY`. Only specify them when: (a) **feedback loops** that exit/enter from the side per R066, (b) **branch edges** from decisions where N≥2 edges exit the same source (distribute per R045), or (c) **multi-entry** where N≥2 edges enter the same target from the same side. When explicit exit/entry IS used, the waypoint coordinates MUST match the computed point exactly: `wp.x = node.x + node.w × portX`, deviation >2px = R016 violation.
+
 **CRITICAL (R006):** Before adding ANY edge, verify the user described the relationship:
 - "X contains A, B, C" → do NOT add edges between A, B, C modules
 - "X calls Y" or "A → B" → add the described edge
@@ -363,6 +365,7 @@ Inspired by drawio-skill `default.json`:
 - **Single-connection nodes (R024)** should be placed directly adjacent to their peer, aligned on the edge axis. An actor that only connects to one service should sit right above/beside it, not at the opposite canvas edge.
 - **Axis alignment (R025):** Before placing nodes, check: are A and B connected by a horizontal edge? → same y-center. Connected by a vertical edge? → same x-center. Deviation ≤ 10px. Reorder siblings within a swimlane so connected nodes are adjacent — never let an edge pass through an unrelated node C between A and B.
 - **Arrow direction must match the visual flow.** A top→down edge ends with the arrow pointing down into the target's top edge; a left→right edge ends with the arrow pointing right into the target's left edge.
+- **Feedback/loopback edge routing (R066):** When an edge returns to an earlier step (retry loop, "不通过" branch, rejection path), route it on the **outside** of the main flow — not through the center. If the main flow is top→down, feedback edges should exit from the LEFT or RIGHT side of the source node and enter from the LEFT or RIGHT side of the target node. Use `dashed=1` to visually distinguish feedback from main flow. Choose the side with fewer existing edges/nodes to minimize crossings. **A feedback edge may share the same entryX/entryY as a forward edge when their approach directions differ** (e.g., a top-entering forward edge and a left-entering feedback edge both targeting `entryX=0.5;entryY=0` — the different approach paths make them visually distinct without collision).
 - **Proportional sizing (R027):** Actors ≈ `60×70`, services ≈ `150×50`. Sub-components may be narrower (`≥120`). Keep scale consistent across the diagram.
 - **Container fit (R026):** `swimlane_w = margin × 2 + Σ(child_w) + Σ(gap)`. Gap = 50px for unconnected (R032, default per R006) or 80px for connected (R031). Margin = 40px each side.
 

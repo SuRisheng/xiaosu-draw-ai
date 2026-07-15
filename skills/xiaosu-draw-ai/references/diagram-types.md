@@ -304,6 +304,8 @@
 - **Direction:** Top-to-bottom for main flow; branches expand left/right at decisions
 - Decision nodes branch left = "No", right = "Yes" (or vice versa, be consistent)
 - Keep the main path centered vertically
+- **Inter-row spacing:** Connected process→process: ≥**80px** edge-to-edge (center-to-center ≥ 130px for h=50 nodes). Decision→branch: ≥**100px**. Pipeline/branch group to next unified step: ≥**60px**.
+- **Feedback loops:** Route on the outside of the main column per R066. Side-routed feedback edges need ≥**60px** horizontal clearance from main-column nodes. Use `dashed=1` for visual distinction.
 
 ### Edges
 
