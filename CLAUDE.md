@@ -68,7 +68,7 @@
 | 改 AI 工作流 | `skills/xiaosu-draw-ai/SKILL.md` | Agent 工作流指令 |
 | 改打包流程 | `skills/xiaosu-draw-ai/scripts/build.js` | 打包构建 |
 | 加测试 | `tests/` | 测试用例 |
-| 改安装说明 | `README.md` + `README_CN.md` | 给人看的项目说明（英文 + 中文） |
+| 改安装说明 | `README.md` + `README_EN.md` | 给人看的项目说明（中文默认 + 英文） |
 
 ## 开发命令速查
 
@@ -150,8 +150,8 @@ python3 -m pytest tests/unit/ -v && \
 | references/ | 英文 | 开源社区惯例 |
 | templates/zh/ | 中文 | 目标用户中文描述 |
 | CLAUDE.md | 中文 | 开发者自己看 |
-| README.md | 英文 | 搜索可见性 |
-| README_CN.md | 中文 | 中文用户阅读 |
+| README.md | 中文 | 目标用户中文为主，GitHub 首页默认展示 |
+| README_EN.md | 英文 | 国际用户/搜索可见性，与中文版锚点互切 |
 
 ## 目录结构
 
@@ -170,10 +170,11 @@ xiaosu-draw-ai/
   .drawio/                   # 自举图与开发验证图
   .github/workflows/         # CI
   .claude/skills/             # 构建产物（勿手改）
-  doc/DESIGN.md               # 权威设计依据（本文件）
+  doc/DESIGN.md               # 权威设计依据
+  doc/img/                    # README 配图（示例图/风格图/对比图）
   CLAUDE.md                  # 开发指南（本文件）
-  README.md                  # 项目门面
-  README_CN.md               # 项目门面（中文）
+  README.md                  # 项目门面（中文，默认）
+  README_EN.md               # 项目门面（英文）
   CHANGELOG.md               # 变更历史
   LICENSE
 ```

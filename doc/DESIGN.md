@@ -252,7 +252,7 @@ Managed Agents 适配时的边界约束：
 | Skill 行为、工作流、按需加载表 | `skills/xiaosu-draw-ai/SKILL.md` |
 | 改什么动哪里（修改路由表）、开发命令、测试触发规则 | `CLAUDE.md` |
 | P0-P3 规则全集与检查阈值 | `skills/xiaosu-draw-ai/references/rules.md` |
-| 目录结构、安装与使用 | `README.md` / `README_CN.md` |
+| 目录结构、安装与使用 | `README.md`（中文）/ `README_EN.md`（英文） |
 | 变更历史 | `CHANGELOG.md` + git log |
 | 本文档旧版（含 Phase 0-5 实施路线、验收标准、目录结构详解、SKILL.md 编写规范、测试体系） | git 历史（2026-07-15 之前的 `doc/DESIGN.md`） |
 
