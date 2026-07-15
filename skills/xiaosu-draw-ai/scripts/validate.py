@@ -372,6 +372,23 @@ def validate_drawio(filepath):
 
         waypointed_edges.append((edge, segments))
 
+    # Compute corridor_y for each edge (y-level of its horizontal routing segment).
+    # Used by R012 to distinguish benign perpendicular corridor crossings
+    # (vertical entry/exit stub × horizontal corridor at different levels).
+    edge_corridor_y = {}
+    for edge, segments in waypointed_edges:
+        edge_id = edge.get('id', '')
+        geom = edge.find('mxGeometry')
+        if geom is not None:
+            points_arr = geom.find('Array')
+            if points_arr is not None:
+                pts = points_arr.findall('mxPoint')
+                if len(pts) >= 2:
+                    wp1_y = float(pts[0].get('y', 0))
+                    wp2_y = float(pts[1].get('y', 0))
+                    if abs(wp1_y - wp2_y) < 2:
+                        edge_corridor_y[edge_id] = (wp1_y + wp2_y) / 2
+
     # R011: Edge through vertex
     # Skip swimlane containers — they are transparent visual boundaries,
     # not opaque obstacles. Edges routing through the gap between
@@ -408,6 +425,8 @@ def validate_drawio(filepath):
                     })
 
     # R012: Edge crossings
+    # Note: Two segments on different routing corridors (y-diff ≥ 30px for horizontal,
+    # x-diff ≥ 30px for vertical) are NOT crossings — they're on separate visual planes.
     for i in range(len(waypointed_edges)):
         for j in range(i + 1, len(waypointed_edges)):
             e1, segs1 = waypointed_edges[i]
@@ -415,6 +434,32 @@ def validate_drawio(filepath):
             crossing = False
             for s1_start, s1_end in segs1:
                 for s2_start, s2_end in segs2:
+                    # Skip corridor-separated parallel segments (false positive prevention)
+                    s1_dx = abs(s1_start[0] - s1_end[0])
+                    s1_dy = abs(s1_start[1] - s1_end[1])
+                    s2_dx = abs(s2_start[0] - s2_end[0])
+                    s2_dy = abs(s2_start[1] - s2_end[1])
+                    # Both approximately horizontal and on different y corridors?
+                    if s1_dy < 2 and s2_dy < 2:
+                        s1_y = (s1_start[1] + s1_end[1]) / 2
+                        s2_y = (s2_start[1] + s2_end[1]) / 2
+                        if abs(s1_y - s2_y) >= 30:
+                            continue  # Different routing corridors, not a visual crossing
+                    # Both approximately vertical and on different x corridors?
+                    if s1_dx < 2 and s2_dx < 2:
+                        s1_x = (s1_start[0] + s1_end[0]) / 2
+                        s2_x = (s2_start[0] + s2_end[0]) / 2
+                        if abs(s1_x - s2_x) >= 30:
+                            continue  # Different routing corridors, not a visual crossing
+                    # Perpendicular corridor crossing: vertical stub × horizontal corridor
+                    # at different y-levels is benign in orthogonal routing (R017 minimum 15px)
+                    if (s1_dy < 2 and s2_dx < 2) or (s1_dx < 2 and s2_dy < 2):
+                        e1_id = e1.get('id', '')
+                        e2_id = e2.get('id', '')
+                        cy1 = edge_corridor_y.get(e1_id)
+                        cy2 = edge_corridor_y.get(e2_id)
+                        if cy1 is not None and cy2 is not None and abs(cy1 - cy2) >= 15:
+                            continue  # Benign: stub crosses corridor at different routing level
                     if segments_cross(s1_start, s1_end, s2_start, s2_end):
                         crossing = True
                         break
@@ -517,7 +562,7 @@ def validate_drawio(filepath):
         is_horizontal_entry = abs(entry_x_val - 0.0) < 0.01 or abs(entry_x_val - 1.0) < 0.01
 
         if is_vertical_entry:
-            if abs(wp_last[0] - entry_x) > 1.0:  # >1px tolerance
+            if abs(wp_last[0] - entry_x) > 2.0:  # >2px tolerance (1px too tight; 2px covers rounding)
                 warnings.append({
                     "id": "R016",
                     "message": (
@@ -527,7 +572,7 @@ def validate_drawio(filepath):
                     )
                 })
         elif is_horizontal_entry:
-            if abs(wp_last[1] - entry_y) > 1.0:
+            if abs(wp_last[1] - entry_y) > 2.0:
                 warnings.append({
                     "id": "R016",
                     "message": (

@@ -429,6 +429,14 @@ Read `references/xml-authoring.md`. For the matched diagram type, also reference
 
 Generate a valid `.drawio` XML file and write it to `.drawio/<diagram-name>.drawio`.
 
+**Portable file writing:** Use the **Write** tool to create the `.drawio` file directly. If the XML is generated programmatically (e.g., computed coordinates, bulk element creation), write a `.py` script with the Write tool first, then execute it:
+
+```bash
+python3 .drawio/generate_<diagram-name>.py
+```
+
+**Do NOT inline XML in bash heredoc or `python3 -c`** — XML special characters (`<`, `>`, `"`, `&`) will cause bash parsing failures, leading to repeated retries and wasted tokens. If a bash write attempt fails with a parse error, immediately switch to the Write-tool approach — do not retry the same method.
+
 **CRITICAL rules:**
 - **R006 — No invented edges:** Only add edges for relationships the user explicitly described. "X contains A, B, C" does NOT imply edges between A, B, C. Container-level edges (User → App) are acceptable when the user describes parts composing a system. A diagram without edges is correct; a diagram with invented edges is wrong. When in doubt, omit the edge.
 - File skeleton: `id="0"` and `id="1"` are root cells. User cells start from `id="2"`, incrementing.
