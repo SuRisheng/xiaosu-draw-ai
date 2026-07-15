@@ -27,6 +27,43 @@ R0XX | Priority | Category | Detection Method | Description
 
 ---
 
+## Rule Conflict Resolution (Meta-Rule)
+
+When multiple rules cannot be satisfied simultaneously, resolve in this order:
+
+1. **P0 > P1 > P2 > P3** — Hard priority. Never violate a higher tier for a lower one.
+2. **Within same tier: Structure > Spacing > Aesthetics**
+   - **Structure** (R039 container width, R029 same-row alignment, R025 axis alignment, R048 swimlane child positioning) — invariants that define the diagram's skeleton.
+   - **Spacing** (R031/R032 gap ranges, R065 edge alignment, R054 gap adjustment) — comfort and readability. Expand/ranges can stretch; structure cannot.
+   - **Aesthetics** (R028 equal margins, R038 sub-item fill) — visual polish. First to compromise.
+3. **When a higher-priority rule blocks a lower one**: Lock the higher-priority outcome, then approximate the lower-priority goal as close as constraints allow. Record any remaining deviation as a P2 warning.
+
+**Example application (6/7/6 layered architecture):**
+
+```
+R039 (structure, P1): All stacked swimlanes MUST have the same width.
+R065 (spacing, P2): Narrower layers SHOULD edge-align with the widest layer.
+R032 (spacing, P2): Same-row gap SHOULD be 10-50px (unconnected).
+
+Resolution:
+  1. Lock R039 → all swimlanes = max(w) = 1220px.
+  2. Approximate R065 → children left-aligned (x=40). Right margin absorbs the slack.
+  3. Approximate R032 → 6-col layers use gap=80px (>50px max). Close enough, not worth violating R039.
+  4. R028 (equal margins) → right margin differs from left. P2 warning, acceptable.
+```
+
+**Example application (no edges described):**
+
+```
+R006 (structure, P0): No edges without user-described relationships.
+R049 (spacing, P1): Direct path priority for edges.
+
+Resolution:
+  1. R006 blocks ALL edges → R049 does not apply. No conflict.
+```
+
+---
+
 ## P0 — Blocking (Exit Code 2)
 
 Rules that indicate structural corruption. **Must fix before proceeding.**
@@ -38,7 +75,7 @@ Rules that indicate structural corruption. **Must fix before proceeding.**
 | **R003** | **Parent-child breakage**: A cell's `parent` attribute references a cell `id` that does not exist. | `[validate.py]` | No |
 | **R004** | **XML syntax violation**: Illegal `--` inside XML comments, unescaped special characters (`<`, `>`, `&` in text content), or malformed tags. | `[validate.py]` | No |
 | **R005** | **Missing geometry**: A vertex `mxCell` lacks a child `<mxGeometry>` element, or an edge `mxCell` has a self-closing `<mxGeometry/>` instead of an expanded form. | `[validate.py]` | No |
-| **R006** | **Invented edge (no user-described relationship)**: An edge connects two modules that the user did NOT describe as having a relationship. When the user lists components ("X contains A, B, C" or "the system has X, Y, Z") without specifying which modules connect to which, do NOT add edges between individual modules. Only draw edges for relationships the user explicitly stated or that are unambiguously structural (e.g., a 3-tier architecture where the user says "frontend → backend → database"). Container-level relationships (User → App system, App → Cloud) are acceptable when the user describes the parts as composing a system. | `[AI 检测]` | No |
+| **R006** | **Invented edge (no user-described relationship)**: An edge connects two modules that the user did NOT describe as having a relationship. When the user lists components ("X contains A, B, C" or "the system has X, Y, Z") without specifying which modules connect to which, do NOT add edges between individual modules. Only draw edges for relationships the user explicitly stated or that are unambiguously structural (e.g., a 3-tier architecture where the user says "frontend → backend → database"). Container-level relationships (User → App system, App → Cloud) are acceptable when the user describes the parts as composing a system. **Enforcement**: Step 1.8 (Edge Existence Gate) in SKILL.md — scan for connection keywords before adding any edge. **Counter-example (actual violation)**: User said "第一层 HMI层 [6 components], 第二层 逻辑服务层 [7 components], 第三层 基础服务层 [6 components]" — only listed what each layer contains. No connection keywords (调用/连接/交互/依赖/→). Model added 6 edges (e.g., 播放器→播放控制服务, 首页推荐→内容推荐服务). All 6 were inventions. Correct output: 0 edges. The layer structure IS the diagram. | `[AI 检测]` + `SKILL.md Step 1.8 gate` | No |
 | **R007** | **CLI not found — install first, fall back only if declined (R042)**: Detect via `drawio --version` or `draw.io --version` or known install paths (`C:\Program Files\draw.io\` on Windows, `/Applications/draw.io.app/` on macOS). Only report "not found" if all checks fail. Then offer: Windows: `winget install JGraph.Draw` or drawio.com; macOS: `brew install --cask drawio`; Linux: `snap install drawio`. If declined → XML-only mode. | `[AI 检测]` | No |
 | **R008** | **Node.js missing — offer install, continue with degraded export (R043)**: When `node --version` fails, offer: Windows: `winget install OpenJS.NodeJS.LTS`; macOS/Linux: `brew install node` or nvm; all: nodejs.org. If declined: `export.js`, `mermaid-convert.js`, and `build.js` are unavailable. | `[AI 检测]` | No |
 | **R009** | **Python 3 missing — offer install, continue without validation (R044)**: When both `python3 --version` and `python --version` fail, offer: Windows: `winget install Python.Python.3.13`; macOS: `brew install python3`; Linux: `sudo apt install python3`; all: python.org. If declined: `validate.py` is unavailable — no structural lint. | `[AI 检测]` | No |
@@ -129,7 +166,7 @@ Rules that indicate suboptimal quality. **Recorded in validation output but do n
 | **R036** | **Cross-swimlane column width unification**: All modules across vertically stacked swimlanes sharing the same column layout MUST use the same width — the global `max(w)` of ALL modules across ALL swimlanes. Steps: (1) compute text-derived width for every module per R035; (2) take `W = max(all_widths)`, round to nearest 10; (3) apply W to every module; (4) choose gap per R006: if modules are edge-connected → R031 (80px), otherwise → R032 (50px); (5) recalculate swimlane width: `swimlane_w = margin × 2 + N_cols × W + (N_cols-1) × gap`. This ensures columns align vertically, eliminates right-side whitespace, and uses correct spacing for the connection context. Exception: if `max(w)/min(w) > 1.5`, use per-swimlane `max(w)`. | `[AI 检测]` |
 | **R065** | **Edge alignment for unequal column counts**: When vertically stacked swimlanes have DIFFERENT column counts (e.g., 6 vs 5), the first and last elements of the narrower layer MUST align with the first and last elements of the widest layer. This takes priority over R036 width unification — the narrower layer MAY use a different `W` and `gap` to achieve edge alignment while staying on the 10px grid. Procedure: (1) compute `edge_left = margin` and `edge_right = margin + N_max × W_max + (N_max-1) × gap_max` from the widest layer; (2) for narrower layers, find `W_narrow ≥ text_derived` and `gap_narrow ∈ [50, 80]` such that `edge_left + N_narrow × W_narrow + (N_narrow-1) × gap_narrow = edge_right`; (3) if no exact on-grid solution exists, use the closest approximation and distribute any leftover ≤5px evenly to the left/right margins. | `[AI 检测]` |
 | **R037** | **Swimlane header text fit**: A swimlane's width MUST satisfy `w ≥ max(derived_from_children, header_text_px + 30)`. The +30 accounts for: 20px collapse icon + 10px safety margin against font metric variance across OS. Header overflow is a P0 defect. | `[混合]` |
-| **R039** | **Stacked container dimension matching**: Vertically stacked containers (same column) MUST share the same **width** (`max(w)`). Side-by-side containers (same row) MUST share the same **height** (`max(h)`). Extra space is absorbed by the right/bottom margin. This gives architectural diagrams a clean, aligned silhouette. | `[AI 检测]` |
+| **R039** | **Stacked container dimension matching**: Vertically stacked containers (same column) MUST share the same **width** (`max(w)`). Side-by-side containers (same row) MUST share the same **height** (`max(h)`). Extra space is absorbed by the right/bottom margin. This gives architectural diagrams a clean, aligned silhouette. **Priority**: Structure (P1) — takes priority over R065 (edge alignment, P2) and R028 (equal margins, P2) when column counts differ. See Rule Conflict Resolution meta-rule. | `[validate.py]` | No |
 | **R038** | **Sub-item fill**: When a swimlane's width exceeds `Σ(children_max_w) + margins`, sub-items MUST fill proportionally: `item_w = max(text_derived_w, swimlane_w × 0.65)`. Then center: `x = (swimlane_w - item_w) / 2`. This prevents items from looking like lost islands in an oversized container. | `[AI 检测]` |
 | **R040** | **Container-child color contrast**: A swimlane container's header `fillColor` must be perceptibly different from its children's `fillColor`. When both derive from the same palette role, the header MUST use a darker variant (e.g., `#B0C4DE` header vs `#DAE8FC` children). Use a very light `swimlaneFillColor` (near-white tint, e.g., `#EDF2FA`) to provide subtle visual grouping — the body fill should be light enough that edges passing through remain visible. If cross-layer edges pass through the swimlane body, use an even lighter tint or omit `swimlaneFillColor` to avoid Z-order occlusion. See `styles/built-in/<style>.json` `shapes.container`. | `[validate.py]` | No |
 

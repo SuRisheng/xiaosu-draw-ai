@@ -423,6 +423,22 @@ State your plan to the user before generating. Example:
 
 5. **Gap spacing from core** — External elements must be ≥30px from the nearest container edge to leave room for the edge path (Type-C gap).
 
+### Step 1.8: Edge Existence Gate (R006 Hard Gate)
+
+**CRITICAL: Before writing ANY edge, determine whether the user described ANY connection relationships.** This is a binary decision gate, not a per-edge checklist.
+
+1. **Scan the user's input for connection keywords** (both ZH and EN):
+   - ZH: `调用` / `连接` / `交互` / `依赖` / `通信` / `→` / `请求` / `访问` / `读写`
+   - EN: `calls` / `connects` / `talks to` / `depends on` / `→` / `requests` / `accesses` / `reads/writes`
+
+2. **Decision**:
+   - **NO connection keyword found** → Diagram has **0 edges**. The layer/group structure IS the diagram. Skip all edge planning, routing, and Step 2.5. **Do NOT infer edges from layer ordering** ("HMI → Logic → Data" is a naming convention, not a user-stated relationship).
+   - **Connection keywords found** → List each edge with its matching keyword from the user's input. Omit any edge that cannot be cited. Proceed to edge planning.
+
+3. **R006 Hard Rule**: "X contains A, B, C" ≠ "A calls B". "Layer 1 (HMI), Layer 2 (Service), Layer 3 (Data)" ≠ "HMI→Service→Data". A diagram with 0 edges is correct; a diagram with invented edges is wrong. When in doubt, omit the edge.
+
+**This gate is the R006 enforcement mechanism.** Without it, R006 is advisory text that the model can overlook. With it, every edge must survive a binary filter.
+
 ### Step 2: Generate XML
 
 Read `references/xml-authoring.md`. For the matched diagram type, also reference `references/diagram-types.md` for type-specific presets. For the default color palette, read `styles/built-in/flat-icon.json` (or `styles/schema.json` for the schema).

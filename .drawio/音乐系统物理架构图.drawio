@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="Page-1" id="page-1">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="750" math="0" shadow="0" pageBgColor="#f8f6f3">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="2" value="音乐系统物理架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=20;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="350" y="20" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 1: HMI 层 ===== -->
+        <mxCell id="4" value="HMI 层" style="swimlane;startSize=30;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;rounded=1;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="1120" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="home 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="30" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="music 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="210" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="radio 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="390" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="search 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="570" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="player 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="750" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="profile 模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="4">
+          <mxGeometry x="930" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Edge L1 → L2 -->
+        <mxCell id="11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;strokeColor=#5a5a5a;" edge="1" parent="1" source="4" target="12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 2: 逻辑服务层 ===== -->
+        <mxCell id="12" value="逻辑服务层" style="swimlane;startSize=30;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;rounded=1;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="260" width="1120" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="PlaybackManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="30" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="SourceManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="180" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="AccountManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="330" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="VoiceControlService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="480" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="MediaSessionManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="630" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="RecommendService" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="780" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="SyncManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="12">
+          <mxGeometry x="930" y="42" width="130" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Edge L2 → L3 -->
+        <mxCell id="20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;strokeWidth=2;strokeColor=#5a5a5a;" edge="1" parent="1" source="12" target="21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== LAYER 3: 基础服务层 ===== -->
+        <mxCell id="21" value="基础服务层" style="swimlane;startSize=30;fillColor=#f4e4c1;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;rounded=1;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="1120" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="Retrofit+OkHttp" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="30" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="Room+EncryptedSP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="210" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="ExoPlayer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="390" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="25" value="AudioManager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="570" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="26" value="AIDL+MediaSession" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="750" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="27" value="Glide" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;arcSize=8;" vertex="1" parent="21">
+          <mxGeometry x="930" y="42" width="150" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

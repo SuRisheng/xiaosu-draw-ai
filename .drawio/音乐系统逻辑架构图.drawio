@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0" type="device">
+  <diagram name="Page-1" id="page-1">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="750" math="0" shadow="0" pageBgColor="#f8f6f3">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="音乐系统逻辑架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=18;fontStyle=1;fontColor=#1a1a1a;" parent="1">
+          <mxGeometry x="500" y="20" width="400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="HMI层" style="swimlane;startSize=30;fillColor=#c4d8eb;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="1220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="首页推荐" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="40" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="音乐浏览" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="240" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="电台浏览" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="440" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="搜索页" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="640" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="播放器" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="840" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="个人中心" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="3">
+          <mxGeometry x="1040" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="逻辑服务层" style="swimlane;startSize=30;fillColor=#c4d8eb;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="40" y="300" width="1220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="播放控制服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="40" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="信源管理服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="210" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="账号管理服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="380" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="语音交互服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="550" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="桌面联动服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="720" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="内容推荐服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="890" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="数据同步服务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#a8c5e6;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="10">
+          <mxGeometry x="1060" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="18" value="基础服务层" style="swimlane;startSize=30;fillColor=#c4d8eb;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=14;fontStyle=1;fontColor=#1a1a1a;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="1220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="19" value="网络通信" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="40" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="20" value="数据持久化" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="240" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="媒体播放引擎" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="440" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="音频焦点管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="640" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="IPC通信" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="840" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="图片加载" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#9dd4c7;strokeColor=#4a4a4a;strokeWidth=2;shadow=1;fontFamily=Helvetica;fontSize=13;fontColor=#1a1a1a;" vertex="1" parent="18">
+          <mxGeometry x="1040" y="45" width="120" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

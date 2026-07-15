@@ -87,7 +87,7 @@ Every `.drawio` file follows this exact structure:
 <?xml version="1.0" encoding="UTF-8"?>
 <mxfile host="drawio" version="26.0.0" type="device">
   <diagram name="Page-1" id="page-1">
-    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="810" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0" pageBgColor="#ffffff">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -103,6 +103,7 @@ Every `.drawio` file follows this exact structure:
 - `id="1"` — default parent layer. All top-level shapes use `parent="1"`.
 - User cells **must** use `id` starting from `"2"`, incrementing sequentially.
 - Never skip IDs or use non-sequential numbers.
+- `pageBgColor` — sets the diagram background color. When applying style presets (e.g., Claude Official `#f8f6f3`, Dark Terminal `#1e1e1e`), set this attribute to the style's background value. Default: `#ffffff`.
 
 ---
 
@@ -118,7 +119,7 @@ Every shape node must have an **expanded** `<mxGeometry>` child element:
 
 **Required attributes:**
 - `id` — unique numeric string, starting from `"2"`
-- `value` — display label (supports `&lt;br&gt;` for line breaks)
+- `value` — display label. **HTML tags in value MUST be XML-escaped**: `<br>` → `&amp;lt;br&amp;gt;`, `<b>` → `&amp;lt;b&amp;gt;`, `<font>` → `&amp;lt;font&amp;gt;`. Writing unescaped `<br>` directly triggers R004 XML parse errors. For line breaks, use `&amp;lt;br&amp;gt;` (i.e., `&lt;br&gt;` in the raw XML).
 - `style` — semicolon-separated key=value pairs (see Shape Styles below)
 - `vertex="1"` — marks this as a shape
 - `parent` — `"1"` for top-level, or container's `id` for nested shapes

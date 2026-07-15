@@ -784,6 +784,92 @@ def validate_drawio(filepath):
                 })
                 break  # One warning per swimlane is enough
 
+    # ── P1: R039 — Stacked Container Dimension Matching ──
+    # Vertically stacked swimlanes (same x, different y) MUST share the same width.
+    # This is P1 (blocking) because width inconsistency breaks visual alignment.
+
+    # Collect all swimlanes (top-level, parent="1")
+    swimlanes = {}
+    for vertex in all_vertices:
+        vstyle = vertex.get('style', '')
+        if 'swimlane' not in vstyle:
+            continue
+        if vertex.get('parent', '') != '1':
+            continue
+        geom = parse_geometry(vertex)
+        if geom is None:
+            continue
+        vid = vertex.get('id', '?')
+        x, y, w, h = geom
+        swimlanes[vid] = (x, y, w, h)
+
+    # Group swimlanes by x-position (stacked = same x-coordinate within 5px tolerance)
+    # This handles multiple columns of stacked containers independently.
+    x_groups = defaultdict(list)
+    for vid, (sx, sy, sw, sh) in swimlanes.items():
+        # Find the closest x-group (within 5px)
+        matched = False
+        for gx in list(x_groups.keys()):
+            if abs(sx - gx) <= 5:
+                x_groups[gx].append((vid, sx, sy, sw, sh))
+                matched = True
+                break
+        if not matched:
+            x_groups[sx].append((vid, sx, sy, sw, sh))
+
+    # For each vertical stack, enforce uniform width
+    for gx, group in x_groups.items():
+        if len(group) < 2:
+            continue  # Single swimlane — nothing to match
+        widths = [sw for (_, _, _, sw, _) in group]
+        max_w = max(widths)
+        # Check if any swimlane is wider than group max by more than 2px tolerance
+        # (max_w is the reference; all must match)
+        for vid, sx, sy, sw, sh in group:
+            if abs(sw - max_w) > 2:
+                errors.append({
+                    "id": "R039",
+                    "message": (
+                        f"Stacked container dimension mismatch: swimlane id='{vid}' "
+                        f"width={sw:.0f}px, but peer swimlane(s) in same column "
+                        f"use width={max_w:.0f}px. Vertically stacked containers "
+                        f"MUST share the same width (max(w)). Unify all to {max_w:.0f}px."
+                    )
+                })
+
+    # P2: R039 — Side-by-side containers (same y) SHOULD share the same height
+    # This is P2 (warning) because side-by-side containers at the same y
+    # may be independent entities (e.g., class diagram swimlanes) with
+    # naturally different content heights. Vertical stacking width is the
+    # stronger invariant (P1).
+    y_groups = defaultdict(list)
+    for vid, (sx, sy, sw, sh) in swimlanes.items():
+        matched = False
+        for gy in list(y_groups.keys()):
+            if abs(sy - gy) <= 5:
+                y_groups[gy].append((vid, sx, sy, sw, sh))
+                matched = True
+                break
+        if not matched:
+            y_groups[sy].append((vid, sx, sy, sw, sh))
+
+    for gy, group in y_groups.items():
+        if len(group) < 2:
+            continue
+        heights = [sh for (_, _, _, _, sh) in group]
+        max_h = max(heights)
+        for vid, sx, sy, sw, sh in group:
+            if abs(sh - max_h) > 2:
+                warnings.append({
+                    "id": "R039",
+                    "message": (
+                        f"Side-by-side container dimension mismatch: swimlane id='{vid}' "
+                        f"height={sh:.0f}px, but peer swimlane(s) in same row "
+                        f"use height={max_h:.0f}px. Horizontally adjacent containers "
+                        f"SHOULD share the same height (max(h)). Consider unifying to {max_h:.0f}px."
+                    )
+                })
+
     return {"errors": errors, "warnings": warnings}
 
 
@@ -793,6 +879,7 @@ def compute_score(results):
     weights = {
         "R011": 20,  # Edge through vertex
         "R012": 10,  # Edge crossing
+        "R039": 8,   # Stacked container dimension mismatch
         "R010": 5,   # Overlapping
         "R020": 1,   # Off-grid
         "R021": 2,   # Non-centered connection
