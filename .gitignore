@@ -31,3 +31,6 @@ desktop.ini
 
 # Test temp files
 /tmp/
+
+# Temp workspace (Feishu doc backups etc.)
+/.tmp/
