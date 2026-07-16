@@ -17,11 +17,10 @@ flowchart TD
     C --> D[抽取 IR 中间表示]
     D --> E[用户确认]
     E --> F{router 选择管道}
-    F -->|有源文件| G[管道 A: 数据导入]
-    F -->|结构优先型| H[管道 B: Mermaid 转换]
-    F -->|布局优先型| I[管道 C: AI 手写 XML]
-    G --> J[references/ 提供生成规则]
-    H --> J
+    F -->|结构优先型| G[管道 B: Mermaid 转换]
+    F -->|布局优先型| H[管道 C: AI 手写 XML]
+    G --> I[references/ 提供生成规则]
+    H --> I
     I --> J
     J --> K[scripts/ 执行验证与导出]
     K --> L[交付: .drawio + PNG/SVG/PDF]
@@ -32,7 +31,7 @@ flowchart TD
 1. **以 `SKILL.md` 为产品核心**，不是以架构文档为核心。
 2. **以可执行规则替代概念描述**，每条规则都要能指导 Agent 下一步动作。
 3. **以安装边界和平台边界消除误导**，不写虚构安装命令，不把不同形态的 Skill/Agent 混为一谈。
-4. **以 IR（中间表示）作为三管道粘合层**，让自然语言、Mermaid、数据导入器、XML 生成共享同一套质量流程。
+4. **以 IR（中间表示）作为粘合层**，让自然语言、Mermaid 转换、XML 生成共享同一套质量流程。
 5. **以质量门禁作为不可跳过的流程**，而不是"生成完后顺手检查"。
 
 ---
@@ -60,8 +59,8 @@ flowchart LR
 | 层 | 职责 | 核心落点 |
 |----|------|---------|
 | L1 意图层 | 自然语言 → 模板引导 → 抽取 IR → 人审核 | `templates/*.md` |
-| L2 路由层 | IR → 判断管道 A/B/C | `SKILL.md`（路由决策树） |
-| L3 生成层 | A: importer→IR→XML；B: Mermaid→CLI 转换；C: AI 手写 XML | `scripts/`、`references/` |
+| L2 路由层 | IR → 判断管道 B/C | `SKILL.md`（路由决策树） |
+| L3 生成层 | B: Mermaid→CLI 转换；C: AI 手写 XML | `scripts/`、`references/` |
 | L4 质量层（不可跳过） | validate.py（P0-P2）→ audit.js（P3）→ AI 视觉审计 | `scripts/validate.py`、`scripts/audit.js`、`references/visual-audit.md` |
 | L5 交付层 | CLI 导出 → 源文件 + PNG/SVG/PDF → [飞书嵌入] | `scripts/export.js`、`references/output-format-gate.md` |
 
@@ -79,17 +78,18 @@ flowchart LR
 
 | 管道 | 输入 | 适用场景 | 输出 | 核心风险 |
 |------|------|---------|------|---------|
-| A：Data-driven | SQL / OpenAPI / Terraform / K8s / 代码 | 用户已有可解析源文件 + importer 已实现 | IR → XML | 导入器解析不完整 |
 | B：Mermaid | 自然语言 → Mermaid | 时序图、ER、类图、状态机等结构优先图 | `.mmd` → `.drawio` | 样式控制弱，依赖 CLI ≥ v30 |
 | C：Hand-written XML | 自然语言 / 结构化 IR | 架构图、部署图、流程图、C4、网络拓扑 | `.drawio` XML | 坐标、边、视觉质量易出错 |
 
-决策树把"数据来源"和"渲染方式"解耦：
+> 用户提供 SQL/OpenAPI 等源文件时，若 `scripts/importers/` 下有对应 importer，用它辅助解析数据结构，然后走管道 C 生成。没有自动化 IR→XML 路径。
+
+决策树：
 
 ```mermaid
 flowchart TD
     A[用户请求画图] --> B{给了可解析源文件？}
-    B -->|是: SQL/OpenAPI/Terraform/K8s| C{已有对应 importer？}
-    C -->|有| D[管道 A: importer 提取 IR]
+    B -->|是: SQL/OpenAPI| C{有对应 importer？}
+    C -->|有| D[importer 辅助解析 → 管道 C]
     C -->|无| E[读取文件内容]
     E --> F[走模板澄清]
     F --> G{图类型？}
@@ -119,7 +119,7 @@ flowchart TD
 
 没有 IR，A/B/C 只是三套互不相干的实现。IR 同时服务四件事：用户确认（把 Agent 的理解展示出来）、importer 统一输出、B/C 共同消费、结构化 diff 与测试比较。
 
-Base IR 骨架（完整 schema、sequence/ER 等图类型扩展见 `references/pipeline-a-authoring.md`，契约测试见 `tests/unit/test_ir_schema.js`）：
+Base IR 骨架（契约测试见 `tests/unit/test_ir_schema.js`）：
 
 ```json
 {
@@ -188,7 +188,7 @@ exit code 集中定义（`validate.py --help`、`references/rules.md`、`audit.j
 | 与旧 drawio 工程关系 | **完全独立新工程** | P0-P3 规则 / validate / 嵌入参考但重写 | — |
 | 质量脚本 | **validate.py + audit.js 双脚本** | validate.py = 结构正确性（P0-P2，Python XML 解析）；audit.js = 视觉质量启发式（P3）+ 聚合 wrapper | 两脚本职责边界长期模糊 → 合并或重新划界 |
 | 管道 B 路由 | 结构优先型**默认 Mermaid**；"漂亮/精美"→ 降级管道 C | Mermaid 结构稳定优先级高；视觉美化走手写 XML | draw.io CLI < v30 → 自动降级管道 C |
-| 管道 A 路由 | 用户**提供可解析源文件**且**对应 importer 已实现**时触发 | 数据来源决定结构怎么来 | 无对应 importer → 读取文件内容走模板澄清，进 B/C |
+| 源文件处理 | 用户**提供 SQL/OpenAPI** 且对应 importer 存在时，importer 辅助解析结构 → 走管道 C 生成 | importer 是数据解析辅助，不是独立管道 | 无对应 importer → 读取文件内容走模板澄清 |
 | styles/ 定位 | **完整生成参数集**（palette/roles/shapes/font/edges/extras） | AI 查表决定所有 style 属性，而非凭感觉配色 | — |
 | 版本源 | **SKILL.md frontmatter 为唯一版本源**（已实施） | Skill 包的天然元数据入口；不依赖"人工记得同步" | 保留 VERSION 则 build 强校验一致，二选一 |
 | SKILL.md 语言 | **英文** | token 效率高、全球 Agent 兼容、开源社区惯例 | — |
@@ -280,7 +280,6 @@ skills/xiaosu-draw-ai/
 │   ├── diagram-types.md              # 10 类图预设：组件→role 映射 + 形状/布局/边语义（色值从 style JSON 查表）
 │   ├── xml-authoring.md              # Pipeline C：XML 著述规范 + Content-First 7 步流水线
 │   ├── mermaid-authoring.md          # Pipeline B：Mermaid 语法 → CLI 转换 + 降级策略
-│   ├── pipeline-a-authoring.md       # Pipeline A：importer API + IR schema 契约
 │   ├── icons.md                      # 60+ 产品品牌色 + 图标映射
 │   ├── output-format-gate.md               # 交付前必查：目标平台 → 输出格式决策矩阵（Mermaid vs PNG）
 │   ├── article-diagram-embedding.md  # 模板驱动文档生成 + @xiaosu-draw-ai 标注
@@ -316,10 +315,10 @@ skills/xiaosu-draw-ai/
     ├── build.js                      # 打包构建（读版本 → 校验完整性 → 输出 .claude/skills/）
     ├── install.js                    # 跨平台安装助手
     ├── utils.js                      # 公共工具（路径/版本/二进制检测）
-    └── importers/                    # Pipeline A 导入器
+    └── importers/                    # 数据解析辅助（非独立管道）
         ├── ir-importer.js            #    IR 导入器接口
-        ├── sql2er.js                 #    SQL DDL → ER 图
-        └── openapi2arch.js           #    OpenAPI → 架构图
+        ├── sql2er.js                 #    SQL DDL 解析 → AI 手写 ER 图
+        └── openapi2arch.js           #    OpenAPI 解析 → AI 手写架构图
 ```
 
 ### 颜色查表链（核心机制）
@@ -352,7 +351,6 @@ flowchart LR
         SP[style-presets.md<br/>role→palette 查表协议]
         XA[xml-authoring.md<br/>XML 规范 + Content-First]
         MA[mermaid-authoring.md]
-        PA[pipeline-a-authoring.md]
         IC[icons.md]
     end
     subgraph Validate[Validate 阶段]

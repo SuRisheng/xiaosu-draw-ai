@@ -19,7 +19,7 @@ metadata: {"hermes":{"tags":["drawio","diagram","architecture","flowchart","visu
 # xiaosu-draw-ai
 
 Generate `.drawio` XML files and export to PNG/SVG/PDF using the native draw.io desktop CLI.
-Pipeline C (AI hand-writes XML) is the active path with full quality gates, templates, and visual audit. Pipeline B (Mermaid conversion) and Pipeline A (data-driven importers) are planned for later phases.
+Two active pipelines: C (AI hand-writes XML, full quality gates) and B (Mermaid conversion for structure-first diagrams).
 
 ## When to Use
 
@@ -87,7 +87,7 @@ The agent MUST:
    - **Decline** → Only then fall back to "XML-only mode": generate `.drawio` XML, skip export steps, and tell the user they can open the file in draw.io desktop or https://app.diagrams.net/.
    - **Already installed elsewhere** → The user provides the path; use it directly.
 
-**This rule applies to every entry point** (Pipeline A/B/C) and every interaction (new diagram, modify existing, export). Without CLI, preview export and visual self-check (Steps 4-5) are impossible — the quality gate is degraded. The agent must inform the user of this trade-off when they decline installation.
+**This rule applies to every entry point** (Pipeline B/C) and every interaction (new diagram, modify existing, export). Without CLI, preview export and visual self-check (Steps 4-5) are impossible — the quality gate is degraded. The agent must inform the user of this trade-off when they decline installation.
 
 > **Why this matters:** The draw.io CLI enables PNG/SVG/PDF export with embedded XML (`--final` mode), Mermaid conversion (Pipeline B, requires ≥ v30), and visual self-check (Steps 4-5). Without it, the skill can only produce raw XML — no preview, no visual quality audit, no final export.
 
@@ -140,7 +140,6 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `templates/en/<type>.md` | User describes a diagram in English — guided discovery questions and constraints |
 | `references/xml-authoring.md` | Hand-writing `.drawio` XML (every Pipeline C generation) |
 | `references/mermaid-authoring.md` | Writing Mermaid `.mmd` for Pipeline B conversion |
-| `references/pipeline-a-authoring.md` | Implementing or using data-driven importers (Pipeline A) |
 | `references/style-presets.md` | Understanding style lookup protocol (role→palette, edge kind→edge style) |
 | `styles/schema.json` | Understanding the JSON schema for style presets |
 | `styles/built-in/<style>.json` | Applying a specific style during Step 2 — read the matching preset JSON |
@@ -218,8 +217,10 @@ User requests a diagram or modification
   ├─ Did the user provide a parseable source file?
   │     (SQL DDL, OpenAPI spec, Terraform, K8s YAML, Docker Compose, code class definitions)
   │
-  │    ├─ YES → Is there a matching importer?
-  │    │      ├─ YES → Pipeline A (importer extracts IR)
+  │    ├─ YES → Is there a matching importer in `scripts/importers/`?
+  │    │      ├─ YES → Read the importer code to understand the structure,
+  │    │      │        then proceed to Pipeline C (AI writes XML). The importer
+  │    │      │        helps parse the source — it does NOT auto-generate XML.
   │    │      └─ NO  → Read file content → template-guided discovery → Pipeline B/C
   │    │
   │    └─ NO → Continue
@@ -242,7 +243,9 @@ User requests a diagram or modification
 
 > **Visual quality requests** ("精美", "beautiful", "professional", "keynote-ready") affect how rendering is done, not how structure is extracted. A "beautiful architecture diagram" is still Pipeline C — just with a more suitable style preset. A "beautiful sequence diagram" downgrades from Pipeline B to C.
 >
-> **Multi-condition overlap**: When the user provides both code AND a diagram type AND visual requirements, data source takes priority: extract structure via Pipeline A, then decide rendering (B or C) separately.
+> **Multi-condition overlap**: When the user provides both code/SQL/OpenAPI AND a diagram
+> type AND visual requirements, use the matching importer (if available) to extract
+> structure, then proceed to Pipeline B or C for rendering.
 
 ## Template-Driven Document Generation
 
@@ -611,10 +614,13 @@ Same as Pipeline C Step 6. Apply Output Format Decision (see global section) bef
 
 ---
 
-## Workflow A: Data-Driven (Phase 4, planned)
+## Data-Driven Source Files
 
-For users who provide parseable source files (SQL DDL, OpenAPI, Terraform, K8s YAML, code classes).
-Read `references/pipeline-a-authoring.md` for importer API and IR schema.
+When the user provides a parseable source file (SQL DDL, OpenAPI spec) and a matching
+importer exists in `scripts/importers/`, read the importer code to parse the source structure.
+The importer helps extract nodes and relationships from the source — then proceed to
+Pipeline C (AI hand-writes XML) for actual diagram generation. There is no automated
+IR→XML pipeline; the importer is a data-parsing assistant, not a diagram generator.
 
 ---
 
@@ -631,7 +637,7 @@ Quality gates are **mandatory, not optional**. Every diagram must pass validatio
 
 **Repair limit**: Maximum 3 validate.py repair attempts. If still failing, report remaining issues to user and ask whether to proceed.
 
-**All three pipelines enter the same gate.** Regardless of whether the diagram was generated via Pipeline A (importers), B (Mermaid conversion), or C (hand-written XML), the output `.drawio` file must pass validate.py, export a preview, and undergo visual self-check before delivery.
+**All three pipelines enter the same gate.** Regardless of whether the diagram was generated via Pipeline B (Mermaid conversion) or C (hand-written XML), the output `.drawio` file must pass validate.py, export a preview, and undergo visual self-check before delivery.
 
 For detailed P3 rules (R030–R039), see `references/visual-audit.md` — a decision table with "what to look for → how to fix → XML example" for each rule.
 
@@ -639,7 +645,7 @@ For detailed P3 rules (R030–R039), see `references/visual-audit.md` — a deci
 
 ## Output Format Decision（交付前必查，全管道通用）
 
-**Before delivering any diagram — regardless of Pipeline A/B/C — determine the target platform and choose the correct output format. This is a mandatory gate, not a suggestion.**
+**Before delivering any diagram — regardless of Pipeline B/C — determine the target platform and choose the correct output format. This is a mandatory gate, not a suggestion.**
 
 Read `references/output-format-gate.md` for the full platform matrix. Quick reference:
 
@@ -664,7 +670,7 @@ Diagram generated (any pipeline)
   │   │   │         + .drawio PNG as backup
   │   │   └─ NO  → Deliver PNG as primary artifact
   │   │             Keep .mmd source for future edits — ALWAYS
-  │   └─ NO  (Pipeline A/C — no Mermaid source)
+  │   └─ NO  (Pipeline C — no Mermaid source)
   │         → Deliver PNG + .drawio source
   │
   └─ Common mistake: Exporting Mermaid as PNG for Feishu Wiki
@@ -682,7 +688,7 @@ After delivering the draft diagram in the correct format:
 
 1. **Show** the deliverable to the user (Mermaid code block or PNG depending on platform).
 2. **Collect** feedback — the user may request label changes, layout adjustments, or component additions.
-3. **Apply** edits (edit `.mmd` source for Mermaid, edit XML for Pipeline C, re-extract for Pipeline A).
+3. **Apply** edits (edit `.mmd` source for Mermaid, edit XML for Pipeline C).
 4. **Re-validate** after each edit with `python3 scripts/validate.py`.
 5. **Re-deliver** in the same format as determined by the Output Format Decision.
 6. **Repeat** until the user approves or 5 revision rounds are reached.
