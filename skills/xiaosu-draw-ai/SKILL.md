@@ -445,13 +445,16 @@ Read `references/xml-authoring.md`. For the matched diagram type, also reference
 
 Generate a valid `.drawio` XML file and write it to `.drawio/<diagram-name>.drawio`.
 
-**Portable file writing:** Use the **Write** tool to create the `.drawio` file directly. If the XML is generated programmatically (e.g., computed coordinates, bulk element creation), write a `.py` script with the Write tool first, then execute it:
+**Portable file writing:** Write the `.drawio` file using your platform's file-creation
+mechanism (e.g., Write tool, `write_file`, `edit_file` — whichever your Agent provides).
+If the XML is generated programmatically (e.g., computed coordinates, bulk element creation),
+write a `.py` script first, then execute it:
 
 ```bash
 python3 .drawio/generate_<diagram-name>.py
 ```
 
-**Do NOT inline XML in bash heredoc or `python3 -c`** — XML special characters (`<`, `>`, `"`, `&`) will cause bash parsing failures, leading to repeated retries and wasted tokens. If a bash write attempt fails with a parse error, immediately switch to the Write-tool approach — do not retry the same method.
+**Do NOT inline XML in bash heredoc or `python3 -c`** — XML special characters (`<`, `>`, `"`, `&`) will cause bash parsing failures, leading to repeated retries and wasted tokens. If a bash write attempt fails with a parse error, immediately switch to file-creation via your platform's mechanism — do not retry the same method.
 
 **CRITICAL rules:**
 - **R006 — No invented edges:** Only add edges for relationships the user explicitly described. "X contains A, B, C" does NOT imply edges between A, B, C. Container-level edges (User → App) are acceptable when the user describes parts composing a system. A diagram without edges is correct; a diagram with invented edges is wrong. When in doubt, omit the edge.
@@ -724,21 +727,26 @@ When the user approves, proceed to final export.
 
 ## Installation Notes
 
-The skill is installed by copying/linking the entire `skills/xiaosu-draw-ai/` directory into the agent's skills directory. **Do NOT copy only `SKILL.md`** — `references/`, `scripts/`, `styles/`, and `templates/` must be colocated.
+The skill is installed by copying/linking the entire `skills/xiaosu-draw-ai/` directory into
+your agent's skills directory (`$SKILLS_DIR`). **Do NOT copy only `SKILL.md`** —
+`references/`, `scripts/`, `styles/`, and `templates/` must be colocated.
+
+Agent-specific skill directories:
+- **Claude Code**: `~/.claude/skills/`
+- **Codex / OpenAI**: `~/.codex/skills/` (or platform-configured path)
+- **Other agents**: Consult your agent's documentation for the skills directory location
 
 **Development install (symlink, changes take effect immediately):**
 ```bash
 # macOS / Linux
-ln -s "$(pwd)/skills/xiaosu-draw-ai" ~/.claude/skills/xiaosu-draw-ai
-```
+ln -s "$(pwd)/skills/xiaosu-draw-ai" "$SKILLS_DIR/xiaosu-draw-ai"
 
-```cmd
-REM Windows (cmd, requires admin or Developer Mode)
-mklink /D "%USERPROFILE%\.claude\skills\xiaosu-draw-ai" "<repo>\skills\xiaosu-draw-ai"
+# Windows (cmd, requires admin or Developer Mode)
+mklink /D "%SKILLS_DIR%\xiaosu-draw-ai" "<repo>\skills\xiaosu-draw-ai"
 ```
 
 **Release install (from built package):**
 ```bash
-cp -r ./.claude/skills/xiaosu-draw-ai ~/.claude/skills/xiaosu-draw-ai
+cp -r ./.claude/skills/xiaosu-draw-ai "$SKILLS_DIR/xiaosu-draw-ai"
 ```
 
