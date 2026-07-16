@@ -445,7 +445,7 @@ xiaosu-draw-ai/
 │   ├── references/                   # 12 on-demand rule documents
 │   ├── templates/                    # 20 prompt templates (zh/ + en/)
 │   ├── styles/                       # Schema + 7 built-in JSON presets
-│   ├── scripts/                      # 12 scripts (validate, export, build, etc.)
+│   ├── scripts/                      # 13 scripts (validate, export, build, importers, etc.)
 │   └── data/                         # Reserved structured data
 │
 ├── tests/                            # L0-L2 test suite

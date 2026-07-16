@@ -457,7 +457,7 @@ xiaosu-draw-ai/
 │   ├── references/                   # 12 份按需加载规则文档
 │   ├── templates/                    # 20 个中英文提示词模板
 │   ├── styles/                       # JSON Schema + 7 套内置预设
-│   ├── scripts/                      # 12 个脚本（校验、导出、构建等）
+│   ├── scripts/                      # 13 个脚本（校验、导出、构建、数据解析等）
 │   └── data/                         # 结构化数据索引（预留）
 │
 ├── tests/                            # L0-L2 测试套件
