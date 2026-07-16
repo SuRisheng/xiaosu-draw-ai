@@ -14,7 +14,7 @@
 
 ## About
 
-xiaosu-draw-ai is an AI-powered diagramming skill that turns natural language into editable `.drawio` files. Based on the draw.io desktop CLI, it supports **10 diagram types** across **3 rendering pipelines**: data-driven importers (SQL → ER, OpenAPI → architecture), Mermaid conversion (`.mmd` → `.drawio`), and AI hand-written XML (full layout control). Every diagram passes through **mandatory quality gates**: structural validation (P0-P2), heuristic visual audit (P3), and AI visual self-check.
+xiaosu-draw-ai is an AI-powered diagramming skill that turns natural language into editable `.drawio` files. Based on the draw.io desktop CLI, it supports **10 diagram types** across **2 rendering pipelines**: Mermaid conversion (`.mmd` → `.drawio`) and AI hand-written XML (full layout control). Every diagram passes through **mandatory quality gates**: structural validation (P0-P2), heuristic visual audit (P3), and AI visual self-check.
 
 The skill ships as a single directory — copy or symlink into any agent's skills directory. No API keys, no platform lock-in. Output is standard `.drawio` XML, editable in draw.io desktop, VS Code, or any MXGraph editor.
 
@@ -25,7 +25,7 @@ The skill ships as a single directory — copy or symlink into any agent's skill
 | Feature | Description |
 |---------|-------------|
 | **Natural Language → Diagram** | Describe in Chinese or English; 10 diagram types with 20 guided prompt templates |
-| **3 Auto-Routed Pipelines** | A: data-driven imports (SQL→ER, OpenAPI→arch); B: Mermaid conversion (`.mmd`→`.drawio`, source preserved); C: AI hand-writes XML (full visual control) |
+| **2 Auto-Routed Pipelines** | B: Mermaid conversion (`.mmd`→`.drawio`, source preserved); C: AI hand-writes XML (full visual control). SQL/OpenAPI sources use importers as parsing helpers → Pipeline C |
 | **7 Visual Styles** | Flat Icon (default), Dark Terminal, Blueprint, Notion Clean, Glassmorphism, Claude Official, OpenAI — with 7 semantic arrow kinds |
 | **P0-P3 Quality Gates** | Auto structural check + heuristic visual audit + AI self-check; preview/final export separation; max 3 auto-repair rounds |
 | **Modify Existing Diagrams** | Edit `.mmd` source → re-convert; parse `.drawio` XML → targeted edit; extract embedded XML from `.drawio.png`; auto-search by name; in-document Mermaid block editing |
@@ -442,10 +442,10 @@ xiaosu-draw-ai/
 │
 ├── skills/xiaosu-draw-ai/            # The Skill package
 │   ├── SKILL.md                      # Agent workflow entry point
-│   ├── references/                   # 15 on-demand rule documents
+│   ├── references/                   # 12 on-demand rule documents
 │   ├── templates/                    # 20 prompt templates (zh/ + en/)
 │   ├── styles/                       # Schema + 7 built-in JSON presets
-│   ├── scripts/                      # 13 scripts (validate, export, build, etc.)
+│   ├── scripts/                      # 12 scripts (validate, export, build, etc.)
 │   └── data/                         # Reserved structured data
 │
 ├── tests/                            # L0-L2 test suite

@@ -25,7 +25,7 @@ Skill 以单个目录打包分发——复制或符号链接到任意 Agent 的 
 | 功能 | 说明 |
 |------|------|
 | **自然语言制图** | 中/英文描述即可，支持 10 种图类型，含 20 个中英文引导模板 |
-| **三管道自动路由** | A：数据驱动导入（SQL→ER / OpenAPI→架构）；B：Mermaid 转换（.mmd→.drawio，源码保留）；C：AI 手写 XML（布局全控） |
+| **双管道自动路由** | B：Mermaid 转换（.mmd→.drawio，源码保留）；C：AI 手写 XML（布局全控）。SQL/OpenAPI 源文件走 importer 辅助解析 → 管道 C |
 | **7 套视觉风格** | Flat Icon（默认）/ Dark Terminal / Blueprint / Notion Clean / Glassmorphism / Claude Official / OpenAI，含 7 种语义箭头 |
 | **P0-P3 质量门禁** | 自动结构校验 + 视觉审计 + AI 自检，预览/最终导出分离，最多 3 轮自动修复 |
 | **已有图增量修改** | .mmd 源编辑→重新转换；.drawio XML 解析→精确编辑；.drawio.png 提取嵌入 XML；Agent 按名自动搜索；文档内嵌 Mermaid 代码块编辑 |
@@ -454,10 +454,10 @@ xiaosu-draw-ai/
 │
 ├── skills/xiaosu-draw-ai/            # Skill 包
 │   ├── SKILL.md                      # Agent 行为入口
-│   ├── references/                   # 15 份按需加载规则文档
+│   ├── references/                   # 12 份按需加载规则文档
 │   ├── templates/                    # 20 个中英文提示词模板
 │   ├── styles/                       # JSON Schema + 7 套内置预设
-│   ├── scripts/                      # 13 个脚本（校验、导出、构建等）
+│   ├── scripts/                      # 12 个脚本（校验、导出、构建等）
 │   └── data/                         # 结构化数据索引（预留）
 │
 ├── tests/                            # L0-L2 测试套件
