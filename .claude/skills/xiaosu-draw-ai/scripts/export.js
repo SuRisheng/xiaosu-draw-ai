@@ -8,6 +8,12 @@
  *   node export.js <input.drawio> --format svg   # Export as SVG
  *   node export.js <input.drawio> --format pdf   # Export as PDF
  *
+ * SVG text fix: draw.io renders text via &lt;foreignObject&gt; + &lt;image&gt; fallback
+ * in a &lt;switch&gt;.  Many SVG viewers don't support foreignObject, so text
+ * disappears.  By default we post-process the SVG to remove foreignObject
+ * so the &lt;image&gt; fallback renders everywhere.  Pass --svg-native-text to
+ * keep the raw draw.io output (vector text in compatible viewers).
+ *
  * Auto-detects the draw.io binary on Windows, macOS, and Linux.
  * See references/rules.md for export constraints.
  */
@@ -86,6 +92,7 @@ Options:
   --output <path> Custom output path (default: derived from input)
   --width <px>    Export width (preview default: 2000, final: auto)
   --scale <n>     Export scale factor (final default: 4, preview: 1)
+  --svg-native-text  Keep raw draw.io SVG output (vector text, needs foreignObject support)
   --help, -h      Show this help
 
 Modes:
@@ -108,6 +115,7 @@ Modes:
         output: null,
         width: null,
         scale: null,
+        svgNativeText: args.includes('--svg-native-text'),
     };
 
     const formatIdx = args.indexOf('--format');
@@ -161,11 +169,14 @@ function buildCommand(binary, options) {
         cmdArgs.push('-e');
         // Higher scale for final output
         cmdArgs.push('-s', scale ? String(scale) : '4');
-    } else if (width) {
-        cmdArgs.push('--width', String(width));
-    } else {
-        // Preview: cap width to 2000px for vision API compatibility
-        cmdArgs.push('--width', '2000');
+    } else if (format !== 'pdf') {
+        // --width is for PNG/JPG/SVG preview; PDF ignores it (produces empty page)
+        if (width) {
+            cmdArgs.push('--width', String(width));
+        } else {
+            // Preview: cap width to 2000px for vision API compatibility
+            cmdArgs.push('--width', '2000');
+        }
         if (scale) {
             cmdArgs.push('-s', String(scale));
         }
@@ -179,6 +190,41 @@ function buildCommand(binary, options) {
     cmdArgs.push(input);
 
     return { binary, args: cmdArgs, output: outPath };
+}
+
+// ── SVG Text Fix ──────────────────────────────────────────────────
+
+/**
+ * draw.io renders text labels as <foreignObject> + <image> fallback
+ * inside a <switch>.  Many SVG viewers don't support foreignObject,
+ * so text disappears.  This function removes <foreignObject> from each
+ * <switch> so the <image> fallback always renders, fixing text display
+ * in all viewers.
+ *
+ * Only modifies <switch> elements that contain BOTH a <foreignObject>
+ * AND an <image> (safe: doesn't touch other switches).
+ */
+function fixSvgText(svgPath) {
+    let svg = fs.readFileSync(svgPath, 'utf-8');
+    const before = svg;
+
+    // draw.io SVG: each text label is <switch> containing
+    //   <foreignObject ...>HTML text</foreignObject>
+    //   <image .../>  (PNG fallback)
+    // Remove foreignObject from every switch that has both,
+    // so the <image> fallback always renders.
+    svg = svg.replace(/<switch>([\s\S]*?)<\/switch>/g, (full) => {
+        if (full.includes('<foreignObject') && full.includes('<image ')) {
+            return full.replace(/<foreignObject[\s\S]*?<\/foreignObject>/g, '');
+        }
+        return full;
+    });
+
+    fs.writeFileSync(svgPath, svg, 'utf-8');
+
+    const removed = (before.match(/<foreignObject/g) || []).length -
+                    (svg.match(/<foreignObject/g) || []).length;
+    return removed;
 }
 
 // ── Main ──────────────────────────────────────────────────────────
@@ -225,9 +271,22 @@ function main() {
 
         // Verify output exists
         if (fs.existsSync(output)) {
+            // SVG text fix: remove foreignObject so image fallback renders
+            let removedFO = 0;
+            if (output.endsWith('.svg') && !options.svgNativeText) {
+                removedFO = fixSvgText(output);
+                if (removedFO > 0) {
+                    const stats = fs.statSync(output);
+                    const sizeKB = (stats.size / 1024).toFixed(1);
+                    console.log(`✓ SVG text fix: ${removedFO} foreignObject(s) removed → ${sizeKB} KB`);
+                }
+            }
+
             const stats = fs.statSync(output);
             const sizeKB = (stats.size / 1024).toFixed(1);
-            console.log(`✓ Export complete: ${output} (${sizeKB} KB)`);
+            if (!output.endsWith('.svg') || options.svgNativeText || removedFO === 0) {
+                console.log(`✓ Export complete: ${output} (${sizeKB} KB)`);
+            }
         } else {
             console.error(`Warning: export completed but output file not found: ${output}`);
             process.exit(1);

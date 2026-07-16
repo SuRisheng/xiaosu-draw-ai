@@ -83,14 +83,15 @@
 
 - **布局方向**：从上到下分层排列。层与层之间间距 ≥ 120px。
 - **同层排列**：同一层的组件水平间距 100–120px，组件之间边缘间距 ≥ 80px。
-- **颜色语义**：严格按照语义角色分配颜色——
-  - 服务/应用组件：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 数据库/存储：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
-  - 消息队列/异步：黄色（fillColor=#fff2cc, strokeColor=#d6b656）
-  - API 网关/代理：橙色（fillColor=#ffe6cc, strokeColor=#d79b00）
-  - 安全/鉴权组件：红色（fillColor=#f8cecc, strokeColor=#b85450）
-  - 外部系统/第三方：灰色（fillColor=#f5f5f5, strokeColor=#666666）
-  - 配置/基础设施：紫色（fillColor=#e1d5e7, strokeColor=#9673a6）
+- **颜色语义**：按组件类型→语义角色→风格预设查表，**不硬编码色值**——
+  - 服务/应用组件 → role: service（颜色由 `roles.service → palette` 查表确定）
+  - 数据库/存储 → role: database
+  - 消息队列/异步 → role: queue
+  - API 网关/代理 → role: gateway
+  - 安全/鉴权组件 → role: error（或 security）
+  - 外部系统/第三方 → role: external
+  - 配置/基础设施 → role: security
+  - **查表方式**：先读所选风格的 JSON（`styles/built-in/<name>.json`）→ 查 `roles` 字段找到 role 对应的 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **网关位置**：API 网关放在顶层中央，数据库放在底层。
 - **服务容器**：同一微服务内的子组件用 swimlane 容器包裹，容器内子组件上下排列。
 - **走线通道**：层与层之间至少保留 80px 宽的走线通道，避免边线穿越组件。

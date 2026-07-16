@@ -92,11 +92,12 @@
 
 - **布局方向**：主流程从上到下，分支在判断节点处左右展开。
 - **形状规范**：
-  - 开始/结束：椭圆（ellipse），绿色（fillColor=#d5e8d4）
-  - 处理步骤：圆角矩形（rounded=1），蓝色（fillColor=#dae8fc）
-  - 判断/分支：菱形（rhombus），黄色（fillColor=#fff2cc）
-  - 输入/输出：平行四边形（shape=parallelogram），橙色（fillColor=#ffe6cc）
-  - 异常/错误：红色（fillColor=#f8cecc）
+  - 开始/结束：椭圆（ellipse），role: database
+  - 处理步骤：圆角矩形（rounded=1），role: service
+  - 判断/分支：菱形（rhombus），role: queue
+  - 输入/输出：平行四边形（shape=parallelogram），role: gateway
+  - 异常/错误：role: error
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **步骤间距**：垂直间距 ≥ 80px，判断分支水平间距 100–120px。
 - **判断分支**：每个菱形判断节点必须有两条出边（Yes 和 No），边的 `value` 属性标注"是"/"否"或具体条件。
 - **边标签背景**：所有带文字标签的边，添加 labelBackgroundColor=#FFFFFF。

@@ -7,8 +7,15 @@
 > matching section below for presets. Do NOT pre-load entire file — load only the
 > relevant type's section.
 >
-> Color palette values are defined in `references/xml-authoring.md` (7-color palette).
-> For the default visual style tokens, see `styles/built-in/flat-icon.json`.
+> **⚠️ Color priority**: The color tables below map component types to semantic roles.
+> Actual hex values (fillColor/strokeColor) come from the selected style JSON
+> (`styles/built-in/<name>.json` → `roles` → `palette`). Do NOT use the old hardcoded
+> hex values from any source — they are flat-icon defaults only and will conflict
+> with style switching. Shape modifiers (`rounded=`, corner radius) also come from
+> the style JSON's `shapes` and `extras` fields.
+>
+> **This file defines WHAT role each component gets. Style JSONs define WHAT COLOR
+> each role becomes.** Template files (`templates/`) define the user-facing constraints.
 
 ---
 
@@ -18,9 +25,18 @@
 
 ### Node Kind → Shape Style Tokens
 
+> These are **base shape tokens** (geometry + behavior). Style-level modifiers
+> (`rounded=`, `fillColor`, `strokeColor`, `fontColor`) come from the selected
+> style JSON's `shapes`, `palette`, and `extras` fields.
+>
+> **`rounded` specifically**: `rounded=1` or `rounded=0` is defined by the style
+> JSON's `extras.cornerRadius` field and individual `shapes` entries. Diagram-type
+> sections below list shapes WITHOUT `rounded=` — append it from the style JSON.
+> Similarly, `fontColor` comes from `palette.*.fontColor` or `extras.fontColor`.
+
 | Node Kind | Shape Token | Used By |
 |-----------|------------|---------|
-| `service` | `rounded=1;whiteSpace=wrap;html=1;` | architecture, deployment, network, c4, data-flow |
+| `service` | `whiteSpace=wrap;html=1;` | architecture, deployment, network, c4, data-flow |
 | `database` | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` | architecture, deployment, network, c4, er |
 | `queue` | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` | architecture, deployment, data-flow |
 | `gateway` | `rounded=1;whiteSpace=wrap;html=1;fontStyle=1;` | architecture, deployment, sequence |
@@ -38,6 +54,10 @@
 
 ### Edge Kind → Arrow Style Tokens
 
+> Arrow and line type are structural (fixed). `rounded=` on edge style and
+> `strokeColor` are style-dependent — they come from the selected style JSON's
+> `edges.style` and `edges`/`palette` fields respectively.
+
 | Edge Kind | Arrow Tokens | Line Style | Used By |
 |-----------|-------------|------------|---------|
 | `primary` | `endArrow=block;endFill=1;strokeWidth=2;` | solid | all (main flow) |
@@ -53,6 +73,9 @@
 
 ### Layout Presets
 
+> Spacing values are authoritative in `references/rules.md` §Spacing & Layout Constants.
+> This table is a convenient summary; when values differ, rules.md wins.
+
 | Diagram Type | Default Direction | Key Spacing |
 |-------------|------------------|-------------|
 | architecture | TB (top→bottom) | Layer: ≥120px, Component: ≥80px, Same-row: 100–120px |
@@ -66,19 +89,26 @@
 | network | LR or TB through zones | Zone gap: ≥120px, Device gap: ≥40px |
 | data-flow | TB or LR through pipeline | Entity→Process: ≥120px, Process→Process: ≥100px |
 
-### Role → Palette Color
+### Semantic Role → Palette Slot Mapping
 
-| Role | fillColor | strokeColor | Applied To |
-|------|-----------|-------------|-----------|
-| primary | `#dae8fc` | `#6c8ebf` | Services, app components, main entities |
-| success | `#d5e8d4` | `#82b366` | Databases, storage, completion states |
-| warning | `#fff2cc` | `#d6b656` | Queues, async, choice nodes, cache |
-| accent | `#ffe6cc` | `#d79b00` | Gateways, load balancers, proxies |
-| danger | `#f8cecc` | `#b85450` | Security, firewalls, error states |
-| neutral | `#f5f5f5` | `#666666` | External systems, network devices |
-| secondary | `#e1d5e7` | `#9673a6` | Config, CI/CD, infrastructure, enum |
+> **This table defines the role→palette slot lookup path, NOT the actual colors.**
+> Actual hex values (fillColor/strokeColor/fontColor) are in the selected style
+> JSON's `roles` and `palette` fields. Example lookup: service component → role
+> `service` → style JSON `roles.service` → slot `primary` → `palette.primary`.
 
-> **Override rule**: Individual diagram type sections may override these defaults. When a type-specific constraint conflicts with a table above, the type-specific constraint wins.
+| Semantic Role | Slot Name (in style JSON) | Applied To |
+|---------------|---------------------------|------------|
+| `service` | `primary` | Services, app components, main entities |
+| `database` | `success` | Databases, storage, completion states |
+| `queue` | `warning` | Queues, async messaging, choice nodes, cache |
+| `gateway` | `accent` | Gateways, load balancers, proxies |
+| `error` | `danger` | Security, firewalls, error/exception states |
+| `external` | `neutral` | External systems, third-party, network devices |
+| `security` | `secondary` | Config, CI/CD, infrastructure, enum |
+
+> **Override rule**: Individual diagram type sections may remap component types to
+> different roles. The type-specific role mapping takes priority over this global table.
+> Actual colors ALWAYS come from the style JSON — never from this file.
 
 ---
 
@@ -90,25 +120,29 @@
 
 | Element | Style String |
 |---------|-------------|
-| Service / Component | `rounded=1;whiteSpace=wrap;html=1;` |
+| Service / Component | `whiteSpace=wrap;html=1;` |
 | Database / Data Store | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
 | Message Queue | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
-| API Gateway / LB | `rounded=1;whiteSpace=wrap;html=1;` |
-| External System | `rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;` |
+| API Gateway / LB | `whiteSpace=wrap;html=1;` |
+| External System | `whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;` |
 | Service Group (Container) | `swimlane;startSize=30;` |
-| Zone / Network Boundary | `rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;pointerEvents=0;` |
+| Zone / Network Boundary | `whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;pointerEvents=0;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor | Examples |
-|------|-----------|-------------|---------|
-| Primary / Service | `#dae8fc` | `#6c8ebf` | Microservices, app logic |
-| Success / Database | `#d5e8d4` | `#82b366` | MySQL, PostgreSQL, caches |
-| Warning / Queue | `#fff2cc` | `#d6b656` | RabbitMQ, Kafka, async |
-| Accent / Gateway | `#ffe6cc` | `#d79b00` | API Gateway, Load Balancer, Proxy |
-| Danger / Security | `#f8cecc` | `#b85450` | Auth, Firewall, WAF |
-| Neutral / External | `#f5f5f5` | `#666666` | Third-party APIs, External systems |
-| Secondary / Infra | `#e1d5e7` | `#9673a6` | Config, CI/CD, Monitoring |
+> Colors come from the selected style JSON. This table maps element types to
+> semantic roles — use the global "Semantic Role → Palette Slot Mapping" table
+> to resolve each role to its palette slot.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Service / Component | `service` |
+| Database / Data Store | `database` |
+| Message Queue | `queue` |
+| API Gateway / LB | `gateway` |
+| External System | `external` |
+| Security / Auth | `error` |
+| Config / Infrastructure | `security` |
 
 ### Layout
 
@@ -166,7 +200,7 @@
 
 | Element | Style String |
 |---------|-------------|
-| Participant (Actor) | `rounded=1;whiteSpace=wrap;html=1;` |
+| Participant (Actor) | `whiteSpace=wrap;html=1;` |
 | Database Participant | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
 | Lifeline | Edge: `endArrow=classic;html=1;dashed=1;dashPattern=8 4;endSize=12;` |
 | Request Message | Edge: `edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=classic;endFill=1;` |
@@ -174,12 +208,14 @@
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Main Participant | `#dae8fc` | `#6c8ebf` |
-| Gateway | `#ffe6cc` | `#d79b00` |
-| External Participant | `#f5f5f5` | `#666666` |
-| Database | `#d5e8d4` | `#82b366` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Main Participant | `service` |
+| Gateway | `gateway` |
+| External Participant | `external` |
+| Database Participant | `database` |
 
 ### Layout
 
@@ -231,15 +267,10 @@
 
 ### Color Assignments
 
-| Entity # | fillColor | strokeColor |
-|----------|-----------|-------------|
-| Entity 1 | `#dae8fc` | `#6c8ebf` |
-| Entity 2 | `#d5e8d4` | `#82b366` |
-| Entity 3 | `#e1d5e7` | `#9673a6` |
-| Entity 4 | `#fff2cc` | `#d6b656` |
-| Entity 5+ | `#f5f5f5` | `#666666` |
-
-> Cycle through colors for each entity. Use at least 3 distinct colors.
+> Colors from selected style JSON. Cycle through palette slots for each entity
+> (at least 3 distinct roles). Example cycle: entity 1→`service`, entity 2→`database`,
+> entity 3→`security`, entity 4→`queue`, entity 5+→`external`.
+> **Do NOT hardcode hex values — look up each role in the style JSON.**
 
 ### Layout
 
@@ -281,23 +312,25 @@
 
 | Element | Style String |
 |---------|-------------|
-| Process Step | `rounded=1;whiteSpace=wrap;html=1;` |
+| Process Step | `whiteSpace=wrap;html=1;` |
 | Decision (Diamond) | `rhombus;whiteSpace=wrap;html=1;` |
 | Start / End | `ellipse;whiteSpace=wrap;html=1;` |
 | Input / Output | `shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;` |
-| Sub-process | `rounded=1;whiteSpace=wrap;html=1;` |
+| Sub-process | `whiteSpace=wrap;html=1;` |
 | Document | `shape=document;whiteSpace=wrap;html=1;boundedLbl=1;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Process Step | `#dae8fc` | `#6c8ebf` |
-| Decision | `#fff2cc` | `#d6b656` |
-| Start / End | `#d5e8d4` | `#82b366` |
-| Input / Output | `#ffe6cc` | `#d79b00` |
-| Error / Exception | `#f8cecc` | `#b85450` |
-| Sub-process | `#e1d5e7` | `#9673a6` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Process Step | `service` |
+| Decision / Branch | `queue` |
+| Start / End | `database` |
+| Input / Output | `gateway` |
+| Error / Exception | `error` |
+| Sub-process | `security` |
 
 ### Layout
 
@@ -340,23 +373,25 @@
 
 | Element | Style String |
 |---------|-------------|
-| Deployment Node / Server | `rounded=1;whiteSpace=wrap;html=1;` |
+| Deployment Node / Server | `whiteSpace=wrap;html=1;` |
 | Network Zone | `rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;pointerEvents=0;` |
 | Database / Storage | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
 | Firewall | `shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;` |
 | Cloud / External | `ellipse;shape=cloud;whiteSpace=wrap;html=1;` |
-| Load Balancer | `rounded=1;whiteSpace=wrap;html=1;` |
+| Load Balancer | `whiteSpace=wrap;html=1;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Internal Service | `#dae8fc` | `#6c8ebf` |
-| Database | `#d5e8d4` | `#82b366` |
-| Network Device | `#f5f5f5` | `#666666` |
-| Firewall / Security | `#f8cecc` | `#b85450` |
-| Load Balancer | `#ffe6cc` | `#d79b00` |
-| Zone Boundary | `none` | `#999999` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Internal Service / Server | `service` |
+| Database / Storage | `database` |
+| Network Device | `external` |
+| Firewall / Security | `error` |
+| Load Balancer / Gateway | `gateway` |
+| Zone Boundary | `external` (stroke only, `fillColor=none`) |
 
 ### Layout
 
@@ -404,12 +439,14 @@
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Concrete Class | `#dae8fc` | `#6c8ebf` |
-| Abstract Class | `#d5e8d4` | `#82b366` |
-| Interface | `#fff2cc` | `#d6b656` |
-| Enum | `#e1d5e7` | `#9673a6` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Concrete Class | `service` |
+| Abstract Class | `database` |
+| Interface | `queue` |
+| Enum | `security` |
 
 ### Layout
 
@@ -457,18 +494,20 @@
 | Software System | `rounded=1;arcSize=10;html=1;whiteSpace=wrap;` |
 | External System | `rounded=1;arcSize=10;html=1;whiteSpace=wrap;dashed=1;` |
 | Container | `rounded=1;arcSize=10;html=1;whiteSpace=wrap;` |
-| Component | `rounded=1;whiteSpace=wrap;html=1;` |
+| Component | `whiteSpace=wrap;html=1;` |
 | Database | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
 | System Boundary | `rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;` |
 
 ### Color Assignments (per level)
 
-| Level | Element Color | Description |
-|-------|--------------|-------------|
-| C1 (Context) | Blue `#dae8fc` / `#6c8ebf` | System as black-box |
-| C2 (Container) | Green `#d5e8d4` / `#82b366` | Apps, data stores |
-| C3 (Component) | Orange `#ffe6cc` / `#d79b00` | Internal components |
-| C4 (Code) | Gray `#f5f5f5` / `#666666` | Classes, modules |
+> Colors from selected style JSON. Map C4 levels to semantic roles.
+
+| Level | Semantic Role | Rationale |
+|-------|--------------|-----------|
+| C1 (Context) | `service` | System as black-box |
+| C2 (Container) | `database` | Apps, data stores |
+| C3 (Component) | `gateway` | Internal components |
+| C4 (Code) | `external` | Classes, modules |
 
 ### Layout
 
@@ -504,20 +543,23 @@
 
 | Element | Style String |
 |---------|-------------|
-| State | `rounded=1;whiteSpace=wrap;html=1;` |
-| Initial State | `ellipse;whiteSpace=wrap;html=1;fillColor=#6c8ebf;strokeColor=#6c8ebf;` |
-| Final State | `ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;` |
+| State | `whiteSpace=wrap;html=1;` |
+| Initial State | `ellipse;whiteSpace=wrap;html=1;` (solid fill from style JSON `palette.primary.strokeColor`) |
+| Final State | `ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;` (fixed convention) |
 | Choice Pseudo-state | `rhombus;whiteSpace=wrap;html=1;` |
 | Composite State | `swimlane;startSize=30;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Normal State | `#dae8fc` | `#6c8ebf` |
-| Error State | `#f8cecc` | `#b85450` |
-| Final State | `#d5e8d4` | `#82b366` |
-| Initial State | `#6c8ebf` (solid fill) | `#6c8ebf` |
+> Colors from selected style JSON. Map via semantic role.
+> Initial/final states MAY use fixed colors (not style-dependent) for visual convention.
+
+| State Type | Semantic Role |
+|-----------|--------------|
+| Normal State | `service` |
+| Error State | `error` |
+| Final State | `database` |
+| Initial State | `service` (solid fill, fixed style) |
 
 ### Layout
 
@@ -557,22 +599,24 @@
 | Element | Style String |
 |---------|-------------|
 | Router / Switch | `shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;` |
-| Server | `rounded=1;whiteSpace=wrap;html=1;` |
+| Server | `whiteSpace=wrap;html=1;` |
 | Firewall | `shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;` |
 | Cloud / Internet | `ellipse;shape=cloud;whiteSpace=wrap;html=1;` |
-| Workstation | `rounded=1;whiteSpace=wrap;html=1;` |
+| Workstation | `whiteSpace=wrap;html=1;` |
 | Storage / NAS | `shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;` |
 | Network Segment | `rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Network Device | `#f5f5f5` | `#666666` |
-| Firewall | `#f8cecc` | `#b85450` |
-| Server | `#dae8fc` | `#6c8ebf` |
-| Storage | `#d5e8d4` | `#82b366` |
-| Security Zone | `#fff2cc` | `#d6b656` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Router / Switch / Network Device | `external` |
+| Firewall | `error` |
+| Server / Compute | `service` |
+| Storage / NAS | `database` |
+| Security Zone | `queue` |
 
 ### Layout
 
@@ -611,19 +655,21 @@
 
 | Element | Style String |
 |---------|-------------|
-| Process | `rounded=1;whiteSpace=wrap;html=1;` |
+| Process | `whiteSpace=wrap;html=1;` |
 | External Entity | `ellipse;whiteSpace=wrap;html=1;` |
 | Data Store | `shape=document;whiteSpace=wrap;html=1;boundedLbl=1;` |
 | Data Flow (Edge) | Label on edge: `fontSize=10;` |
 
 ### Color Assignments
 
-| Role | fillColor | strokeColor |
-|------|-----------|-------------|
-| Process | `#dae8fc` | `#6c8ebf` |
-| External Entity | `#fff2cc` | `#d6b656` |
-| Data Store | `#d5e8d4` | `#82b366` |
-| Error Flow | `#f8cecc` | `#b85450` |
+> Colors from selected style JSON. Map via semantic role.
+
+| Element Type | Semantic Role |
+|-------------|--------------|
+| Process (Transform) | `service` |
+| External Entity (Source/Sink) | `queue` |
+| Data Store | `database` |
+| Error Flow | `error` |
 
 ### Layout
 
@@ -660,7 +706,7 @@
 
 | Shape | Key Style Tokens |
 |-------|-----------------|
-| Rounded Rectangle | `rounded=1;whiteSpace=wrap;html=1;` |
+| Rounded Rectangle | `whiteSpace=wrap;html=1;` |
 | Sharp Rectangle | `rounded=0;whiteSpace=wrap;html=1;` |
 | Ellipse | `ellipse;whiteSpace=wrap;html=1;` |
 | Diamond (Rhombus) | `rhombus;whiteSpace=wrap;html=1;` |
@@ -678,17 +724,21 @@
 > Edges are not just lines. Each semantic relationship should have a distinct visual style.
 > Use these 7 kinds when generating edges. Source: DESIGN.md §10.5.
 
-| Kind | Meaning | Style Tokens | Example Use |
-|------|---------|-------------|-------------|
-| **primary** | Main flow / synchronous call | Primary color (`#6c8ebf`), solid, `endArrow=block;endFill=1;strokeWidth=2;` | API call, data flow between services |
-| **async** | Asynchronous message | Neutral color (`#64748b`), dashed, `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | Message queue, event bus, background job |
-| **memoryRead** | Cache read | Success color (`#16a34a`), solid, `endArrow=block;endFill=1;` | Redis GET, CDN fetch |
-| **memoryWrite** | Cache write | Success color (`#16a34a`), dashed, `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | Redis SET, cache invalidation |
-| **control** | Control flow / branch | Primary color (`#6c8ebf`), solid, `endArrow=block;endFill=1;orthogonalLoop=1;` | If-else, switch, state transition |
-| **feedback** | Feedback / return flow | Warning color (`#d97706`), dashed, `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | Error response, rollback, retry |
-| **neutral** | Weak dependency / reference | Neutral color (`#9ca3af`), thin, `endArrow=open;endFill=0;strokeWidth=1;` | Documentation link, optional dependency |
+| Kind | Meaning | Style Tokens (arrow + line) | Color Source | Example Use |
+|------|---------|---------------------------|-------------|-------------|
+| **primary** | Main flow / synchronous call | `endArrow=block;endFill=1;strokeWidth=2;` solid | style JSON `edges` or `palette.primary` | API call, data flow |
+| **async** | Asynchronous message | `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | style JSON `palette.neutral` | Message queue, event bus |
+| **memoryRead** | Cache read | `endArrow=block;endFill=1;` solid | style JSON `palette.success` | Redis GET, CDN fetch |
+| **memoryWrite** | Cache write | `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | style JSON `palette.success` | Redis SET, cache invalidation |
+| **control** | Control flow / branch | `endArrow=block;endFill=1;orthogonalLoop=1;` solid | style JSON `palette.primary` | If-else, switch, state transition |
+| **feedback** | Feedback / return flow | `endArrow=block;endFill=1;dashed=1;dashPattern=8 4;` | style JSON `palette.warning` | Error response, rollback, retry |
+| **neutral** | Weak dependency / reference | `endArrow=open;endFill=0;strokeWidth=1;` | style JSON `palette.neutral` | Documentation link, optional dependency |
 
-**Application rule**: When generating edges in Pipeline C, choose the kind that matches the relationship described by the user. Apply the corresponding style tokens from the table above. The color values are defaults from `flat-icon` style; use matching tokens from the selected style preset.
+**Application rule**: When generating edges in Pipeline C, choose the kind that matches
+the relationship described by the user. Apply the arrow/line tokens above + the color
+from the selected style JSON's `edges` field (or `palette` for per-edge coloring). The
+`strokeColor` is the ONLY color-dependent token — all others are structural and
+style-independent.
 
 **Legend requirement**: Every diagram MUST include a legend that explains the arrow semantics used. See the individual diagram type sections for legend placement constraints (R039 in `visual-audit.md`).
 
@@ -713,10 +763,10 @@
 ## Global Constraints (Apply to All Types)
 
 From `references/rules.md`:
-- **R001–R005**: P0 blocking — structural integrity (dangling edges, duplicate IDs, parent-child, XML syntax, missing geometry)
-- **R010–R015**: P1 must-fix — layout quality (overlaps, edge-through-vertex, crossings, spacing, off-canvas, self-closing edges)
-- **R020–R022**: P2 warning — grid alignment, connection points, arrow segments
-- **R030–R039**: P3 visual audit — see `references/visual-audit.md`
+- **R001–R009**: P0 blocking — structural integrity (dangling edges, duplicate IDs, parent-child, XML syntax, missing geometry, environment)
+- **R010–R017, R045–R051**: P1 must-fix — layout quality (overlaps, edge-through-vertex, crossings, spacing, off-canvas, routing corridors, edge distribution, clearance, waypoint alignment, swimlane positioning, edge parent assignment)
+- **R020–R065**: P2 warning — grid alignment, connection points, arrow segments, waypoints, label ratio, content-first sizing, column unification, spacing constants, container matching
+- **P3 visual audit**: See `references/visual-audit.md` for the complete P3 decision table (label truncation, edge-shape overlap, edge-label overlap, stacked edges, arrow direction, corner connections, label background, component spacing, Z-order, legend)
 
 From `references/xml-authoring.md`:
 - All coordinates must be multiples of 10px (grid alignment)

@@ -90,11 +90,12 @@ Answer these questions in natural language (not all required — the AI will ask
 
 - **Layout direction**: Main flow top-to-bottom; branches expand left/right at decision nodes.
 - **Shape conventions**:
-  - Start/End: ellipse, green (fillColor=#d5e8d4)
-  - Process step: rounded rectangle (rounded=1), blue (fillColor=#dae8fc)
-  - Decision: diamond (rhombus), yellow (fillColor=#fff2cc)
-  - Input/Output: parallelogram (shape=parallelogram), orange (fillColor=#ffe6cc)
-  - Error/Exception: red (fillColor=#f8cecc)
+  - Start/End: ellipse, role: database
+  - Process step: rounded rectangle (rounded=1), role: service
+  - Decision: diamond (rhombus), role: queue
+  - Input/Output: parallelogram (shape=parallelogram), role: gateway
+  - Error/Exception: role: error
+  - **Lookup**: Read selected style JSON → `roles` field → find palette slot → `palette` field → fillColor/strokeColor
 - **Step spacing**: Vertical gap ≥ 80px; decision branch horizontal gap 100–120px.
 - **Decision branches**: Each diamond node must have exactly 2 outgoing edges labeled "Yes"/"No" via the edge `value` attribute.
 - **Edge label background**: Always add labelBackgroundColor=#FFFFFF to edges with text labels.

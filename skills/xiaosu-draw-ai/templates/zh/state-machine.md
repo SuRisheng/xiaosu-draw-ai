@@ -62,11 +62,12 @@
   - 普通状态：圆角矩形（rounded=1;whiteSpace=wrap;html=1;）
   - 选择伪状态（choice）：菱形（rhombus;whiteSpace=wrap;html=1;）
   - 复合状态（含子状态）：swimlane（swimlane;startSize=30;）
-- **颜色语义**：
-  - 普通状态：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 终态：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
-  - 错误/异常状态：红色（fillColor=#f8cecc, strokeColor=#b85450）
-  - 初始状态：深蓝（fillColor=#6c8ebf, strokeColor=#6c8ebf）
+- **颜色语义**：按状态类型→语义角色→风格预设查表，不硬编码色值——
+  - 普通状态 → role: service
+  - 终态 → role: database
+  - 错误/异常状态 → role: error
+  - 初始状态（实心小圆）→ 固定深色填充（不跟随风格）
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **边规范**：边使用正交路由（edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;），箭头用 block（endArrow=block;endFill=1;）。转换标签格式：`事件 [守卫条件] / 动作`。自转换（同一状态到自身）使用弧形边（orthogonalLoop=1;jettySize=auto;），放在状态上方或右侧。
 - **数量约束**：有且仅有一个初始状态。可有一个或多个终态。choice 节点的每条出边必须标注条件（如 `[是]`/`[否]` 或具体守卫）。
 - **坐标对齐**：所有坐标必须是 10px 的整数倍。

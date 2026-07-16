@@ -63,7 +63,7 @@ flowchart LR
 | L2 路由层 | IR → 判断管道 A/B/C | `SKILL.md`（路由决策树） |
 | L3 生成层 | A: importer→IR→XML；B: Mermaid→CLI 转换；C: AI 手写 XML | `scripts/`、`references/` |
 | L4 质量层（不可跳过） | validate.py（P0-P2）→ audit.js（P3）→ AI 视觉审计 | `scripts/validate.py`、`scripts/audit.js`、`references/visual-audit.md` |
-| L5 交付层 | CLI 导出 → 源文件 + PNG/SVG/PDF → [飞书嵌入] | `scripts/export.js`、`references/feishu-embed.md` |
+| L5 交付层 | CLI 导出 → 源文件 + PNG/SVG/PDF → [飞书嵌入] | `scripts/export.js`、`references/output-format-gate.md` |
 
 三个贯穿性约定：
 
@@ -255,6 +255,126 @@ Managed Agents 适配时的边界约束：
 | 目录结构、安装与使用 | `README.md`（中文）/ `README_EN.md`（英文） |
 | 变更历史 | `CHANGELOG.md` + git log |
 | 本文档旧版（含 Phase 0-5 实施路线、验收标准、目录结构详解、SKILL.md 编写规范、测试体系） | git 历史（2026-07-15 之前的 `doc/DESIGN.md`） |
+
+---
+
+## 6. Skill 包目录与文件说明
+
+以下为 `skills/xiaosu-draw-ai/` 下每个文件和目录的职责、加载时机（按需加载阶段）、以及与其他文件的依赖关系。
+
+```
+skills/xiaosu-draw-ai/
+│
+├── SKILL.md                          # 🎯 Agent 行为入口（约 30KB）
+│   # 触发条件 → 模板选择 → IR 抽取 → 管道选择
+│   # → 生成 → 质量门禁 → 导出 → 交付
+│   # 含 Bundled Resources 按需加载表（何时读哪个文件）
+│
+├── data/                             # 📊 结构化索引（预留）
+│   └── README.md                     #    当前无实际数据文件
+│
+├── references/                       # 📚 15 份外置专业知识（按需加载）
+│   ├── rules.md                      # P0-P2 规则全集 + exit code + 评分权重（结构 + 布局）
+│   ├── visual-audit.md               # P3 AI 视觉审计决策表（独立的视觉规则，see→fix→XML 示例）
+│   ├── style-presets.md              # 样式查表协议 + 风格合并规则 + 兼容矩阵
+│   ├── diagram-types.md              # 10 类图预设：组件→role 映射 + 形状/布局/边语义（色值从 style JSON 查表）
+│   ├── xml-authoring.md              # Pipeline C：XML 著述规范 + Content-First 7 步流水线
+│   ├── mermaid-authoring.md          # Pipeline B：Mermaid 语法 → CLI 转换 + 降级策略
+│   ├── pipeline-a-authoring.md       # Pipeline A：importer API + IR schema 契约
+│   ├── icons.md                      # 60+ 产品品牌色 + 图标映射
+│   ├── output-format-gate.md               # 交付前必查：目标平台 → 输出格式决策矩阵（Mermaid vs PNG）
+│   ├── article-diagram-embedding.md  # 模板驱动文档生成 + @xiaosu-draw-ai 标注
+│   ├── dense-diagram-simplification.md # 稠密图简化：5 策略 + 决策流（≥15 节点触发）
+│   ├── benchmark.md                  # 性能度量：计时 + Token 统计 + 报告格式
+│   ├── troubleshooting.md            # 跨平台故障排除
+│   ├── claude-api-agent-skills.md    # Phase 5 适配：Claude API Agent Skills 容器化
+│   └── managed-agents-adaptation.md  # Phase 5 适配：Managed Agents 云端托管
+│
+├── styles/                           # 🎨 7 套视觉风格（JSON 预设）
+│   ├── schema.json                   # JSON Schema（必填字段定义）
+│   └── built-in/                     # 7 个预设（flat-icon 为默认）
+│       ├── flat-icon.json            #    白底蓝主色 · 圆角 · Helvetica
+│       ├── dark-terminal.json        #    深底霓虹 · 直角 · Courier New
+│       ├── blueprint.json            #    深蓝底青白线 · 直角 · Courier New
+│       ├── notion-clean.json         #    白底低饱和 · 圆角 · Helvetica
+│       ├── glassmorphism.json        #    深渐变底磨砂 · 圆角 · Helvetica
+│       ├── claude-official.json      #    暖白底柔影 · 圆角 · Helvetica
+│       └── openai.json               #    白底细线框 · 圆角 · Helvetica
+│
+├── templates/                        # 📝 20 个中英文提示词模板
+│   ├── zh/                           # 中文模板（10 类图，引导问题 + 约束段）
+│   └── en/                           # 英文模板（10 类图，部分未完整翻译）
+│
+└── scripts/                          # 🔧 13 个脚本（详见 CLAUDE.md §修改路由表）
+    ├── validate.py                   # P0-P2 结构 lint（Python 3，ElementTree）
+    ├── audit.js                      # P3 启发式 + 聚合 wrapper（Node.js）
+    ├── export.js                     # PNG/SVG/PDF 导出封装（draw.io CLI 封装）
+    ├── mermaid-convert.js            # Pipeline B：Mermaid → draw.io 转换
+    ├── router.js                     # 正交路由引擎 + 并行边分布 + 障碍规避
+    ├── xml-parser.js                 # 已有图 XML → JSON 结构解析
+    ├── png-extract.js                # PNG 嵌入 XML 提取
+    ├── build.js                      # 打包构建（读版本 → 校验完整性 → 输出 .claude/skills/）
+    ├── install.js                    # 跨平台安装助手
+    ├── utils.js                      # 公共工具（路径/版本/二进制检测）
+    └── importers/                    # Pipeline A 导入器
+        ├── ir-importer.js            #    IR 导入器接口
+        ├── sql2er.js                 #    SQL DDL → ER 图
+        └── openapi2arch.js           #    OpenAPI → 架构图
+```
+
+### 颜色查表链（核心机制）
+
+组件颜色经过三级查找，每一级只负责一件事：
+
+```
+组件类型（"用户服务"）
+  → ① template 或 diagram-types.md：组件→语义 role（service）
+  → ② style JSON roles：语义 role→palette slot（primary）
+  → ③ style JSON palette：palette slot→实际色值（fillColor/strokeColor/fontColor）
+```
+
+| 级 | 谁定义 | 例子 |
+|----|--------|------|
+| ① 组件→role | `templates/` 约束段 + `diagram-types.md` Color Assignments | "服务组件 → role: service" |
+| ② role→slot | 风格 JSON `roles` 字段 | `"service": "primary"` |
+| ③ slot→色值 | 风格 JSON `palette` 字段 | `"primary": {"fillColor": "#0d1f3c", "strokeColor": "#00b4d8"}` |
+
+**优先级**：风格 JSON 的 `shapes` 字段覆盖 `diagram-types.md` 的 shape token；风格 JSON 的 `font` 字段覆盖 `rules.md` R034 的字体 px 值（层级结构保留，具体数值可变）。
+
+### references/ 文件按需加载关系
+
+```mermaid
+flowchart LR
+    subgraph Plan[Plan 阶段]
+        DT[diagram-types.md<br/>组件→role 映射]
+    end
+    subgraph Generate[Generate 阶段]
+        SP[style-presets.md<br/>role→palette 查表协议]
+        XA[xml-authoring.md<br/>XML 规范 + Content-First]
+        MA[mermaid-authoring.md]
+        PA[pipeline-a-authoring.md]
+        IC[icons.md]
+    end
+    subgraph Validate[Validate 阶段]
+        RL[rules.md<br/>P0-P2 结构+布局]
+    end
+    subgraph Visual[Visual Check 阶段]
+        VA[visual-audit.md<br/>P3 视觉决策表]
+    end
+    subgraph Special[交付/特殊场景]
+        FE[output-format-gate.md<br/>格式决策]
+        AE[article-diagram-embedding.md<br/>文档生成]
+        DD[dense-diagram-simplification.md]
+        BM[benchmark.md]
+        TB[troubleshooting.md]
+    end
+    DT --> XA
+    DT --> MA
+    SP --> XA
+    SP --> MA
+    XA --> RL
+    RL --> VA
+```
 
 ---
 

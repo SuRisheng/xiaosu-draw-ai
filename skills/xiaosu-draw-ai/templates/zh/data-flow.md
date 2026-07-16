@@ -53,11 +53,12 @@
   - 外部实体：椭圆（ellipse;whiteSpace=wrap;html=1;）
   - 处理过程：圆角矩形（rounded=1;whiteSpace=wrap;html=1;）
   - 数据存储：文档形状（shape=document;whiteSpace=wrap;html=1;boundedLbl=1;）或圆柱体（shape=cylinder3;...）
-- **颜色语义**：
-  - 外部实体：黄色（fillColor=#fff2cc, strokeColor=#d6b656）
-  - 处理过程：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 数据存储：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
-  - 异常/错误流：红色（fillColor=#f8cecc, strokeColor=#b85450）
+- **颜色语义**：按实体类型→语义角色→风格预设查表，不硬编码色值——
+  - 外部实体 → role: queue
+  - 处理过程 → role: service
+  - 数据存储 → role: database
+  - 异常/错误流 → role: error
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **边规范**：边使用正交路由（edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;），箭头用 block（endArrow=block;endFill=1;）。每条边必须有 label（标注数据内容），边标签添加 labelBackgroundColor=#FFFFFF。
 - **完整性约束**：每个处理过程至少有一条输入边和一条输出边。数据存储至少有一条读边和一条写边。避免数据流线交叉，使用 waypoints 做清晰路由（层间保留 80px 宽走线通道）。
 - **坐标对齐**：所有坐标必须是 10px 的整数倍。

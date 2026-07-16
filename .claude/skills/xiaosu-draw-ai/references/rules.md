@@ -110,6 +110,14 @@ Rules that indicate layout or quality defects. **Fix and re-run validation.**
 
 Rules for the Content-First + Gap Routing pipeline (see SKILL.md workflow). These complement existing P1/P2 rules.
 
+> **Edge routing rules are defined across multiple sections of this file:**
+> - §P1: R017 (corridor lanes), R045 (multi-edge distribution), R046 (edge-node clearance), R047 (waypoint-entry alignment), R049 (direct path priority), R050 (path obstacle check), R051 (edge parent assignment)
+> - §Smart Layout: R052-R062 (gap routing, spacing adjustment, element crossing fallback, smart layout modes)
+> - §P2: R023 (excessive waypoints), R041 (label-to-segment ratio)
+> - P3 visual: R031 (edge-shape overlap), R033 (stacked edges) in `references/visual-audit.md`
+>
+> All edge rules apply regardless of diagram type. Start with the P1 core rules, then apply gap routing (R052+) for complex layouts.
+
 ### P1 — Must Fix
 
 | ID | Description | Detection |
@@ -144,6 +152,12 @@ Rules for the Content-First + Gap Routing pipeline (see SKILL.md workflow). Thes
 
 Rules that indicate suboptimal quality. **Recorded in validation output but do not block.**
 
+> ⚠️ **ID collision note**: Some R030-R039 IDs in this P2 section have DIFFERENT meanings
+> in `scripts/audit.js` and `references/visual-audit.md` (P3 visual rules).
+> See `doc/DESIGN.md` §7.1 for the full cross-reference. When reading "R030" in AI context,
+> determine which file you're reading: rules.md P2 = layout margins; audit.js/visual-audit.md
+> = label truncation. Full renumbering tracked as a future refactoring task.
+
 | ID | Description | Detection |
 |----|-------------|-----------|
 | **R020** | **Off-grid geometry**: Vertex `x`, `y`, `width`, or `height` values are not multiples of **10px**. Suppressed when the off-grid vertex shares a center-x or center-y with a sibling (intentional centering, e.g., x=565 to align center with a node at x=560/w=130). | `[validate.py]` |
@@ -161,7 +175,7 @@ Rules that indicate suboptimal quality. **Recorded in validation output but do n
 | **R031** | **Connected element gap = 80px**: Two elements connected by an edge must have an edge-to-edge gap of exactly **80px** along the connection axis. This gives edges enough visual length to be readable without being too long. | `[混合]` |
 | **R032** | **Unconnected element gap 10–50px**: Adjacent elements in the same group that are NOT connected by an edge must have an edge-to-edge gap in **10–50px**. Elements should be visually grouped, not scattered. | `[混合]` |
 | **R033** | **Internal padding 10–20px**: Every node must have internal text padding. Use `spacingLeft=15;spacingRight=15;spacingTop=15;spacingBottom=15;` in the style string. This ensures text doesn't touch node borders. | `[AI 检测]` |
-| **R034** | **Text size hierarchy**: All text must use one of 4 predefined sizes: **H1**=18px bold (diagram title), **H2**=14px bold (swimlane/container headers), **Body**=13px (module labels), **Caption**=10px (descriptions, edge labels). Never use ad-hoc font sizes. | `[AI 检测]` |
+| **R034** | **Text size hierarchy**: All text must use one of 4 predefined sizes: **H1**=18px bold (diagram title), **H2**=14px bold (swimlane/container headers), **Body**=13px (module labels), **Caption**=10px (descriptions, edge labels). Never use ad-hoc font sizes. **Priority**: The selected style JSON's `font` field (titleFontSize, fontSize) takes priority over these defaults — if the JSON says `titleFontSize=16`, use 16, not 18. The 4-tier hierarchy structure is mandatory; the exact px values are not. | `[AI 检测]` |
 | **R035** | **Content-first sizing**: Element dimensions MUST be derived from text content, not decided arbitrarily. Step 1: measure text pixel width (CJK ≈ fontSize, Latin ≈ fontSize×0.6). Step 2: add 15px spacing per side. Step 3: round to nearest 10 (min w=90, min h=50). Step 4: unify group heights per R029. Step 5: container size = children + gaps + margins. **Bold text**: multiply estimated width by 1.05. | `[AI 检测]` |
 | **R036** | **Cross-swimlane column width unification**: All modules across vertically stacked swimlanes sharing the same column layout MUST use the same width — the global `max(w)` of ALL modules across ALL swimlanes. Steps: (1) compute text-derived width for every module per R035; (2) take `W = max(all_widths)`, round to nearest 10; (3) apply W to every module; (4) choose gap per R006: if modules are edge-connected → R031 (80px), otherwise → R032 (50px); (5) recalculate swimlane width: `swimlane_w = margin × 2 + N_cols × W + (N_cols-1) × gap`. This ensures columns align vertically, eliminates right-side whitespace, and uses correct spacing for the connection context. Exception: if `max(w)/min(w) > 1.5`, use per-swimlane `max(w)`. | `[AI 检测]` |
 | **R065** | **Edge alignment for unequal column counts**: When vertically stacked swimlanes have DIFFERENT column counts (e.g., 6 vs 5), the first and last elements of the narrower layer MUST align with the first and last elements of the widest layer. This takes priority over R036 width unification — the narrower layer MAY use a different `W` and `gap` to achieve edge alignment while staying on the 10px grid. Procedure: (1) compute `edge_left = margin` and `edge_right = margin + N_max × W_max + (N_max-1) × gap_max` from the widest layer; (2) for narrower layers, find `W_narrow ≥ text_derived` and `gap_narrow ∈ [50, 80]` such that `edge_left + N_narrow × W_narrow + (N_narrow-1) × gap_narrow = edge_right`; (3) if no exact on-grid solution exists, use the closest approximation and distribute any leftover ≤5px evenly to the left/right margins. | `[AI 检测]` |
@@ -170,23 +184,10 @@ Rules that indicate suboptimal quality. **Recorded in validation output but do n
 | **R038** | **Sub-item fill**: When a swimlane's width exceeds `Σ(children_max_w) + margins`, sub-items MUST fill proportionally: `item_w = max(text_derived_w, swimlane_w × 0.65)`. Then center: `x = (swimlane_w - item_w) / 2`. This prevents items from looking like lost islands in an oversized container. | `[AI 检测]` |
 | **R040** | **Container-child color contrast**: A swimlane container's header `fillColor` must be perceptibly different from its children's `fillColor`. When both derive from the same palette role, the header MUST use a darker variant (e.g., `#B0C4DE` header vs `#DAE8FC` children). Use a very light `swimlaneFillColor` (near-white tint, e.g., `#EDF2FA`) to provide subtle visual grouping — the body fill should be light enough that edges passing through remain visible. If cross-layer edges pass through the swimlane body, use an even lighter tint or omit `swimlaneFillColor` to avoid Z-order occlusion. See `styles/built-in/<style>.json` `shapes.container`. | `[validate.py]` | No |
 
-Rules that require visual judgment. Cannot be reliably automated; AI checks exported PNG.
-
-> **Detailed audit guide:** See `references/visual-audit.md` for per-rule detection instructions,
-> fix recipes, and XML before/after examples. The table below is a summary reference.
-
-| ID | Description | Source |
-|----|-------------|--------|
-| **R030** | **Label truncation**: Text content visually overflows its shape boundary. | drawio-skill Step 5 |
-| **R031** | **Edge-shape visual overlap**: An edge (especially without waypoints) visually crosses an unrelated shape's interior. | drawio-skill Step 5 |
-| **R032** | **Edge-label overlap**: An edge label collides with other visual elements (nodes, other labels, connectors). | drawio-skill Step 5 |
-| **R033** | **Stacked edges**: Multiple edges follow the same visual path (indistinguishable). **[Elevated to P2 — automated detection planned.]** Check if two edges share ≥ 20px of continuous overlapping segments (same coordinates within 5px tolerance). Fix: offset waypoints by 15–20px, or distribute connection points (`exitX=0.25/0.5/0.75`). See also R016 (waypoint alignment). | drawio-skill Step 5 + automated |
-| **R034** | **Wrong arrow direction**: Arrow head points in the wrong direction relative to the connected shape's edge. | drawio-skill Step 5 |
-| **R035** | **Corner connection**: Arrow connects within **20px** of a shape's corner (instead of edge midpoint). | fireworks-tech-graph |
-| **R036** | **Missing arrow label background**: An arrow label has no background rectangle, making it unreadable when crossing lines. | fireworks-tech-graph |
-| **R037** | **Insufficient component spacing**: Visual clearance between unrelated components appears less than **80px**. | fireworks-tech-graph |
-| **R038** | **Z-order violation**: Arrows render visually on top of components (should be behind). | fireworks-tech-graph |
-| **R039** | **Legend overlap / unreadable**: Legend collides with diagram content or is too small to read. | General |
+> **P3 Visual Audit**: See `references/visual-audit.md` for the complete P3 decision table
+> (label truncation, edge-shape overlap, edge-label overlap, stacked edges, arrow direction,
+> corner connections, label background, component spacing, Z-order, legend). P3 rules use
+> separate IDs in `visual-audit.md` and are NOT part of the R0XX numbering system in this file.
 
 ---
 

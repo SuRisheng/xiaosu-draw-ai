@@ -1,9 +1,14 @@
-# Output Format & Embedding Guide
+# Output Format Decision Gate（输出格式决策门）
 
 > **CRITICAL: Read this BEFORE every diagram delivery, regardless of pipeline.**
 > 
-> Determines the correct output format based on where the diagram will be consumed.
-> Covers Feishu (Lark), GitHub, Notion, Confluence, Slack, and other platforms.
+> Determines the correct output format based on where the diagram will be consumed:
+> Mermaid code block (for platforms with native Mermaid rendering) vs PNG/SVG (for
+> platforms that don't). Covers Feishu (Lark), GitHub, Notion, Confluence, Slack,
+> and other platforms.
+>
+> **Not Feishu-specific** — the name is historical. This is the universal delivery
+> format decision matrix for ALL platforms.
 
 ---
 

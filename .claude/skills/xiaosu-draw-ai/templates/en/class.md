@@ -55,12 +55,13 @@ A diagram showing classes, interfaces, and abstract classes with their attribute
   - 属性行和和方法行用无边框文本（fillColor=none;strokeColor=none;），左对齐（align=left），fontSize=11。
   - 属性格式：`visibility name: Type`（+ public, - private, # protected）。
   - 类宽度 200–240px，行高 20px，类高度 = 26 + 属性数×20 + 方法数×20。
-- **颜色语义**：
-  - 具体类：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 抽象类：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
-  - 接口：黄色（fillColor=#fff2cc, strokeColor=#d6b656）
-  - 枚举：紫色（fillColor=#e1d5e7, strokeColor=#9673a6）
-  - 至少使用 3 种不同颜色交替。
+- **颜色语义**：不同类用不同语义角色，色值由所选风格 JSON 查表确定——
+  - 具体类 → role: service
+  - 抽象类 → role: database
+  - 接口 → role: queue
+  - 枚举 → role: security
+  - 至少使用 3 种不同角色交替。
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **边规范**：边使用正交路由（edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;）——
   - 继承（extends）：endArrow=block;endFill=0;（空心三角）
   - 实现（implements）：endArrow=block;endFill=0;dashed=1;dashPattern=8 4;（虚线空心三角）

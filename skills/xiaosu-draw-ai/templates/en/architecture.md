@@ -81,14 +81,15 @@ Answer these questions in natural language (not all required — the AI will ask
 
 - **Layout direction**: Top-to-bottom layers. Layer gap ≥ 120px.
 - **Same-row spacing**: 100–120px horizontal, ≥ 80px edge-to-edge between components.
-- **Color semantics**: Assign colors by semantic role —
-  - Services: blue (fillColor=#dae8fc, strokeColor=#6c8ebf)
-  - Databases: green (fillColor=#d5e8d4, strokeColor=#82b366)
-  - Queues/async: yellow (fillColor=#fff2cc, strokeColor=#d6b656)
-  - Gateways/proxies: orange (fillColor=#ffe6cc, strokeColor=#d79b00)
-  - Security/auth: red (fillColor=#f8cecc, strokeColor=#b85450)
-  - External/third-party: gray (fillColor=#f5f5f5, strokeColor=#666666)
-  - Config/infrastructure: purple (fillColor=#e1d5e7, strokeColor=#9673a6)
+- **Color semantics**: Map component type → semantic role → style preset table. Do NOT hardcode hex values —
+  - Services/applications → role: service (color from `roles.service → palette` lookup)
+  - Databases/storage → role: database
+  - Queues/async → role: queue
+  - Gateways/proxies → role: gateway
+  - Security/auth → role: error (or security)
+  - External/third-party → role: external
+  - Config/infrastructure → role: security
+  - **Lookup**: Read selected style JSON → `roles` field → find palette slot → `palette` field → fillColor/strokeColor
 - **Gateway position**: Centered at the top layer. Databases at the bottom.
 - **Service groups**: Use swimlane containers for services with sub-components.
 - **Routing corridors**: Reserve ≥ 80px between layers for clean edge routing.

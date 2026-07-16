@@ -12,6 +12,10 @@
 
 ### Step 0: Text Hierarchy
 
+> **Priority**: The selected style JSON's `font` field values take priority over these
+> defaults. If the JSON says `titleFontSize=16`, use 16, not 18. The 4-tier hierarchy
+> structure is mandatory; the exact px values are style-dependent.
+
 | Role | Tag | fontSize | fontStyle | Usage |
 |------|-----|----------|-----------|-------|
 | H1 — 图名 | diagram title | `18` | `1` (bold) | Top of page |

@@ -298,10 +298,12 @@ style="edgeStyle=orthogonalEdgeStyle;endArrow=classic;endFill=1;labelBackgroundC
 
 **What to look for:** Arrows render visually ON TOP of components when they should render behind them.
 
+> **Authoritative Z-order spec**: See `references/rules.md` §Z-Order Convention for the complete
+> rendering order definition. This section describes how to detect and fix violations only.
+
 **How to identify:**
 - In the exported PNG, check if any edge appears to pass OVER a shape (not through it — that's R031)
 - draw.io renders cells in document (XML) order: lower `id` → lower in Z-order
-- Correct visual order (bottom to top): canvas → containers → edges → edge labels → components → component labels → legend
 - In practice: assign lower IDs to edges, higher IDs to vertices
 
 **How to fix:**

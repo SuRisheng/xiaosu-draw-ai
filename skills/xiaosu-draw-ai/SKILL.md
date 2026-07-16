@@ -150,7 +150,7 @@ Read these reference files only when needed. Do NOT pre-load them.
 | `references/troubleshooting.md` | CLI not found, export failures, encoding issues, version problems |
 | `references/dense-diagram-simplification.md` | Diagram has 15+ nodes or user says "too cluttered" — apply simplification strategies |
 | `references/benchmark.md` | User says "benchmark", "measure", "统计性能", or "耗时统计" — collect timing and token metrics |
-| `references/feishu-embed.md` | **Delivering any diagram — MANDATORY before every delivery.** Determine target platform (Wiki/Docx/GitHub/Slack etc.) and correct output format (Mermaid code block vs PNG vs both). Prevents exporting Mermaid as PNG when native code would be better. |
+| `references/output-format-gate.md` | **Delivering any diagram — MANDATORY before every delivery.** Determine target platform (Wiki/Docx/GitHub/Slack etc.) and correct output format (Mermaid code block vs PNG vs both). Prevents exporting Mermaid as PNG when native code would be better. |
 | `references/article-diagram-embedding.md` | User provides a template article link + requirements to generate a new document — OR — user says "update diagrams in this article" after editing text — OR — article contains `@xiaosu-draw-ai` annotations. Read template structure, extract diagram type/position hints, batch generate all diagrams. |
 | `scripts/xml-parser.js` | User provides an existing .drawio file to modify — parse XML to see current nodes/edges/containers |
 | `scripts/png-extract.js` | User provides a .drawio.png (--final export) — extract the embedded source XML |
@@ -598,7 +598,7 @@ Visual self-check per `references/visual-audit.md` (max 2 rounds).
 
 ### Step B5: Platform-Aware Delivery
 
-**See global "Output Format Decision" section below.** This gate applies to ALL pipelines, not just Pipeline B. Read `references/feishu-embed.md` before every delivery.
+**See global "Output Format Decision" section below.** This gate applies to ALL pipelines, not just Pipeline B. Read `references/output-format-gate.md` before every delivery.
 
 For Pipeline B specifically: the `.mmd` file is the **single source of truth**. Default to delivering the Mermaid code block (not PNG) for any platform that supports Mermaid rendering (Feishu Wiki, GitHub, Notion, Obsidian). Export PNG only as backup or when the platform requires it.
 
@@ -638,7 +638,7 @@ For detailed P3 rules (R030–R039), see `references/visual-audit.md` — a deci
 
 **Before delivering any diagram — regardless of Pipeline A/B/C — determine the target platform and choose the correct output format. This is a mandatory gate, not a suggestion.**
 
-Read `references/feishu-embed.md` for the full platform matrix. Quick reference:
+Read `references/output-format-gate.md` for the full platform matrix. Quick reference:
 
 | Target Platform | Preferred Format | Why |
 |----------------|---------|-----|

@@ -54,11 +54,12 @@ A diagram showing network devices, connections, and network zone partitioning. B
   - 存储/NAS：圆柱体（shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;）
   - 互联网/云/WAN：云形状（ellipse;shape=cloud;whiteSpace=wrap;html=1;）
   - 网络区域/子网：虚线框（rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;）
-- **颜色语义**：
-  - 路由器/交换机/网络设备：灰色（fillColor=#f5f5f5, strokeColor=#666666）
-  - 防火墙/安全设备：红色（fillColor=#f8cecc, strokeColor=#b85450）
-  - 服务器/计算：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 存储：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
+- **颜色语义**：按设备类型→语义角色→风格预设查表，不硬编码色值——
+  - 路由器/交换机/网络设备 → role: external
+  - 防火墙/安全设备 → role: error
+  - 服务器/计算 → role: service
+  - 存储 → role: database
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **边规范**：网络链路用直线（edgeStyle=none;rounded=0;），加粗（strokeWidth=2;），无箭头或 block 箭头。VPN/专线用虚线（dashed=1;dashPattern=8 4;）。至少一个防火墙节点位于外部（互联网）和内部区域之间。
 - **标注**：节点标注设备名或 IP 地址（fontSize=11），区域容器标注子网/VLAN ID（如 "192.168.1.0/24"、"VLAN 10"）。
 - **坐标对齐**：所有坐标必须是 10px 的整数倍。

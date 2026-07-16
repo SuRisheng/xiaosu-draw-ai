@@ -51,13 +51,14 @@
   - 负载均衡/API 网关：圆角矩形（rounded=1;whiteSpace=wrap;html=1;fontStyle=1;）
   - 云/互联网：云形状（ellipse;shape=cloud;whiteSpace=wrap;html=1;）
   - 区域边界：虚线框（rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 4;fillColor=none;strokeColor=#999999;）
-- **颜色语义**：
-  - 内部服务/应用：蓝色（fillColor=#dae8fc, strokeColor=#6c8ebf）
-  - 数据库/存储：绿色（fillColor=#d5e8d4, strokeColor=#82b366）
-  - 消息队列/缓存：黄色（fillColor=#fff2cc, strokeColor=#d6b656）
-  - 防火墙/安全：红色（fillColor=#f8cecc, strokeColor=#b85450）
-  - 负载均衡/网关：橙色（fillColor=#ffe6cc, strokeColor=#d79b00）
-  - 网络设备：灰色（fillColor=#f5f5f5, strokeColor=#666666）
+- **颜色语义**：按组件类型→语义角色→风格预设查表，不硬编码色值——
+  - 内部服务/应用 → role: service
+  - 数据库/存储 → role: database
+  - 消息队列/缓存 → role: queue
+  - 防火墙/安全 → role: error
+  - 负载均衡/网关 → role: gateway
+  - 网络设备 → role: external
+  - **查表方式**：读所选风格 JSON → 查 `roles` 字段找 palette 槽位 → 查 `palette` 字段取 fillColor/strokeColor
 - **区域标注**：每个区域容器上方标注区域名（如 "DMZ — Edge Layer"、"Application Layer"、"Data Layer"），使用 fontStyle=1 加粗。
 - **边规范**：边使用正交路由（edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;），箭头用 block（endArrow=block;endFill=1;strokeWidth=2;）。跨区域链路用实线，VPN/专线用虚线（dashed=1;dashPattern=8 4;）。至少一个防火墙节点位于外部和内部区域之间。
 - **坐标对齐**：所有坐标必须是 10px 的整数倍。
